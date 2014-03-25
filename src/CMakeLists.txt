@@ -13,12 +13,22 @@ set( IntersonCxx_SRCS
 
 include( GenerateExportHeader )
 add_library( IntersonCxx SHARED
- ${IntersonCxx_SRCS}
- )
+  ${IntersonCxx_SRCS}
+  )
 generate_export_header( IntersonCxx
   BASE_NAME IntersonCxx
   EXPORT_MACRO_NAME IntersonCxx_EXPORT
   EXPORT_FILE_NAME ${PROJECT_BINARY_DIR}/include/IntersonCxx_Export.h
   )
 set_target_properties( IntersonCxx PROPERTIES
-  COMPILE_FLAGS "/clr /EHa" )
+  COMPILE_FLAGS "/clr /EHa /AI${IntersonSDK_DIR}/Libraries"
+  )
+if( BUILD_TESTING )
+  # For running tests
+  add_custom_command( TARGET IntersonCxx
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:IntersonCxx> "${PROJECT_BINARY_DIR}/test" 
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${IntersonSDK_DIR}/Libraries/Interson.dll" "${PROJECT_BINARY_DIR}/test"
+    )
+endif()

@@ -18,9 +18,7 @@ public:
   IntersonClass();
   ~IntersonClass();
 
-  //std::string CompleteVersion();
-
-  //std::string Version();
+  std::string Version() const;
 
 private:
   IntersonClass( const IntersonClass & );
