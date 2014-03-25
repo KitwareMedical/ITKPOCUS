@@ -1,0 +1,24 @@
+if(CMAKE_CXX_FLAGS_DEBUG MATCHES "/RTC1")
+  string(REPLACE "/RTC1" " " CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+endif()
+
+if(CMAKE_CXX_FLAGS MATCHES "/EHsc")
+  string(REPLACE "/EHsc" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+endif()
+
+set( IntersonCxx_SRCS
+  IntersonCxxIntersonClass.cxx
+  IntersonCxxControlsHWControls.cxx
+  )
+
+include( GenerateExportHeader )
+add_library( IntersonCxx SHARED
+ ${IntersonCxx_SRCS}
+ )
+generate_export_header( IntersonCxx
+  BASE_NAME IntersonCxx
+  EXPORT_MACRO_NAME IntersonCxx_EXPORT
+  EXPORT_FILE_NAME ${PROJECT_BINARY_DIR}/include/IntersonCxx_Export.h
+  )
+set_target_properties( IntersonCxx PROPERTIES
+  COMPILE_FLAGS "/clr /EHa" )
