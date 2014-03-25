@@ -32,6 +32,8 @@ public:
 
   static const unsigned short int EEOEMSpace = 4096;
 
+  unsigned char GetProbeID() const;
+
 private:
   HWControls( const HWControls & );
   void operator=( const HWControls & );
