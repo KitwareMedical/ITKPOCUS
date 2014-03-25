@@ -5,8 +5,6 @@
 
 #include <string>
 
-#pragma unmanaged
-
 namespace IntersonCxx
 {
 

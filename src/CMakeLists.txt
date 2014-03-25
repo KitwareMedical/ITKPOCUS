@@ -29,6 +29,6 @@ if( BUILD_TESTING )
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:IntersonCxx> "${PROJECT_BINARY_DIR}/test" 
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    "${IntersonSDK_DIR}/Libraries/Interson.dll" "${PROJECT_BINARY_DIR}/test"
+    "${IntersonSDK_DIR}/Libraries/Interson.dll" "${PROJECT_BINARY_DIR}/tesm"
     )
 endif()
