@@ -3,6 +3,9 @@
 
 #include "IntersonCxx_Export.h"
 
+#include <string>
+#include <vector>
+
 namespace IntersonCxx
 {
 
@@ -14,6 +17,7 @@ class HWControlsImpl;
 class IntersonCxx_EXPORT HWControls
 {
 public:
+  typedef std::vector< std::string > FoundProbesType;
   HWControls();
   ~HWControls();
 
@@ -33,6 +37,11 @@ public:
   static const unsigned short int EEOEMSpace = 4096;
 
   unsigned char GetProbeID() const;
+
+  void FindAllProbes( FoundProbesType & foundProbes );
+
+  void FindMyProbe( int probeIndex );
+
 
 private:
   HWControls( const HWControls & );

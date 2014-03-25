@@ -17,6 +17,8 @@ namespace Controls
 class HWControlsImpl
 {
 public:
+  typedef HWControls::FoundProbesType FoundProbesType;
+
   HWControlsImpl()
     {
     Wrapped = gcnew Interson::Controls::HWControls();
@@ -25,6 +27,24 @@ public:
   unsigned char GetProbeID()
     {
     return Wrapped->GetProbeID();
+    }
+
+  void FindAllProbes( FoundProbesType & foundProbes )
+    {
+    System::Collections::Specialized::StringCollection ^ managedProbes =
+      gcnew System::Collections::Specialized::StringCollection();
+    Wrapped->FindAllProbes( managedProbes );;
+    foundProbes.resize( managedProbes->Count );
+    for( int ii = 0; ii < managedProbes->Count; ++ii )
+      {
+      foundProbes[ii] = msclr::interop::marshal_as< std::string >(
+      managedProbes[ii] );
+      }
+    }
+
+  void FindMyProbe( int probeIndex )
+    {
+    Wrapped->FindMyProbe( probeIndex );
     }
 
 private:
@@ -40,17 +60,35 @@ HWControls
 {
 }
 
+
 HWControls
 ::~HWControls()
 {
   delete Impl;
 }
 
+
 unsigned char
 HWControls
 ::GetProbeID() const
 {
   return Impl->GetProbeID();
+}
+
+
+void
+HWControls
+::FindAllProbes( FoundProbesType & foundProbes )
+{
+  Impl->FindAllProbes( foundProbes );
+}
+
+
+void
+HWControls
+::FindMyProbe( int probeIndex )
+{
+  Impl->FindMyProbe( probeIndex );
 }
 
 } // end namespace Controls
