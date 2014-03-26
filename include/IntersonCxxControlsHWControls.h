@@ -41,13 +41,17 @@ public:
   void FindMyProbe( int probeIndex );
   unsigned char GetProbeID() const;
 
+  /** Units: mm */
   int ValidDepth( int depth ) const;
 
-  /** Get the list of supported frequecies. */
+  /** Get the list of supported frequencies. Units: Hz. */
   void GetFrequency( FrequenciesType & frequencies ) const;
-
   bool SetFrequency( int frequency );
 
+  /** Units: Volts */
+  bool SendHighVoltage( unsigned char voltage );
+  bool EnableHighVoltage();
+  bool DisableHighVoltage();
 
 
 private:

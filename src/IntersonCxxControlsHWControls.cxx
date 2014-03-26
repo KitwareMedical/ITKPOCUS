@@ -83,6 +83,21 @@ public:
     return Wrapped->SetFrequency( frequencyIndex, managedFrequencies[frequencyIndex] );
     }
 
+  bool SendHighVoltage( unsigned char voltage )
+    {
+    return Wrapped->SendHighVoltage( voltage );
+    }
+
+  bool EnableHighVoltage()
+    {
+    return Wrapped->EnableHighVoltage();
+    }
+
+  bool DisableHighVoltage()
+    {
+    return Wrapped->DisableHighVoltage();
+    }
+
 private:
   gcroot< Interson::Controls::HWControls ^ > Wrapped;
 };
@@ -148,6 +163,30 @@ HWControls
 ::SetFrequency( int frequency )
 {
   return Impl->SetFrequency( frequency );
+}
+
+
+bool
+HWControls
+::SendHighVoltage( unsigned char voltage )
+{
+  return Impl->SendHighVoltage( voltage );
+}
+
+
+bool
+HWControls
+::EnableHighVoltage()
+{
+  return Impl->EnableHighVoltage();
+}
+
+
+bool
+HWControls
+::DisableHighVoltage()
+{
+  return Impl->DisableHighVoltage();
 }
 
 } // end namespace Controls

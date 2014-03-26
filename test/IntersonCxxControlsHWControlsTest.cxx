@@ -53,6 +53,10 @@ int main( int argc, char * argv[] )
     return EXIT_FAILURE;
     }
 
+  hwControls.SendHighVoltage( 50 );
+  hwControls.EnableHighVoltage();
+  hwControls.DisableHighVoltage();
+
   return EXIT_SUCCESS;
 }
 
