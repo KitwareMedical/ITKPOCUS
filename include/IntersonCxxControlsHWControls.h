@@ -53,6 +53,10 @@ public:
   bool EnableHighVoltage();
   bool DisableHighVoltage();
 
+  bool SendDynamic( unsigned char dynamic );
+
+  bool StartMotor();
+  bool StopMotor();
 
 private:
   HWControls( const HWControls & );

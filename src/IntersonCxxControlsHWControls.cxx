@@ -98,6 +98,22 @@ public:
     return Wrapped->DisableHighVoltage();
     }
 
+  bool SendDynamic( unsigned char dynamic )
+    {
+    return Wrapped->SendDynamic( dynamic );
+    }
+
+  bool StartMotor()
+    {
+    return Wrapped->StartMotor();
+    }
+
+  bool StopMotor()
+    {
+    return Wrapped->StopMotor();
+    }
+
+
 private:
   gcroot< Interson::Controls::HWControls ^ > Wrapped;
 };
@@ -187,6 +203,30 @@ HWControls
 ::DisableHighVoltage()
 {
   return Impl->DisableHighVoltage();
+}
+
+
+bool
+HWControls
+::SendDynamic( unsigned char dynamic )
+{
+  return Impl->SendDynamic( dynamic );
+}
+
+
+bool
+HWControls
+::StartMotor()
+{
+  return Impl->StartMotor();
+}
+
+
+bool
+HWControls
+::StopMotor()
+{
+  return Impl->StopMotor();
 }
 
 } // end namespace Controls

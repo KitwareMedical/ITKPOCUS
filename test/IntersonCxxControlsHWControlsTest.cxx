@@ -57,6 +57,11 @@ int main( int argc, char * argv[] )
   hwControls.EnableHighVoltage();
   hwControls.DisableHighVoltage();
 
+  hwControls.SendDynamic( 50 );
+  
+  hwControls.StartMotor();
+  hwControls.StopMotor();
+
   return EXIT_SUCCESS;
 }
 
