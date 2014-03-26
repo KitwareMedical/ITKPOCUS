@@ -113,6 +113,20 @@ public:
     return Wrapped->StopMotor();
     }
 
+  void EnableHardButton()
+    {
+    Wrapped->EnableHardButton();
+    }
+
+  void DisableHardButton()
+    {
+    Wrapped->DisableHardButton();
+    }
+
+  unsigned char ReadHardButton()
+    {
+    return Wrapped->ReadHardButton();
+    }
 
 private:
   gcroot< Interson::Controls::HWControls ^ > Wrapped;
@@ -227,6 +241,30 @@ HWControls
 ::StopMotor()
 {
   return Impl->StopMotor();
+}
+
+
+void
+HWControls
+::EnableHardButton()
+{
+  Impl->EnableHardButton();
+}
+
+
+void
+HWControls
+::DisableHardButton()
+{
+  Impl->DisableHardButton();
+}
+
+
+unsigned char
+HWControls
+::ReadHardButton()
+{
+  return Impl->ReadHardButton();
 }
 
 } // end namespace Controls

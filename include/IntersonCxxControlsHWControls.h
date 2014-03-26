@@ -58,6 +58,10 @@ public:
   bool StartMotor();
   bool StopMotor();
 
+  void EnableHardButton();
+  void DisableHardButton();
+  unsigned char ReadHardButton();
+
 private:
   HWControls( const HWControls & );
   void operator=( const HWControls & );

@@ -62,6 +62,11 @@ int main( int argc, char * argv[] )
   hwControls.StartMotor();
   hwControls.StopMotor();
 
+  hwControls.EnableHardButton();
+  hwControls.DisableHardButton();
+  const unsigned char button = hwControls.ReadHardButton();
+  std::cout << "\nButton: " << static_cast< int >( button ) << std::endl;
+
   return EXIT_SUCCESS;
 }
 
