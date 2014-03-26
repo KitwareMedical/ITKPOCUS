@@ -18,6 +18,8 @@ class HWControlsImpl
 {
 public:
   typedef HWControls::FoundProbesType FoundProbesType;
+  typedef HWControls::FrequenciesType FrequenciesType;
+
 
   HWControlsImpl()
     {
@@ -45,6 +47,40 @@ public:
   void FindMyProbe( int probeIndex )
     {
     Wrapped->FindMyProbe( probeIndex );
+    }
+
+  int ValidDepth( int depth )
+    {
+    return Wrapped->ValidDepth( depth );
+    }
+
+  void GetFrequency( FrequenciesType & frequencies )
+    {
+    array< int > ^ managedFrequencies = Wrapped->GetFrequency();
+    frequencies.resize( managedFrequencies->Length );
+    for( int ii = 0; ii < managedFrequencies->Length; ++ii )
+      {
+      frequencies[ii] = managedFrequencies[ii];
+      }
+    }
+
+  bool SetFrequency( int frequency )
+    {
+    array< int > ^ managedFrequencies = Wrapped->GetFrequency();
+    int frequencyIndex = -1;
+    for( int ii = 0; ii < managedFrequencies->Length; ++ii )
+      {
+      if( frequency == managedFrequencies[ii] )
+        {
+        frequencyIndex = ii;
+        break;
+        }
+      }
+    if( frequencyIndex == -1 )
+      {
+      return false;
+      }
+    return Wrapped->SetFrequency( frequencyIndex, managedFrequencies[frequencyIndex] );
     }
 
 private:
@@ -78,7 +114,7 @@ HWControls
 
 void
 HWControls
-::FindAllProbes( FoundProbesType & foundProbes )
+::FindAllProbes( FoundProbesType & foundProbes ) const
 {
   Impl->FindAllProbes( foundProbes );
 }
@@ -89,6 +125,29 @@ HWControls
 ::FindMyProbe( int probeIndex )
 {
   Impl->FindMyProbe( probeIndex );
+}
+
+int
+HWControls
+::ValidDepth( int depth ) const
+{
+  return Impl->ValidDepth( depth );
+}
+
+
+void
+HWControls
+::GetFrequency( FrequenciesType & frequencies ) const
+{
+  Impl->GetFrequency( frequencies );
+}
+
+
+bool
+HWControls
+::SetFrequency( int frequency )
+{
+  return Impl->SetFrequency( frequency );
 }
 
 } // end namespace Controls

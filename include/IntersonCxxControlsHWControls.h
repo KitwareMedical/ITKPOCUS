@@ -18,6 +18,7 @@ class IntersonCxx_EXPORT HWControls
 {
 public:
   typedef std::vector< std::string > FoundProbesType;
+  typedef std::vector< int > FrequenciesType;
   HWControls();
   ~HWControls();
 
@@ -36,11 +37,17 @@ public:
 
   static const unsigned short int EEOEMSpace = 4096;
 
+  void FindAllProbes( FoundProbesType & foundProbes ) const;
+  void FindMyProbe( int probeIndex );
   unsigned char GetProbeID() const;
 
-  void FindAllProbes( FoundProbesType & foundProbes );
+  int ValidDepth( int depth ) const;
 
-  void FindMyProbe( int probeIndex );
+  /** Get the list of supported frequecies. */
+  void GetFrequency( FrequenciesType & frequencies ) const;
+
+  bool SetFrequency( int frequency );
+
 
 
 private:
