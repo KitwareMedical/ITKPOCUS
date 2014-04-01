@@ -29,6 +29,9 @@ public:
   bool GetRFData() const;
   void SetRFData( bool transferOn );
 
+  void StartReadScan( unsigned char * buffer );
+  void StopReadScan();
+
 private:
   Scan2DClass( const Scan2DClass & );
   void operator=( const Scan2DClass & );

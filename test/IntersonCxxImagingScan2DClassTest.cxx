@@ -16,8 +16,15 @@ int main( int argc, char * argv[] )
   int ret = EXIT_SUCCESS;
 
   hwControls.StartMotor();
+  unsigned char * bModeBuffer = new unsigned char[Scan2DClassType::MAX_VECTORS * Scan2DClassType::MAX_SAMPLES];
+  scan2D.StartReadScan( bModeBuffer );
+
+  hwControls.StopAcquisition();
+  scan2D.StopReadScan();
 
   hwControls.StopMotor();
+
+  delete[] bModeBuffer;
 
   return ret;
 }
