@@ -1,6 +1,7 @@
 set( _tests
   IntersonCxxIntersonClassTest
   IntersonCxxControlsHWControlsTest
+  IntersonCxxImagingScan2DClassTest
   )
 
 foreach( test ${_tests} )
