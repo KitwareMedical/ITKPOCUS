@@ -128,6 +128,21 @@ public:
     return Wrapped->ReadHardButton();
     }
 
+  bool StartBmode()
+    {
+    return Wrapped->StartBmode();
+    }
+
+  bool StartRFmode()
+    {
+    return Wrapped->StartRFmode();
+    }
+
+  bool StopAcquisition()
+    {
+    return Wrapped->StopAcquisition();
+    }
+
 private:
   gcroot< Interson::Controls::HWControls ^ > Wrapped;
 };
@@ -265,6 +280,30 @@ HWControls
 ::ReadHardButton()
 {
   return Impl->ReadHardButton();
+}
+
+
+bool
+HWControls
+::StartBmode()
+{
+  return Impl->StartBmode();
+}
+
+
+bool
+HWControls
+::StartRFmode()
+{
+  return Impl->StartRFmode();
+}
+
+
+bool
+HWControls
+::StopAcquisition()
+{
+  return Impl->StopAcquisition();
 }
 
 } // end namespace Controls

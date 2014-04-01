@@ -67,6 +67,28 @@ int main( int argc, char * argv[] )
   const unsigned char button = hwControls.ReadHardButton();
   std::cout << "\nButton: " << static_cast< int >( button ) << std::endl;
 
+  std::cout << "\nStarting acquisition..." << std::endl;
+  if( !hwControls.StartBmode() )
+    {
+    std::cerr << "Could not start B mode acquision." << std::endl;
+    return EXIT_FAILURE;
+    }
+  if( !hwControls.StopAcquisition() )
+    {
+    std::cerr << "Could not stop acquision." << std::endl;
+    return EXIT_FAILURE;
+    }
+  if( !hwControls.StartRFmode() )
+    {
+    std::cerr << "Could not start RF acquision." << std::endl;
+    return EXIT_FAILURE;
+    }
+  if( !hwControls.StopAcquisition() )
+    {
+    std::cerr << "Could not stop acquision." << std::endl;
+    return EXIT_FAILURE;
+    }
+
   return EXIT_SUCCESS;
 }
 

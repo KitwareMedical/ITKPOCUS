@@ -62,6 +62,10 @@ public:
   void DisableHardButton();
   unsigned char ReadHardButton();
 
+  bool StartBmode();
+  bool StartRFmode();
+  bool StopAcquisition();
+
 private:
   HWControls( const HWControls & );
   void operator=( const HWControls & );
