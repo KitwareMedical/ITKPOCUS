@@ -20,6 +20,10 @@ public:
   Scan2DClass();
   ~Scan2DClass();
 
+  static const int MAX_SAMPLES = 1024;
+  static const int MAX_RFSAMPLES = 2048;
+  static const int MAX_VECTORS = 241;
+
 
 private:
   Scan2DClass( const Scan2DClass & );
