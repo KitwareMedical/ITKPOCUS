@@ -24,6 +24,10 @@ public:
   static const int MAX_RFSAMPLES = 2048;
   static const int MAX_VECTORS = 241;
 
+  bool GetScanOn() const;
+
+  bool GetRFData() const;
+  void SetRFData( bool transferOn );
 
 private:
   Scan2DClass( const Scan2DClass & );

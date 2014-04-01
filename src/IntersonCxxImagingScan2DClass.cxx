@@ -22,6 +22,22 @@ public:
     Wrapped = gcnew Interson::Imaging::Scan2DClass();
     }
 
+  bool GetScanOn()
+    {
+    return Wrapped->ScanOn;
+    }
+
+  bool GetRFData()
+    {
+    return Wrapped->RFData;
+    }
+
+  void SetRFData( bool transferOn )
+    {
+    Wrapped->RFData = transferOn;
+    }
+
+
 private:
   gcroot< Interson::Imaging::Scan2DClass ^ > Wrapped;
 };
@@ -40,6 +56,30 @@ Scan2DClass
 ::~Scan2DClass()
 {
   delete Impl;
+}
+
+
+bool
+Scan2DClass
+::GetScanOn() const
+{
+  return Impl->GetScanOn();
+}
+
+
+bool
+Scan2DClass
+::GetRFData() const
+{
+  return Impl->GetRFData();
+}
+
+
+void
+Scan2DClass
+::SetRFData( bool transferOn )
+{
+  Impl->SetRFData( transferOn );
 }
 
 } // end namespace Imaging
