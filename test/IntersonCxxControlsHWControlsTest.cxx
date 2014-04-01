@@ -67,7 +67,7 @@ int main( int argc, char * argv[] )
   const unsigned char button = hwControls.ReadHardButton();
   std::cout << "\nButton: " << static_cast< int >( button ) << std::endl;
 
-  std::cout << "\nStarting acquisition..." << std::endl;
+  std::cout << "\nStarting acquisition...\n" << std::endl;
   if( !hwControls.StartBmode() )
     {
     std::cerr << "Could not start B mode acquision." << std::endl;
@@ -93,6 +93,19 @@ int main( int argc, char * argv[] )
   std::cout << "Frame rate: " << frameRate << std::endl;
   std::cout << "Serial number: " << hwControls.GetProbeSerialNumber() << std::endl;
   std::cout << "FPGA Version: " << hwControls.ReadFPGAVersion() << std::endl;
+  std::cout << "OEM ID: " << hwControls.GetOEMId() << std::endl;
+  std::cout << "Filter ID: " << hwControls.GetFilterId() << std::endl;
+
+  if( !hwControls.EnableRFDecimator() )
+    {
+    std::cerr << "Could not enable the RF decimator." << std::endl;
+    return EXIT_FAILURE;
+    }
+  if( !hwControls.DisableRFDecimator() )
+    {
+    std::cerr << "Could not disable the RF decimator." << std::endl;
+    return EXIT_FAILURE;
+    }
 
   return EXIT_SUCCESS;
 }

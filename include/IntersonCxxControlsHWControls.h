@@ -69,6 +69,11 @@ public:
   short GetProbeFrameRate( int depth );
   std::string GetProbeSerialNumber() const;
   std::string ReadFPGAVersion() const;
+  std::string GetOEMId() const;
+  std::string GetFilterId() const;
+
+  bool EnableRFDecimator();
+  bool DisableRFDecimator();
 
 private:
   HWControls( const HWControls & );

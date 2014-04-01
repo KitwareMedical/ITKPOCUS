@@ -158,6 +158,26 @@ public:
     return msclr::interop::marshal_as< std::string >( Wrapped->ReadFPGAVersion() );
     }
 
+  std::string GetOEMId()
+    {
+    return msclr::interop::marshal_as< std::string >( Interson::Controls::HWControls::GetOEMId() );
+    }
+
+  std::string GetFilterId()
+    {
+    return msclr::interop::marshal_as< std::string >( Interson::Controls::HWControls::GetFilterId() );
+    }
+
+  bool EnableRFDecimator()
+    {
+    return Wrapped->EnableRFDecimator();
+    }
+
+  bool DisableRFDecimator()
+    {
+    return Wrapped->DisableRFDecimator();
+    }
+
 private:
   gcroot< Interson::Controls::HWControls ^ > Wrapped;
 };
@@ -343,6 +363,38 @@ HWControls
 ::ReadFPGAVersion() const
 {
   return Impl->ReadFPGAVersion();
+}
+
+
+std::string
+HWControls
+::GetOEMId() const
+{
+  return Impl->GetOEMId();
+}
+
+
+std::string
+HWControls
+::GetFilterId() const
+{
+  return Impl->GetFilterId();
+}
+
+
+bool
+HWControls
+::EnableRFDecimator()
+{
+  return Impl->EnableRFDecimator();
+}
+
+
+bool
+HWControls
+::DisableRFDecimator()
+{
+  return Impl->DisableRFDecimator();
 }
 
 } // end namespace Controls
