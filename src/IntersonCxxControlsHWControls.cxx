@@ -143,6 +143,21 @@ public:
     return Wrapped->StopAcquisition();
     }
 
+  short GetProbeFrameRate( int depth )
+    {
+    return Wrapped->GetProbeFrameRate( depth );
+    }
+
+  std::string GetProbeSerialNumber()
+    {
+    return msclr::interop::marshal_as< std::string >( Wrapped->GetProbeSerialNumber() );
+    }
+    
+  std::string ReadFPGAVersion()
+    {
+    return msclr::interop::marshal_as< std::string >( Wrapped->ReadFPGAVersion() );
+    }
+
 private:
   gcroot< Interson::Controls::HWControls ^ > Wrapped;
 };
@@ -304,6 +319,30 @@ HWControls
 ::StopAcquisition()
 {
   return Impl->StopAcquisition();
+}
+
+
+short
+HWControls
+::GetProbeFrameRate( int depth )
+{
+  return Impl->GetProbeFrameRate( depth );
+}
+
+
+std::string
+HWControls
+::GetProbeSerialNumber() const
+{
+  return Impl->GetProbeSerialNumber();
+}
+
+
+std::string
+HWControls
+::ReadFPGAVersion() const
+{
+  return Impl->ReadFPGAVersion();
 }
 
 } // end namespace Controls

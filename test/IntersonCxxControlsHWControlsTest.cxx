@@ -89,6 +89,11 @@ int main( int argc, char * argv[] )
     return EXIT_FAILURE;
     }
 
+  const short frameRate = hwControls.GetProbeFrameRate( 40 );
+  std::cout << "Frame rate: " << frameRate << std::endl;
+  std::cout << "Serial number: " << hwControls.GetProbeSerialNumber() << std::endl;
+  std::cout << "FPGA Version: " << hwControls.ReadFPGAVersion() << std::endl;
+
   return EXIT_SUCCESS;
 }
 

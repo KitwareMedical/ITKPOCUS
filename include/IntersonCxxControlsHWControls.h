@@ -66,6 +66,10 @@ public:
   bool StartRFmode();
   bool StopAcquisition();
 
+  short GetProbeFrameRate( int depth );
+  std::string GetProbeSerialNumber() const;
+  std::string ReadFPGAVersion() const;
+
 private:
   HWControls( const HWControls & );
   void operator=( const HWControls & );
