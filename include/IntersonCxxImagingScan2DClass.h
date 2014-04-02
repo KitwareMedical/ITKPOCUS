@@ -29,7 +29,7 @@ public:
   bool GetRFData() const;
   void SetRFData( bool transferOn );
 
-  void StartReadScan( unsigned char * buffer );
+  void StartReadScan();
   void StopReadScan();
 
 private:
@@ -37,6 +37,8 @@ private:
   void operator=( const Scan2DClass & );
 
   Scan2DClassImpl * Impl;
+
+  unsigned char * BmodeBuffer;
 };
 
 } // end namespace Imaging

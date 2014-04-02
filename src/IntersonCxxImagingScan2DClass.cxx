@@ -49,7 +49,7 @@ public:
       {
       for( int jj = 0; jj < Scan2DClass::MAX_SAMPLES; ++jj )
          {
-         buffer[Scan2DClass::MAX_VECTORS * ii + jj] = BmodeBuffer[ii, jj];
+         buffer[Scan2DClass::MAX_SAMPLES * ii + jj] = BmodeBuffer[ii, jj];
          }
       }
     }
@@ -70,7 +70,8 @@ private:
 
 Scan2DClass
 ::Scan2DClass():
-  Impl( new Scan2DClassImpl() )
+  Impl( new Scan2DClassImpl() ),
+  BmodeBuffer( new unsigned char[MAX_SAMPLES * MAX_VECTORS] )
 {
 }
 
@@ -79,6 +80,7 @@ Scan2DClass
 ::~Scan2DClass()
 {
   delete Impl;
+  delete [] BmodeBuffer;
 }
 
 
@@ -108,9 +110,9 @@ Scan2DClass
 
 void
 Scan2DClass
-::StartReadScan( unsigned char * buffer )
+::StartReadScan()
 {
-  Impl->StartReadScan( buffer );
+  Impl->StartReadScan( BmodeBuffer );
 }
 
 
