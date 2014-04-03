@@ -35,6 +35,7 @@ int main( int argc, char * argv[] )
   const int maxSamples = Scan2DClassType::MAX_SAMPLES;
   const int maxPixels = maxVectors * maxSamples;
 
+  scan2D.AbortScan();
   hwControls.StartMotor();
   std::cout << "\nStarting BMode scanning..." << std::endl;
   scan2D.StartReadScan();
@@ -45,6 +46,7 @@ int main( int argc, char * argv[] )
   hwControls.StopAcquisition();
   scan2D.StopReadScan();
   Sleep( 100 ); // "time to stop"
+  scan2D.DisposeScan();
   hwControls.StopMotor();
 
   return ret;

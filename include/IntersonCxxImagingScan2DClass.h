@@ -31,6 +31,8 @@ public:
 
   void StartReadScan();
   void StopReadScan();
+  void DisposeScan();
+  void AbortScan();
 
 private:
   Scan2DClass( const Scan2DClass & );

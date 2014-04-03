@@ -59,6 +59,16 @@ public:
     Wrapped->StopReadScan();
     }
 
+  void DisposeScan()
+    {
+    Wrapped->DisposeScan();
+    }
+
+  void AbortScan()
+    {
+    Wrapped->AbortScan();
+    }
+
 private:
   gcroot< Interson::Imaging::Scan2DClass ^ > Wrapped;
 
@@ -121,6 +131,22 @@ Scan2DClass
 ::StopReadScan()
 {
   Impl->StopReadScan();
+}
+
+
+void
+Scan2DClass
+::DisposeScan()
+{
+  Impl->DisposeScan();
+}
+
+
+void
+Scan2DClass
+::AbortScan()
+{
+  Impl->AbortScan();
 }
 
 } // end namespace Imaging
