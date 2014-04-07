@@ -7,6 +7,7 @@ include( ${ITK_USE_FILE} )
 SEMMacroBuildCLI(
   NAME AcquireIntersonBMode
   TARGET_LIBRARIES ${ITK_LIBRARIES}
+                   IntersonCxx
   INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR}/include
                       ${PROJECT_BINARY_DIR}/include
   )
