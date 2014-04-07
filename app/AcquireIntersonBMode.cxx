@@ -31,12 +31,25 @@ int main( int argc, char * argv[] )
     }
   hwControls.FindMyProbe( 0 );
   const unsigned int probeId = hwControls.GetProbeID();
-  std::cout << "ProbeID after FindMyProbe: " << probeId << std::endl;
   if( probeId == 0 )
     {
     std::cerr << "Could not find the probe." << std::endl;
     return EXIT_FAILURE;
     }
+
+  int ret = EXIT_SUCCESS;
+
+  scan2D.AbortScan();
+  hwControls.StartMotor();
+  scan2D.StartReadScan();
+  Sleep( 100 ); // "time to start"
+  hwControls.StartBmode();
+
+  hwControls.StopAcquisition();
+  scan2D.StopReadScan();
+  Sleep( 100 ); // "time to stop"
+  scan2D.DisposeScan();
+  hwControls.StopMotor();
 
   typedef itk::ImageFileWriter< ImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
@@ -51,5 +64,5 @@ int main( int argc, char * argv[] )
     return EXIT_FAILURE;
     }
 
-  return EXIT_SUCCESS;
+  return ret;
 }
