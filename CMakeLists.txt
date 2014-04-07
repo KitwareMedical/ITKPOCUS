@@ -19,3 +19,8 @@ if( BUILD_TESTING )
   enable_testing()
   add_subdirectory( test )
 endif()
+
+option( BUILD_APPLICATIONS "Build applications" OFF )
+if( BUILD_APPLICATIONS )
+  add_subdirectory( app )
+endif()
