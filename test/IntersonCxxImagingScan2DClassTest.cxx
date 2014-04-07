@@ -17,6 +17,11 @@ int main( int argc, char * argv[] )
   typedef IntersonCxx::Controls::HWControls::FoundProbesType FoundProbesType;
   FoundProbesType foundProbes;
   hwControls.FindAllProbes( foundProbes );
+  if( foundProbes.empty() )
+    {
+    std::cerr << "Could not find the probe." << std::endl;
+    return EXIT_FAILURE;
+    }
   hwControls.FindMyProbe( 0 );
   const unsigned int probeId = hwControls.GetProbeID();
   std::cout << "ProbeID after FindMyProbe: " << probeId << std::endl;

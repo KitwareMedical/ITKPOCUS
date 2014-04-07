@@ -20,7 +20,7 @@ int main( int argc, char * argv[] )
     {
     std::cout << "    " << foundProbes[ii] << std::endl;
     }
-  if( foundProbes.size() == 0 )
+  if( foundProbes.empty() )
     {
     std::cerr << "Could not find the probe." << std::endl;
     return EXIT_FAILURE;
