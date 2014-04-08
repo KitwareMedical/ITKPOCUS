@@ -8,7 +8,7 @@
 #include "AcquireIntersonBModeCLP.h"
 
 const unsigned int Dimension = 3;
-typedef unsigned char                      PixelType;
+typedef unsigned short                     PixelType;
 typedef itk::Image< PixelType, Dimension > ImageType;
 
 typedef IntersonCxx::Imaging::Scan2DClass Scan2DClassType;
@@ -93,7 +93,7 @@ int main( int argc, char * argv[] )
   clientData.Image = image.GetPointer();
   clientData.FrameIndex = 0;
 
-  scan2D.SetNewBmodeImageCallback( &pasteIntoImage, &clientData );
+  scan2D.SetNewRFImageCallback( &pasteIntoImage, &clientData );
 
   HWControlsType::FrequenciesType frequencies;
   hwControls.GetFrequency( frequencies );
@@ -110,12 +110,13 @@ int main( int argc, char * argv[] )
   hwControls.SendDynamic( 50 );
 
   scan2D.AbortScan();
+  scan2D.SetRFData( true );
   if( !hwControls.StartMotor() )
     {
     std::cerr << "Could not start motor." << std::endl;
     return EXIT_FAILURE;
     };
-  scan2D.StartReadScan();
+  scan2D.StartRFReadScan();
   Sleep( 100 ); // "time to start"
   if( !hwControls.StartBmode() )
     {

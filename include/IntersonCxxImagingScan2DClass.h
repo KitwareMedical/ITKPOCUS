@@ -24,19 +24,28 @@ public:
   static const int MAX_RFSAMPLES = 2048;
   static const int MAX_VECTORS = 241;
 
+  typedef unsigned char  BmodePixelType;
+  typedef unsigned short RFPixelType;
+
   bool GetScanOn() const;
 
   bool GetRFData() const;
   void SetRFData( bool transferOn );
 
   void StartReadScan();
+  void StartRFReadScan();
   void StopReadScan();
   void DisposeScan();
   void AbortScan();
 
-  typedef void (__stdcall * NewBmodeImageCallbackType)( unsigned char * buffer,
+  typedef void (__stdcall * NewBmodeImageCallbackType)( BmodePixelType * buffer,
     void * clientData );
   void SetNewBmodeImageCallback( NewBmodeImageCallbackType callback,
+    void * clientData = NULL );
+
+  typedef void (__stdcall * NewRFImageCallbackType)( RFPixelType * buffer,
+    void * clientData );
+  void SetNewRFImageCallback( NewRFImageCallbackType callback,
     void * clientData = NULL );
 
 private:
@@ -44,8 +53,6 @@ private:
   void operator=( const Scan2DClass & );
 
   Scan2DClassImpl * Impl;
-
-  unsigned char * BmodeBuffer;
 };
 
 } // end namespace Imaging
