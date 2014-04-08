@@ -7,7 +7,6 @@
 
 #include <Windows.h> // Sleep
 
-
 int main( int argc, char * argv[] )
 {
   IntersonCxx::Controls::HWControls hwControls;

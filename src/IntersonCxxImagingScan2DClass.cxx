@@ -1,6 +1,8 @@
 #pragma unmanaged
 #include "IntersonCxxImagingScan2DClass.h"
 
+#include <iostream>
+
 #pragma managed
 
 #include <vcclr.h>
@@ -37,6 +39,7 @@ public:
 
   void HandleNewBmodeImage( Interson::Imaging::Scan2DClass ^ scan2D, System::EventArgs ^ eventArgs )
     {
+    std::cout << "calling callback!" << std::endl;
     if( this->NewBmodeImageCallback != NULL )
       {
       for( int ii = 0; ii < Scan2DClass::MAX_VECTORS; ++ii )
@@ -76,10 +79,12 @@ public:
     BmodeBuffer = gcnew BmodeArrayType( Scan2DClass::MAX_VECTORS, Scan2DClass::MAX_SAMPLES );
 
     BmodeHandler = gcnew NewBmodeImageHandler( BmodeBuffer );
-    Interson::Imaging::Scan2DClass::NewImageHandler ^ myHandler = gcnew
+    //Interson::Imaging::Scan2DClass::NewImageHandler ^ myHandler = gcnew
+    BmodeHandlerDelegate = gcnew
         Interson::Imaging::Scan2DClass::NewImageHandler(BmodeHandler,
         &NewBmodeImageHandler::HandleNewBmodeImage );
-    Wrapped->NewImageTick += myHandler;
+    //Wrapped->NewImageTick += myHandler;
+    Wrapped->NewImageTick += BmodeHandlerDelegate;
     }
 
   bool GetScanOn()
@@ -122,14 +127,11 @@ public:
     this->BmodeHandler->SetNewBmodeImageCallback( callback, clientData );
     }
 
-  void HandleNewBmodeImage( Interson::Imaging::Scan2DClass ^ scan2D, System::EventArgs ^ eventArgs )
-    {
-    }
-
 private:
   gcroot< Interson::Imaging::Scan2DClass ^ > Wrapped;
   gcroot< BmodeArrayType ^ >                 BmodeBuffer;
   gcroot< NewBmodeImageHandler ^ >           BmodeHandler;
+  gcroot< Interson::Imaging::Scan2DClass::NewImageHandler ^ > BmodeHandlerDelegate;
 
 };
 

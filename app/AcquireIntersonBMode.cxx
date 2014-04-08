@@ -7,13 +7,27 @@
 
 #include "AcquireIntersonBModeCLP.h"
 
+const unsigned int Dimension = 3;
+typedef unsigned char                      PixelType;
+typedef itk::Image< PixelType, Dimension > ImageType;
+
+struct CallbackClientData
+{
+  ImageType *        Image;
+  itk::SizeValueType FrameIndex;
+};
+
+void __stdcall pasteIntoImage( PixelType * buffer, void * clientData )
+{
+  CallbackClientData * callbackClientData = static_cast< CallbackClientData * >( clientData );
+  ++(callbackClientData->FrameIndex);
+  std::cout << "FrameIndex: " << callbackClientData->FrameIndex << std::endl;
+}
+
 int main( int argc, char * argv[] )
 {
   PARSE_ARGS;
 
-  const unsigned int Dimension = 3;
-  typedef unsigned char                      PixelType;
-  typedef itk::Image< PixelType, Dimension > ImageType;
 
   typedef IntersonCxx::Controls::HWControls HWControlsType;
   IntersonCxx::Controls::HWControls hwControls;
@@ -39,11 +53,19 @@ int main( int argc, char * argv[] )
 
   int ret = EXIT_SUCCESS;
 
+  CallbackClientData clientData;
+  clientData.Image = NULL;
+  clientData.FrameIndex = 0;
+
+  scan2D.SetNewBmodeImageCallback( &pasteIntoImage, &clientData );
+
   scan2D.AbortScan();
   hwControls.StartMotor();
   scan2D.StartReadScan();
   Sleep( 100 ); // "time to start"
   hwControls.StartBmode();
+
+  Sleep( 300 ); // "time to start"
 
   hwControls.StopAcquisition();
   scan2D.StopReadScan();
