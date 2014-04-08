@@ -20,6 +20,13 @@ SEMMacroBuildCLI(
                       ${PROJECT_BINARY_DIR}/include
   )
 
+SEMMacroBuildCLI(
+  NAME PrintIntersonProbeInfo
+  TARGET_LIBRARIES IntersonCxx
+  INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR}/include
+                      ${PROJECT_BINARY_DIR}/include
+  )
+
 if( BUILD_TESTING )
   set( TEMP ${PROJECT_BINARY_DIR}/Testing/Temporary )
 
@@ -41,5 +48,9 @@ if( BUILD_TESTING )
     COMMAND $<TARGET_FILE:AcquireIntersonRF>
       --frames 5
       ${TEMP}/AcquireIntersonRFTest1.mha
+     )
+
+  add_test( NAME PrintIntersonProbeInfoTest
+    COMMAND $<TARGET_FILE:PrintIntersonProbeInfo>
      )
 endif()

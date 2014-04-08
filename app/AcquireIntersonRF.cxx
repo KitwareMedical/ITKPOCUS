@@ -5,7 +5,7 @@
 #include "IntersonCxxImagingScan2DClass.h"
 #include "IntersonCxxControlsHWControls.h"
 
-#include "AcquireIntersonBModeCLP.h"
+#include "AcquireIntersonRFCLP.h"
 
 typedef IntersonCxx::Imaging::Scan2DClass Scan2DClassType;
 
