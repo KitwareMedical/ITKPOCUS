@@ -39,8 +39,8 @@ void __stdcall pasteIntoImage( PixelType * buffer, void * clientData )
   imageBuffer += framePixels * callbackClientData->FrameIndex;
   std::memcpy( imageBuffer, buffer, framePixels * sizeof( PixelType ) );
 
+  std::cout << "Acquired frame: " << callbackClientData->FrameIndex << std::endl;
   ++(callbackClientData->FrameIndex);
-  std::cout << "FrameIndex: " << callbackClientData->FrameIndex << std::endl;
 }
 
 int main( int argc, char * argv[] )
@@ -90,14 +90,25 @@ int main( int argc, char * argv[] )
   image->SetRegions( imageRegion );
   image->Allocate();
 
-  // TODO remove
-  image->FillBuffer( 7 );
-
   CallbackClientData clientData;
   clientData.Image = image.GetPointer();
   clientData.FrameIndex = 0;
 
   scan2D.SetNewBmodeImageCallback( &pasteIntoImage, &clientData );
+
+  HWControlsType::FrequenciesType frequencies;
+  hwControls.GetFrequency( frequencies );
+  // TODO make CLI option
+  if( !hwControls.SetFrequency( frequencies[1] ) )
+    {
+    std::cerr << "Could not set the frequency." << std::endl;
+    return EXIT_FAILURE;
+    }
+  // TODO make CLI option
+  hwControls.SendHighVoltage( 50 );
+  hwControls.EnableHighVoltage();
+  // TODO make CLI option
+  hwControls.SendDynamic( 50 );
 
   scan2D.AbortScan();
   if( !hwControls.StartMotor() )
@@ -113,7 +124,10 @@ int main( int argc, char * argv[] )
     return EXIT_FAILURE;
     };
 
-  Sleep( 3000 );
+  while( clientData.FrameIndex < framesToCollect )
+    {
+    Sleep( 100 );
+    }
 
   hwControls.StopAcquisition();
   scan2D.StopReadScan();

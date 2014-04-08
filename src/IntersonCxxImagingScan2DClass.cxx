@@ -1,8 +1,6 @@
 #pragma unmanaged
 #include "IntersonCxxImagingScan2DClass.h"
 
-#include <iostream>
-
 #pragma managed
 
 #include <vcclr.h>
@@ -39,7 +37,6 @@ public:
 
   void HandleNewBmodeImage( Interson::Imaging::Scan2DClass ^ scan2D, System::EventArgs ^ eventArgs )
     {
-    std::cout << "calling callback!" << std::endl;
     if( this->NewBmodeImageCallback != NULL )
       {
       for( int ii = 0; ii < Scan2DClass::MAX_VECTORS; ++ii )
