@@ -8,13 +8,60 @@
 
 #using "Interson.dll"
 // For StartReadScan
-#using "System.Drawing.dll"
+//#using "System.Drawing.dll"
 
 namespace IntersonCxx
 {
 
 namespace Imaging
 {
+
+ref class NewBmodeImageHandler
+{
+public:
+  typedef Scan2DClass::NewBmodeImageCallbackType NewBmodeImageCallbackType;
+  typedef cli::array< byte, 2 > BmodeArrayType;
+
+  NewBmodeImageHandler( BmodeArrayType ^ managedBmodeBuffer ):
+      NewBmodeImageCallback( NULL ),
+      NewBmodeImageCallbackClientData( NULL ),
+      NativeBmodeBuffer( new unsigned char[Scan2DClass::MAX_SAMPLES * Scan2DClass::MAX_VECTORS] ),
+      ManagedBmodeBuffer( managedBmodeBuffer )
+    {
+    }
+
+  ~NewBmodeImageHandler()
+    {
+    delete [] NativeBmodeBuffer;
+    }
+
+  void HandleNewBmodeImage( Interson::Imaging::Scan2DClass ^ scan2D, System::EventArgs ^ eventArgs )
+    {
+    if( this->NewBmodeImageCallback != NULL )
+      {
+      for( int ii = 0; ii < Scan2DClass::MAX_VECTORS; ++ii )
+        {
+        for( int jj = 0; jj < Scan2DClass::MAX_SAMPLES; ++jj )
+          {
+          this->NativeBmodeBuffer[Scan2DClass::MAX_SAMPLES * ii + jj] = this->ManagedBmodeBuffer[ii, jj];
+          }
+        }
+      this->NewBmodeImageCallback( this->NativeBmodeBuffer, this->NewBmodeImageCallbackClientData );
+      }
+    }
+
+  void SetNewBmodeImageCallback( NewBmodeImageCallbackType callback, void * clientData )
+    {
+    this->NewBmodeImageCallback = callback;
+    this->NewBmodeImageCallbackClientData = clientData;
+    }
+
+private:
+  NewBmodeImageCallbackType NewBmodeImageCallback;
+  void * NewBmodeImageCallbackClientData;
+  unsigned char * NativeBmodeBuffer;
+  BmodeArrayType ^ ManagedBmodeBuffer;
+};
 
 class Scan2DClassImpl
 {
@@ -27,6 +74,12 @@ public:
     {
     Wrapped = gcnew Interson::Imaging::Scan2DClass();
     BmodeBuffer = gcnew BmodeArrayType( Scan2DClass::MAX_VECTORS, Scan2DClass::MAX_SAMPLES );
+
+    BmodeHandler = gcnew NewBmodeImageHandler( BmodeBuffer );
+    Interson::Imaging::Scan2DClass::NewImageHandler ^ myHandler = gcnew
+        Interson::Imaging::Scan2DClass::NewImageHandler(BmodeHandler,
+        &NewBmodeImageHandler::HandleNewBmodeImage );
+    Wrapped->NewImageTick += myHandler;
     }
 
   bool GetScanOn()
@@ -44,16 +97,9 @@ public:
     Wrapped->RFData = transferOn;
     }
 
-  void StartReadScan( unsigned char * buffer )
+  void StartReadScan()
     {
     Wrapped->StartReadScan( (BmodeArrayType ^)BmodeBuffer );
-    for( int ii = 0; ii < Scan2DClass::MAX_VECTORS; ++ii )
-      {
-      for( int jj = 0; jj < Scan2DClass::MAX_SAMPLES; ++jj )
-         {
-         buffer[Scan2DClass::MAX_SAMPLES * ii + jj] = BmodeBuffer[ii, jj];
-         }
-      }
     }
 
   void StopReadScan()
@@ -71,20 +117,20 @@ public:
     Wrapped->AbortScan();
     }
 
- void SetNewBmodeImageCallback( NewBmodeImageCallbackType callback, void * clientData = 0)
+  void SetNewBmodeImageCallback( NewBmodeImageCallbackType callback, void * clientData = 0 )
     {
-    this->NewBmodeImageCallback = callback;
-    this->NewBmodeImageCallbackClientData = clientData;
+    this->BmodeHandler->SetNewBmodeImageCallback( callback, clientData );
+    }
+
+  void HandleNewBmodeImage( Interson::Imaging::Scan2DClass ^ scan2D, System::EventArgs ^ eventArgs )
+    {
     }
 
 private:
   gcroot< Interson::Imaging::Scan2DClass ^ > Wrapped;
+  gcroot< BmodeArrayType ^ >                 BmodeBuffer;
+  gcroot< NewBmodeImageHandler ^ >           BmodeHandler;
 
-  gcroot< BmodeArrayType ^ > BmodeBuffer;
-
-  unsigned char * NativeBmodeBuffer;
-  NewBmodeImageCallbackType NewBmodeImageCallback;
-  void * NewBmodeImageCallbackClientData;
 };
 
 
@@ -92,10 +138,8 @@ private:
 
 Scan2DClass
 ::Scan2DClass():
-  Impl( new Scan2DClassImpl() ),
-  BmodeBuffer( new unsigned char[MAX_SAMPLES * MAX_VECTORS] )
+  Impl( new Scan2DClassImpl() )
 {
-  //this->Impl->SetInterface( this );
 }
 
 
@@ -104,7 +148,6 @@ Scan2DClass
 ::~Scan2DClass()
 {
   delete Impl;
-  delete [] BmodeBuffer;
 }
 
 
@@ -136,7 +179,7 @@ void
 Scan2DClass
 ::StartReadScan()
 {
-  Impl->StartReadScan( BmodeBuffer );
+  Impl->StartReadScan();
 }
 
 
