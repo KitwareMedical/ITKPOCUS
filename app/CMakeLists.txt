@@ -32,4 +32,14 @@ if( BUILD_TESTING )
       --frames 5
       ${TEMP}/AcquireIntersonBModeTest1.mha
      )
+
+  add_test( NAME AcquireIntersonRFTest
+    COMMAND $<TARGET_FILE:AcquireIntersonRF>
+      ${TEMP}/AcquireIntersonRFTest.mha
+     )
+  add_test( NAME AcquireIntersonRFTest1
+    COMMAND $<TARGET_FILE:AcquireIntersonRF>
+      --frames 5
+      ${TEMP}/AcquireIntersonRFTest1.mha
+     )
 endif()

@@ -25,7 +25,7 @@ public:
   static const int MAX_VECTORS = 241;
 
   typedef unsigned char  BmodePixelType;
-  typedef unsigned short RFPixelType;
+  typedef short RFPixelType;
 
   bool GetScanOn() const;
 

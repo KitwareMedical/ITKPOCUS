@@ -21,6 +21,7 @@
       <description>Frames to collect.</description>
       <longflag>frames</longflag>
       <flag>f</flag> 
+      <default>1</default>
     </integer>
   </parameters>
 </executable>

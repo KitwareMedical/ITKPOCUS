@@ -7,11 +7,12 @@
 
 #include "AcquireIntersonBModeCLP.h"
 
+typedef IntersonCxx::Imaging::Scan2DClass Scan2DClassType;
+
 const unsigned int Dimension = 3;
-typedef unsigned short                     PixelType;
+typedef Scan2DClassType::RFPixelType       PixelType;
 typedef itk::Image< PixelType, Dimension > ImageType;
 
-typedef IntersonCxx::Imaging::Scan2DClass Scan2DClassType;
 
 struct CallbackClientData
 {
@@ -32,7 +33,7 @@ void __stdcall pasteIntoImage( PixelType * buffer, void * clientData )
     }
 
   const int maxVectors = Scan2DClassType::MAX_VECTORS;
-  const int maxSamples = Scan2DClassType::MAX_SAMPLES;
+  const int maxSamples = Scan2DClassType::MAX_RFSAMPLES;
   const int framePixels = maxVectors * maxSamples;
 
   PixelType * imageBuffer = image->GetPixelContainer()->GetBufferPointer();
@@ -73,7 +74,7 @@ int main( int argc, char * argv[] )
 
   const itk::SizeValueType framesToCollect = frames;
   const int maxVectors = Scan2DClassType::MAX_VECTORS;
-  const int maxSamples = Scan2DClassType::MAX_SAMPLES;
+  const int maxSamples = Scan2DClassType::MAX_RFSAMPLES;
 
   ImageType::Pointer image = ImageType::New();
   typedef ImageType::RegionType RegionType;
@@ -108,6 +109,8 @@ int main( int argc, char * argv[] )
   hwControls.EnableHighVoltage();
   // TODO make CLI option
   hwControls.SendDynamic( 50 );
+  // TODO make CLI option
+  hwControls.DisableRFDecimator();
 
   scan2D.AbortScan();
   scan2D.SetRFData( true );
@@ -118,9 +121,9 @@ int main( int argc, char * argv[] )
     };
   scan2D.StartRFReadScan();
   Sleep( 100 ); // "time to start"
-  if( !hwControls.StartBmode() )
+  if( !hwControls.StartRFmode() )
     {
-    std::cerr << "Could not start B-mode collection." << std::endl;
+    std::cerr << "Could not start RF collection." << std::endl;
     return EXIT_FAILURE;
     };
 
