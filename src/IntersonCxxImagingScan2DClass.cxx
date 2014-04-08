@@ -21,6 +21,8 @@ class Scan2DClassImpl
 public:
   typedef cli::array< byte, 2 > BmodeArrayType;
 
+  typedef Scan2DClass::NewBmodeImageCallbackType NewBmodeImageCallbackType;
+
   Scan2DClassImpl()
     {
     Wrapped = gcnew Interson::Imaging::Scan2DClass();
@@ -69,10 +71,20 @@ public:
     Wrapped->AbortScan();
     }
 
+ void SetNewBmodeImageCallback( NewBmodeImageCallbackType callback, void * clientData = 0)
+    {
+    this->NewBmodeImageCallback = callback;
+    this->NewBmodeImageCallbackClientData = clientData;
+    }
+
 private:
   gcroot< Interson::Imaging::Scan2DClass ^ > Wrapped;
 
   gcroot< BmodeArrayType ^ > BmodeBuffer;
+
+  unsigned char * NativeBmodeBuffer;
+  NewBmodeImageCallbackType NewBmodeImageCallback;
+  void * NewBmodeImageCallbackClientData;
 };
 
 
@@ -83,7 +95,9 @@ Scan2DClass
   Impl( new Scan2DClassImpl() ),
   BmodeBuffer( new unsigned char[MAX_SAMPLES * MAX_VECTORS] )
 {
+  //this->Impl->SetInterface( this );
 }
+
 
 
 Scan2DClass
@@ -147,6 +161,15 @@ Scan2DClass
 ::AbortScan()
 {
   Impl->AbortScan();
+}
+
+
+void
+Scan2DClass
+::SetNewBmodeImageCallback( NewBmodeImageCallbackType callback,
+                            void * clientData )
+{
+  Impl->SetNewBmodeImageCallback( callback, clientData );
 }
 
 } // end namespace Imaging

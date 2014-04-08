@@ -34,6 +34,11 @@ public:
   void DisposeScan();
   void AbortScan();
 
+  typedef void (__stdcall * NewBmodeImageCallbackType)( unsigned char * buffer,
+    void * clientData );
+  void SetNewBmodeImageCallback( NewBmodeImageCallbackType callback,
+    void * clientData = NULL );
+
 private:
   Scan2DClass( const Scan2DClass & );
   void operator=( const Scan2DClass & );
