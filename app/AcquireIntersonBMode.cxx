@@ -71,8 +71,7 @@ int main( int argc, char * argv[] )
 
   int ret = EXIT_SUCCESS;
 
-  // replace with command line option
-  const itk::SizeValueType framesToCollect = 1;
+  const itk::SizeValueType framesToCollect = frames;
   const int maxVectors = Scan2DClassType::MAX_VECTORS;
   const int maxSamples = Scan2DClassType::MAX_SAMPLES;
 

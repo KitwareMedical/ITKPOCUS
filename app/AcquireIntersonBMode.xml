@@ -15,5 +15,12 @@
       <index>0</index>
       <description>Output image filename.</description>
     </image>
+    <integer>
+      <name>frames</name>
+      <label>Frames</label>
+      <description>Frames to collect.</description>
+      <longflag>frames</longflag>
+      <flag>f</flag> 
+    </integer>
   </parameters>
 </executable>
