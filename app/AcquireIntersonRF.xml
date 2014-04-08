@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<executable>
+  <category>Ultrasound</category>
+  <title>Acquire Interson RF</title>
+  <description>Acquire multiple RF frames with the Interson USB probe.</description>
+  <version>0.1.0</version>
+  <license>Apache 2.0</license>
+  <contributor>Matt McCormick (Kitware)</contributor>
+  <acknowledgements>This work is funded in part by a grant with InnerOptic/Kitware</acknowledgements>
+  <parameters>
+    <image>
+      <name>outputImage</name>
+      <label>Output Image</label>
+      <channel>output</channel>
+      <index>0</index>
+      <description>Output image filename.</description>
+    </image>
+    <integer>
+      <name>frames</name>
+      <label>Frames</label>
+      <description>Frames to collect.</description>
+      <longflag>frames</longflag>
+      <flag>f</flag> 
+    </integer>
+  </parameters>
+</executable>
