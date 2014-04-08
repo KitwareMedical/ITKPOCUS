@@ -13,8 +13,9 @@ SEMMacroBuildCLI(
   )
 
 if( BUILD_TESTING )
+  set( TEMP ${PROJECT_BINARY_DIR}/Testing/Temporary )
   add_test( NAME AcquireIntersonBModeTest
     COMMAND $<TARGET_FILE:AcquireIntersonBMode>
-      AcquireIntersonBModeTest.mha
+      ${TEMP}/AcquireIntersonBModeTest.mha
    )
 endif()

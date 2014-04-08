@@ -49,8 +49,8 @@ public:
           this->NativeBmodeBuffer[Scan2DClass::MAX_SAMPLES * ii + jj] = this->ManagedBmodeBuffer[ii, jj];
           }
         }
-      this->NewBmodeImageCallback( this->NativeBmodeBuffer, this->NewBmodeImageCallbackClientData );
       }
+      this->NewBmodeImageCallback( this->NativeBmodeBuffer, this->NewBmodeImageCallbackClientData );
     }
 
   void SetNewBmodeImageCallback( NewBmodeImageCallbackType callback, void * clientData )
@@ -79,12 +79,15 @@ public:
     BmodeBuffer = gcnew BmodeArrayType( Scan2DClass::MAX_VECTORS, Scan2DClass::MAX_SAMPLES );
 
     BmodeHandler = gcnew NewBmodeImageHandler( BmodeBuffer );
-    //Interson::Imaging::Scan2DClass::NewImageHandler ^ myHandler = gcnew
     BmodeHandlerDelegate = gcnew
         Interson::Imaging::Scan2DClass::NewImageHandler(BmodeHandler,
         &NewBmodeImageHandler::HandleNewBmodeImage );
-    //Wrapped->NewImageTick += myHandler;
     Wrapped->NewImageTick += BmodeHandlerDelegate;
+    }
+
+  ~Scan2DClassImpl()
+    {
+    Wrapped->NewImageTick -= BmodeHandlerDelegate;
     }
 
   bool GetScanOn()
