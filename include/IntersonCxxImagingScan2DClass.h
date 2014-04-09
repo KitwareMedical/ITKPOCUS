@@ -35,6 +35,8 @@ public:
   bool GetFrameAvg() const;
   void SetFrameAvg( bool doAveraging );
 
+  double GetTrueDepth() const;
+
   void StartReadScan();
   void StartRFReadScan();
   void StopReadScan();

@@ -48,7 +48,9 @@ int main( int argc, char * argv[] )
   scan2D.StartReadScan();
   Sleep( 100 ); // "time to start"
   hwControls.StartBmode();
-  std::cout << "Scan is on: " << scan2D.GetScanOn() << std::endl;
+  std::cout << "\nScan is on: " << scan2D.GetScanOn() << std::endl;
+
+  std::cout << "\nTrueDepth: " << scan2D.GetTrueDepth() << std::endl;
 
   hwControls.StopAcquisition();
   scan2D.StopReadScan();

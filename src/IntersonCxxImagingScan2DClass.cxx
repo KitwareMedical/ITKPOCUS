@@ -174,6 +174,11 @@ public:
     return Wrapped->FrameAvg = doAveraging;
     }
 
+  double GetTrueDepth()
+    {
+    return Wrapped->TrueDepth;
+    }
+
   void StartReadScan()
     {
     Wrapped->StartReadScan( (BmodeArrayType ^)BmodeBuffer );
@@ -208,6 +213,7 @@ public:
     {
     this->RFHandler->SetNewRFImageCallback( callback, clientData );
     }
+
 
 private:
   gcroot< Interson::Imaging::Scan2DClass ^ >                  Wrapped;
@@ -332,6 +338,14 @@ Scan2DClass
                             void * clientData )
 {
   Impl->SetNewRFImageCallback( callback, clientData );
+}
+
+
+double
+Scan2DClass
+::GetTrueDepth() const
+{
+  return Impl->GetTrueDepth();
 }
 
 } // end namespace Imaging
