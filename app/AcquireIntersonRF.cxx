@@ -115,8 +115,22 @@ int main( int argc, char * argv[] )
     return EXIT_FAILURE;
     }
 
-  // TODO make CLI option
-  hwControls.DisableRFDecimator();
+  if( decimator )
+    {
+    if( !hwControls.EnableRFDecimator() )
+      {
+      std::cerr << "Could not enable RF decimator." << std::endl;
+      return EXIT_FAILURE;
+      }
+    }
+  else
+    {
+    if( !hwControls.DisableRFDecimator() )
+      {
+      std::cerr << "Could not disable RF decimator." << std::endl;
+      return EXIT_FAILURE;
+      }
+    }
 
   hwControls.DisableHardButton();
 

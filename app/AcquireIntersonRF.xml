@@ -41,15 +41,13 @@
       <minimum>0</minimum>
       <maximum>100</maximum>
     </integer>
-    <integer>
-      <name>gain</name>
-      <label>Dynamic Gain</label>
-      <description>Dynamic gain [dB].</description>
-      <longflag>gain</longflag>
-      <flag>g</flag> 
-      <default>100</default>
-      <minimum>0</minimum>
-      <maximum>255</maximum>
-    </integer>
+    <boolean>
+      <name>decimator</name>
+      <label>Enable RF Decimator</label>
+      <description>For GV and GP (low frequency probes) sampling rate is 15 Msamples/sec with decimator off and with decimator on sampling rate is 7.5 Msamples/sec. For higher frequency probes sampling rate is 30 Ms/sec with decimator off and 15 Ms/sec with decimator on.</description>
+      <longflag>decimator</longflag>
+      <flag>d</flag>
+    </boolean>
+
   </parameters>
 </executable>

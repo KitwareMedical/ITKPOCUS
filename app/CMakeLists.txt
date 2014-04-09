@@ -64,6 +64,11 @@ if( BUILD_TESTING )
       --highVoltage 30
       ${TEMP}/AcquireIntersonRFTestVoltage.mha
      )
+  add_test( NAME AcquireIntersonRFTestDecimator
+    COMMAND $<TARGET_FILE:AcquireIntersonRF>
+      --decimator
+      ${TEMP}/AcquireIntersonRFTestDecimator.mha
+     )
 
   add_test( NAME PrintIntersonProbeInfoTest
     COMMAND $<TARGET_FILE:PrintIntersonProbeInfo>
