@@ -126,15 +126,16 @@ public:
   Scan2DClassImpl()
     {
     Wrapped = gcnew Interson::Imaging::Scan2DClass();
-    BmodeBuffer = gcnew BmodeArrayType( Scan2DClass::MAX_VECTORS, Scan2DClass::MAX_SAMPLES );
-    RFBuffer = gcnew RFArrayType( Scan2DClass::MAX_VECTORS, Scan2DClass::MAX_RFSAMPLES );
 
+
+    BmodeBuffer = gcnew BmodeArrayType( Scan2DClass::MAX_VECTORS, Scan2DClass::MAX_SAMPLES );
     BmodeHandler = gcnew NewBmodeImageHandler( BmodeBuffer );
     BmodeHandlerDelegate = gcnew
         Interson::Imaging::Scan2DClass::NewImageHandler(BmodeHandler,
         &NewBmodeImageHandler::HandleNewBmodeImage );
     Wrapped->NewImageTick += BmodeHandlerDelegate;
 
+    RFBuffer = gcnew RFArrayType( Scan2DClass::MAX_VECTORS, Scan2DClass::MAX_RFSAMPLES );
     RFHandler = gcnew NewRFImageHandler( RFBuffer );
     RFHandlerDelegate = gcnew
         Interson::Imaging::Scan2DClass::NewImageHandler(RFHandler,
@@ -144,8 +145,8 @@ public:
 
   ~Scan2DClassImpl()
     {
-    Wrapped->NewImageTick -= BmodeHandlerDelegate;
     Wrapped->NewImageTick -= RFHandlerDelegate;
+    Wrapped->NewImageTick -= BmodeHandlerDelegate;
     }
 
   bool GetScanOn()
@@ -200,6 +201,7 @@ public:
 
 private:
   gcroot< Interson::Imaging::Scan2DClass ^ >                  Wrapped;
+
   gcroot< BmodeArrayType ^ >                                  BmodeBuffer;
   gcroot< RFArrayType ^ >                                     RFBuffer;
   gcroot< NewBmodeImageHandler ^ >                            BmodeHandler;

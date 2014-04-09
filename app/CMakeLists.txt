@@ -34,20 +34,20 @@ if( BUILD_TESTING )
     COMMAND $<TARGET_FILE:AcquireIntersonBMode>
       ${TEMP}/AcquireIntersonBModeTest.mha
      )
-  add_test( NAME AcquireIntersonBModeTest1
+  add_test( NAME AcquireIntersonBModeTestFrames
     COMMAND $<TARGET_FILE:AcquireIntersonBMode>
       --frames 5
-      ${TEMP}/AcquireIntersonBModeTest1.mha
+      ${TEMP}/AcquireIntersonBModeTestFrames.mha
      )
 
   add_test( NAME AcquireIntersonRFTest
     COMMAND $<TARGET_FILE:AcquireIntersonRF>
       ${TEMP}/AcquireIntersonRFTest.mha
      )
-  add_test( NAME AcquireIntersonRFTest1
+  add_test( NAME AcquireIntersonRFTestFrames
     COMMAND $<TARGET_FILE:AcquireIntersonRF>
       --frames 5
-      ${TEMP}/AcquireIntersonRFTest1.mha
+      ${TEMP}/AcquireIntersonRFTestFrames.mha
      )
 
   add_test( NAME PrintIntersonProbeInfoTest

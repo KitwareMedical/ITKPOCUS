@@ -7,11 +7,12 @@
 
 #include "AcquireIntersonBModeCLP.h"
 
+typedef IntersonCxx::Imaging::Scan2DClass Scan2DClassType;
+
 const unsigned int Dimension = 3;
-typedef unsigned char                      PixelType;
+typedef Scan2DClassType::BmodePixelType    PixelType;
 typedef itk::Image< PixelType, Dimension > ImageType;
 
-typedef IntersonCxx::Imaging::Scan2DClass Scan2DClassType;
 
 struct CallbackClientData
 {
@@ -97,8 +98,7 @@ int main( int argc, char * argv[] )
 
   HWControlsType::FrequenciesType frequencies;
   hwControls.GetFrequency( frequencies );
-  // TODO make CLI option
-  if( !hwControls.SetFrequency( frequencies[1] ) )
+  if( !hwControls.SetFrequency( frequencies[frequencyIndex] ) )
     {
     std::cerr << "Could not set the frequency." << std::endl;
     return EXIT_FAILURE;
@@ -108,8 +108,10 @@ int main( int argc, char * argv[] )
   hwControls.EnableHighVoltage();
   // TODO make CLI option
   hwControls.SendDynamic( 50 );
+  hwControls.DisableHardButton();
 
   scan2D.AbortScan();
+  scan2D.SetRFData( false );
   if( !hwControls.StartMotor() )
     {
     std::cerr << "Could not start motor." << std::endl;

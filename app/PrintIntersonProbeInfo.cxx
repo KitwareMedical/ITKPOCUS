@@ -21,7 +21,7 @@ int main( int argc, char * argv[] )
     std::cerr << "Could not find the probe." << std::endl;
     return EXIT_FAILURE;
     }
-  std::cout << "\nFound Probes: " << std::endl;
+  std::cout << "\nProbes Found: " << std::endl;
   for( size_t ii = 0; ii < foundProbes.size(); ++ii )
     {
     std::cout << "    " << ii << ": " << foundProbes[ii] << std::endl;

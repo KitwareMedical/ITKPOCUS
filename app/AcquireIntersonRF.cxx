@@ -98,8 +98,7 @@ int main( int argc, char * argv[] )
 
   HWControlsType::FrequenciesType frequencies;
   hwControls.GetFrequency( frequencies );
-  // TODO make CLI option
-  if( !hwControls.SetFrequency( frequencies[1] ) )
+  if( !hwControls.SetFrequency( frequencies[frequencyIndex] ) )
     {
     std::cerr << "Could not set the frequency." << std::endl;
     return EXIT_FAILURE;
@@ -111,6 +110,7 @@ int main( int argc, char * argv[] )
   hwControls.SendDynamic( 50 );
   // TODO make CLI option
   hwControls.DisableRFDecimator();
+  hwControls.DisableHardButton();
 
   scan2D.AbortScan();
   scan2D.SetRFData( true );

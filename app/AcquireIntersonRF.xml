@@ -20,6 +20,14 @@
       <label>Frames</label>
       <description>Frames to collect.</description>
       <longflag>frames</longflag>
+      <flag>n</flag> 
+      <default>1</default>
+    </integer>
+    <integer>
+      <name>frequencyIndex</name>
+      <label>Frequency Index</label>
+      <description>Index of the frequency to examine.  See the output of PrintIntersonProbeInfo.</description>
+      <longflag>frequencyIndex</longflag>
       <flag>f</flag> 
       <default>1</default>
     </integer>
