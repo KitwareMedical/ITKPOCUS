@@ -42,56 +42,16 @@ int main( int argc, char * argv[] )
 
   HWControlsType::FrequenciesType frequencies;
   hwControls.GetFrequency( frequencies );
-  // TODO make CLI option
   std::cout << "\nFrequencies: [Hz]" << std::endl;
   for( size_t ii = 0; ii < frequencies.size(); ++ii )
     {
     std::cout << "    " << ii << ": " << frequencies[ii] << std::endl;
     }
 
-  /*
-  // TODO make CLI option
-  hwControls.SendDynamic( 50 );
+  std::cout << "\nSerial number: " << hwControls.GetProbeSerialNumber() << std::endl;
+  std::cout << "FPGA Version:  " << hwControls.ReadFPGAVersion() << std::endl;
+  std::cout << "OEM ID:        " << hwControls.GetOEMId() << std::endl;
+  std::cout << "Filter ID:     " << hwControls.GetFilterId() << std::endl;
 
-  scan2D.AbortScan();
-  if( !hwControls.StartMotor() )
-    {
-    std::cerr << "Could not start motor." << std::endl;
-    return EXIT_FAILURE;
-    };
-  scan2D.StartReadScan();
-  Sleep( 100 ); // "time to start"
-  if( !hwControls.StartBmode() )
-    {
-    std::cerr << "Could not start B-mode collection." << std::endl;
-    return EXIT_FAILURE;
-    };
-
-  while( clientData.FrameIndex < framesToCollect )
-    {
-    Sleep( 100 );
-    }
-
-  hwControls.StopAcquisition();
-  scan2D.StopReadScan();
-  Sleep( 100 ); // "time to stop"
-  scan2D.DisposeScan();
-  hwControls.StopMotor();
-
-  typedef itk::ImageFileWriter< ImageType > WriterType;
-  WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName( outputImage );
-  writer->SetInput( image );
-  try
-    {
-    writer->Update();
-    }
-  catch( itk::ExceptionObject & error )
-    {
-    std::cerr << "Error: " << error << std::endl;
-    return EXIT_FAILURE;
-    }
-
-  */
   return EXIT_SUCCESS;
 }
