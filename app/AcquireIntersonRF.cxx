@@ -103,9 +103,16 @@ int main( int argc, char * argv[] )
     std::cerr << "Could not set the frequency." << std::endl;
     return EXIT_FAILURE;
     }
-  // TODO make CLI option
-  hwControls.SendHighVoltage( 50 );
-  hwControls.EnableHighVoltage();
+  if( !hwControls.SendHighVoltage( highVoltage ) )
+    {
+    std::cerr << "Could not set the high voltage." << std::endl;
+    return EXIT_FAILURE;
+    }
+  if( !hwControls.EnableHighVoltage() )
+    {
+    std::cerr << "Could not enable high voltage." << std::endl;
+    return EXIT_FAILURE;
+    }
   // TODO make CLI option
   hwControls.SendDynamic( 50 );
   // TODO make CLI option

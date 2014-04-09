@@ -39,6 +39,11 @@ if( BUILD_TESTING )
       --frames 5
       ${TEMP}/AcquireIntersonBModeTestFrames.mha
      )
+  add_test( NAME AcquireIntersonBModeTestVoltage
+    COMMAND $<TARGET_FILE:AcquireIntersonBMode>
+      --highVoltage 30
+      ${TEMP}/AcquireIntersonBModeTestTestVoltage.mha
+     )
 
   add_test( NAME AcquireIntersonRFTest
     COMMAND $<TARGET_FILE:AcquireIntersonRF>
@@ -48,6 +53,11 @@ if( BUILD_TESTING )
     COMMAND $<TARGET_FILE:AcquireIntersonRF>
       --frames 5
       ${TEMP}/AcquireIntersonRFTestFrames.mha
+     )
+  add_test( NAME AcquireIntersonRFTestVoltage
+    COMMAND $<TARGET_FILE:AcquireIntersonRF>
+      --highVoltage 30
+      ${TEMP}/AcquireIntersonRFTestVoltage.mha
      )
 
   add_test( NAME PrintIntersonProbeInfoTest

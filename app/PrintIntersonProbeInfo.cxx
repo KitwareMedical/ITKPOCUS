@@ -48,10 +48,8 @@ int main( int argc, char * argv[] )
     {
     std::cout << "    " << ii << ": " << frequencies[ii] << std::endl;
     }
+
   /*
-  // TODO make CLI option
-  hwControls.SendHighVoltage( 50 );
-  hwControls.EnableHighVoltage();
   // TODO make CLI option
   hwControls.SendDynamic( 50 );
 

@@ -31,5 +31,13 @@
       <flag>f</flag> 
       <default>1</default>
     </integer>
+    <integer>
+      <name>highVoltage</name>
+      <label>High Voltage</label>
+      <description>Percentage of the high voltage for transducer excitation.</description>
+      <longflag>highVoltage</longflag>
+      <flag>z</flag> 
+      <default>50</default>
+    </integer>
   </parameters>
 </executable>
