@@ -42,7 +42,12 @@ if( BUILD_TESTING )
   add_test( NAME AcquireIntersonBModeTestVoltage
     COMMAND $<TARGET_FILE:AcquireIntersonBMode>
       --highVoltage 30
-      ${TEMP}/AcquireIntersonBModeTestTestVoltage.mha
+      ${TEMP}/AcquireIntersonBModeTestVoltage.mha
+     )
+  add_test( NAME AcquireIntersonBModeTestGain
+    COMMAND $<TARGET_FILE:AcquireIntersonBMode>
+      --gain 50
+      ${TEMP}/AcquireIntersonBModeTestGain.mha
      )
 
   add_test( NAME AcquireIntersonRFTest

@@ -115,8 +115,11 @@ int main( int argc, char * argv[] )
     return EXIT_FAILURE;
     }
 
-  // TODO make CLI option
-  hwControls.SendDynamic( 50 );
+  if( !hwControls.SendDynamic( gain ) )
+    {
+    std::cerr << "Could not set dynamic gain." << std::endl;
+    }
+
   hwControls.DisableHardButton();
 
   scan2D.AbortScan();

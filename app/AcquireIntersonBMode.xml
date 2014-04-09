@@ -38,6 +38,18 @@
       <longflag>highVoltage</longflag>
       <flag>z</flag> 
       <default>50</default>
+      <minimum>0</minimum>
+      <maximum>100</maximum>
+    </integer>
+    <integer>
+      <name>gain</name>
+      <label>Dynamic Gain</label>
+      <description>Dynamic gain [dB].</description>
+      <longflag>gain</longflag>
+      <flag>g</flag> 
+      <default>100</default>
+      <minimum>0</minimum>
+      <maximum>255</maximum>
     </integer>
   </parameters>
 </executable>

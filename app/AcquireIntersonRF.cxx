@@ -103,6 +103,7 @@ int main( int argc, char * argv[] )
     std::cerr << "Could not set the frequency." << std::endl;
     return EXIT_FAILURE;
     }
+
   if( !hwControls.SendHighVoltage( highVoltage ) )
     {
     std::cerr << "Could not set the high voltage." << std::endl;
@@ -113,10 +114,10 @@ int main( int argc, char * argv[] )
     std::cerr << "Could not enable high voltage." << std::endl;
     return EXIT_FAILURE;
     }
-  // TODO make CLI option
-  hwControls.SendDynamic( 50 );
+
   // TODO make CLI option
   hwControls.DisableRFDecimator();
+
   hwControls.DisableHardButton();
 
   scan2D.AbortScan();
