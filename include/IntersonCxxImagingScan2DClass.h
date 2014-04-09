@@ -32,6 +32,9 @@ public:
   bool GetRFData() const;
   void SetRFData( bool transferOn );
 
+  bool GetFrameAvg() const;
+  void SetFrameAvg( bool doAveraging );
+
   void StartReadScan();
   void StartRFReadScan();
   void StopReadScan();

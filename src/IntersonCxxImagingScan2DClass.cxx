@@ -164,6 +164,16 @@ public:
     Wrapped->RFData = transferOn;
     }
 
+  bool GetFrameAvg()
+    {
+    return Wrapped->FrameAvg;
+    }
+
+  void SetFrameAvg( bool doAveraging )
+    {
+    return Wrapped->FrameAvg = doAveraging;
+    }
+
   void StartReadScan()
     {
     Wrapped->StartReadScan( (BmodeArrayType ^)BmodeBuffer );
@@ -250,6 +260,21 @@ Scan2DClass
 ::SetRFData( bool transferOn )
 {
   Impl->SetRFData( transferOn );
+}
+
+
+bool
+Scan2DClass
+::GetFrameAvg() const
+{
+  return Impl->GetFrameAvg();
+}
+
+void
+Scan2DClass
+::SetFrameAvg( bool doAveraging )
+{
+  Impl->SetFrameAvg( doAveraging );
 }
 
 

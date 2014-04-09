@@ -39,6 +39,9 @@ int main( int argc, char * argv[] )
   const int maxSamples = Scan2DClassType::MAX_SAMPLES;
   const int maxPixels = maxVectors * maxSamples;
 
+  scan2D.SetFrameAvg( true );
+  std::cout << "\nFrameAvg: " << scan2D.GetFrameAvg() << std::endl;
+
   scan2D.AbortScan();
   hwControls.StartMotor();
   std::cout << "\nStarting BMode scanning..." << std::endl;
