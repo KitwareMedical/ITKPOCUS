@@ -48,6 +48,15 @@ int main( int argc, char * argv[] )
     std::cout << "    " << ii << ": " << frequencies[ii] << std::endl;
     }
 
+  std::cout << "\nSupported Depth [mm]: FrameRate [fps]" << std::endl;
+  int depth = 20;
+  while( hwControls.ValidDepth( depth ) == depth )
+    {
+    short frameRate = hwControls.GetProbeFrameRate( depth );
+    std::cout << "    " << depth << ":\t" << frameRate << std::endl;
+    depth += 20;
+    }
+
   std::cout << "\nSerial number: " << hwControls.GetProbeSerialNumber() << std::endl;
   std::cout << "FPGA Version:  " << hwControls.ReadFPGAVersion() << std::endl;
   std::cout << "OEM ID:        " << hwControls.GetOEMId() << std::endl;
