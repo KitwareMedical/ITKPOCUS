@@ -32,6 +32,8 @@ public:
     ERROR // other error
     };
 
+  int GetHeightScan() const;
+
 
 private:
   ScanConverter( const ScanConverter & );

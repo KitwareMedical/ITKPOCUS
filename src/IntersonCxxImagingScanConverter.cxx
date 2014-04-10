@@ -26,6 +26,11 @@ public:
     {
     }
 
+  int GetHeightScan()
+    {
+    return Wrapped->HeightScan;
+    }
+
 
 private:
   gcroot< Interson::Imaging::ScanConverter ^ >    Wrapped;
@@ -48,6 +53,13 @@ ScanConverter
   delete Impl;
 }
 
+
+int
+ScanConverter
+::GetHeightScan() const
+{
+  return Impl->GetHeightScan();
+}
 
 } // end namespace Imaging
 

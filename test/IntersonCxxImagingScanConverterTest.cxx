@@ -16,6 +16,9 @@ int main( int argc, char * argv[] )
   typedef IntersonCxx::Imaging::Scan2DClass Scan2DClassType;
   Scan2DClassType scan2D;
 
+  typedef IntersonCxx::Imaging::ScanConverter ScanConverterType;
+  ScanConverterType scanConverter;
+
   typedef HWControlsType::FoundProbesType FoundProbesType;
   FoundProbesType foundProbes;
   hwControls.FindAllProbes( foundProbes );
@@ -43,9 +46,10 @@ int main( int argc, char * argv[] )
   scan2D.StartReadScan();
   Sleep( 100 ); // "time to start"
   hwControls.StartBmode();
-  std::cout << "\nScan is on: " << scan2D.GetScanOn() << std::endl;
 
+  std::cout << "\nScan is on: " << scan2D.GetScanOn() << std::endl;
   std::cout << "\nTrueDepth: " << scan2D.GetTrueDepth() << std::endl;
+  std::cout << "\nHeightScan: " << scanConverter.GetHeightScan() << std::endl;
 
   hwControls.StopAcquisition();
   scan2D.StopReadScan();
