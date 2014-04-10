@@ -44,6 +44,13 @@ public:
                                             int widthScan,
                                             int heightScan );
 
+  ScanConverterError IdleInitScanConverter( int depth,
+                                            bool upDown,
+                                            bool leftRight,
+                                            int widthScan,
+                                            int heightScan,
+                                            unsigned char probeId );
+
 private:
   ScanConverter( const ScanConverter & );
   void operator=( const ScanConverter & );

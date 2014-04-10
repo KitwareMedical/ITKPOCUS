@@ -56,6 +56,17 @@ public:
       Wrapped->HardInitScanConverter( depth, upDown, leftRight, widthScan, heightScan ) );
     }
 
+  ScanConverter::ScanConverterError IdleInitScanConverter( int depth,
+                                                           bool upDown,
+                                                           bool leftRight,
+                                                           int widthScan,
+                                                           int heightScan,
+                                                           unsigned char probeId )
+    {
+    return static_cast< ScanConverter::ScanConverterError >(
+      Wrapped->IdleInitScanConverter( depth, upDown, leftRight, widthScan, heightScan, probeId ) );
+    }
+
 private:
   gcroot< Interson::Imaging::ScanConverter ^ >    Wrapped;
 
@@ -123,6 +134,24 @@ ScanConverter
                                       leftRight,
                                       widthScan,
                                       heightScan );
+}
+
+
+ScanConverter::ScanConverterError
+ScanConverter
+::IdleInitScanConverter( int depth,
+                         bool upDown,
+                         bool leftRight,
+                         int widthScan,
+                         int heightScan,
+                         unsigned char probeId )
+{
+  return Impl->IdleInitScanConverter( depth,
+                                      upDown,
+                                      leftRight,
+                                      widthScan,
+                                      heightScan,
+                                      probeId );
 }
 
 } // end namespace Imaging

@@ -48,6 +48,19 @@ int main( int argc, char * argv[] )
   const int height = 512; 
 
   ScanConverterType::ScanConverterError converterError =
+    scanConverter.IdleInitScanConverter( depth,
+                                         upDown,
+                                         leftRight,
+                                         width,
+                                         height,
+                                         probeId );
+  if( converterError != ScanConverterType::SUCCESS )
+    {
+    std::cerr << "Error during idle scan converter initialization: "
+              << converterError << std::endl;
+    return EXIT_FAILURE;
+    }
+  converterError =
     scanConverter.HardInitScanConverter( depth,
                                          upDown,
                                          leftRight,
@@ -55,7 +68,7 @@ int main( int argc, char * argv[] )
                                          height );
   if( converterError != ScanConverterType::SUCCESS )
     {
-    std::cerr << "Error during scan converter initialization: "
+    std::cerr << "Error during hard scan converter initialization: "
               << converterError << std::endl;
     return EXIT_FAILURE;
     }
