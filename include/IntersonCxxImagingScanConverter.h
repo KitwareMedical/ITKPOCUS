@@ -38,6 +38,12 @@ public:
   float GetMmPerPixel() const;
   int GetZeroOfYScale() const;
 
+  ScanConverterError HardInitScanConverter( int depth,
+                                            bool upDown,
+                                            bool leftRight,
+                                            int widthScan,
+                                            int heightScan );
+
 private:
   ScanConverter( const ScanConverter & );
   void operator=( const ScanConverter & );

@@ -36,9 +36,29 @@ int main( int argc, char * argv[] )
     return EXIT_FAILURE;
     }
 
-  const int maxVectors = Scan2DClassType::MAX_VECTORS;
-  const int maxSamples = Scan2DClassType::MAX_SAMPLES;
-  const int maxPixels = maxVectors * maxSamples;
+  const int depth = 50;
+  if( hwControls.ValidDepth( depth ) != depth )
+    {
+    std::cerr << "Did not request a valid depth" << std::endl;
+    return EXIT_SUCCESS;
+    }
+  const bool upDown = true;
+  const bool leftRight = true;
+  const int width = 776;
+  const int height = 512; 
+
+  ScanConverterType::ScanConverterError converterError =
+    scanConverter.HardInitScanConverter( depth,
+                                         upDown,
+                                         leftRight,
+                                         width,
+                                         height );
+  if( converterError != ScanConverterType::SUCCESS )
+    {
+    std::cerr << "Error during scan converter initialization: "
+              << converterError << std::endl;
+    return EXIT_FAILURE;
+    }
 
   scan2D.AbortScan();
   hwControls.StartMotor();

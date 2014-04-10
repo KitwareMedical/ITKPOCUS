@@ -46,6 +46,15 @@ public:
     return Wrapped->ZeroOfYScale;
     }
 
+  ScanConverter::ScanConverterError HardInitScanConverter( int depth,
+                                                           bool upDown,
+                                                           bool leftRight,
+                                                           int widthScan,
+                                                           int heightScan )
+    {
+    return static_cast< ScanConverter::ScanConverterError >(
+      Wrapped->HardInitScanConverter( depth, upDown, leftRight, widthScan, heightScan ) );
+    }
 
 private:
   gcroot< Interson::Imaging::ScanConverter ^ >    Wrapped;
@@ -98,6 +107,22 @@ ScanConverter
 ::GetZeroOfYScale() const
 {
   return Impl->GetZeroOfYScale();
+}
+
+
+ScanConverter::ScanConverterError
+ScanConverter
+::HardInitScanConverter( int depth,
+                         bool upDown,
+                         bool leftRight,
+                         int widthScan,
+                         int heightScan )
+{
+  return Impl->HardInitScanConverter( depth,
+                                      upDown,
+                                      leftRight,
+                                      widthScan,
+                                      heightScan );
 }
 
 } // end namespace Imaging
