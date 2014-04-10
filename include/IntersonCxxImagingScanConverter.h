@@ -33,6 +33,7 @@ public:
     };
 
   int GetHeightScan() const;
+  int GetWidthScan() const;
 
 
 private:
