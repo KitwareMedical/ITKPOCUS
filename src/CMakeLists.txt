@@ -10,6 +10,7 @@ set( IntersonCxx_SRCS
   IntersonCxxIntersonClass.cxx
   IntersonCxxControlsHWControls.cxx
   IntersonCxxImagingScan2DClass.cxx
+  IntersonCxxImagingScanConverter.cxx
   )
 
 include( GenerateExportHeader )

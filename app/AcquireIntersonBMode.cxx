@@ -122,6 +122,14 @@ int main( int argc, char * argv[] )
 
   hwControls.DisableHardButton();
 
+  if( hwControls.ValidDepth( depth ) == depth )
+    {
+    }
+  else
+    {
+    std::cerr << "Invalid requested depth for probe." << std::endl;
+    }
+
   scan2D.AbortScan();
   scan2D.SetRFData( false );
   if( !hwControls.StartMotor() )

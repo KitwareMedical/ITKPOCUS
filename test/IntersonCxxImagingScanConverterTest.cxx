@@ -1,5 +1,6 @@
 #include "IntersonCxxImagingScan2DClass.h"
 #include "IntersonCxxControlsHWControls.h"
+#include "IntersonCxxImagingScanConverter.h"
 
 #include <cstdlib>
 #include <iostream>
@@ -32,17 +33,9 @@ int main( int argc, char * argv[] )
     return EXIT_FAILURE;
     }
 
-  std::cout << "\nScan is on: " << scan2D.GetScanOn() << std::endl;
-  std::cout << "RF Data transfer is on: " << scan2D.GetRFData() << std::endl;
-
-  int ret = EXIT_SUCCESS;
-  
   const int maxVectors = Scan2DClassType::MAX_VECTORS;
   const int maxSamples = Scan2DClassType::MAX_SAMPLES;
   const int maxPixels = maxVectors * maxSamples;
-
-  scan2D.SetFrameAvg( true );
-  std::cout << "\nFrameAvg: " << scan2D.GetFrameAvg() << std::endl;
 
   scan2D.AbortScan();
   hwControls.StartMotor();
@@ -60,5 +53,5 @@ int main( int argc, char * argv[] )
   scan2D.DisposeScan();
   hwControls.StopMotor();
 
-  return ret;
+  return EXIT_SUCCESS;
 }
