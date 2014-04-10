@@ -48,6 +48,13 @@ public:
   void SetNewBmodeImageCallback( NewBmodeImageCallbackType callback,
     void * clientData = NULL );
 
+  typedef void (__stdcall * NewScanConvertedBmodeImageCallbackType)( BmodePixelType * buffer,
+    void * clientData );
+  /** \warning The WidthScan and HeightScan must be initialized on the
+   * ScanConverter before calling this method. */
+  void SetNewScanConvertedBmodeImageCallback( NewScanConvertedBmodeImageCallbackType callback,
+    void * clientData = NULL );
+
   typedef void (__stdcall * NewRFImageCallbackType)( RFPixelType * buffer,
     void * clientData );
   void SetNewRFImageCallback( NewRFImageCallbackType callback,
