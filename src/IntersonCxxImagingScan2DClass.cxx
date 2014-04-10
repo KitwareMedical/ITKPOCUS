@@ -7,7 +7,7 @@
 #include <msclr/marshal_cppstd.h>
 
 #using "Interson.dll"
-// For Build2D Bitmap
+// for Bitmap
 #using "System.Drawing.dll"
 
 namespace IntersonCxx
@@ -106,16 +106,17 @@ public:
         }
       this->NewBmodeImageCallback( this->NativeBmodeBuffer, this->NewBmodeImageCallbackClientData );
       }
+
     if( this->NewScanConvertedBmodeImageCallback != NULL )
       {
       scan2D->Build2D( ScanConvertedBmode, ManagedBmodeBuffer );
-      for( int ii = 0; ii < ScanConvertedBmode->Width; ++ii )
+      for( int ii = 0; ii < ScanConvertedBmode->Height; ++ii )
         {
-        for( int jj = 0; jj < ScanConvertedBmode->Height; ++jj )
+        for( int jj = 0; jj < ScanConvertedBmode->Width; ++jj )
           {
           // Assume it is grayscale, i.e. R = G = B
-          ScanConvertedBmodeBuffer[ScanConvertedBmode->Height * ii + jj] =
-            static_cast< BmodePixelType >( ScanConvertedBmode->GetPixel( ii, jj).B );
+          this->ScanConvertedBmodeBuffer[ScanConvertedBmode->Width * ii + jj] =
+            static_cast< BmodePixelType >( ScanConvertedBmode->GetPixel( jj, ii ).B );
           }
         }
       this->NewScanConvertedBmodeImageCallback( this->ScanConvertedBmodeBuffer, this->NewScanConvertedBmodeImageCallbackClientData );

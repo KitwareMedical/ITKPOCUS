@@ -29,7 +29,7 @@ public:
     UNKNOWN_PROBE, // Probe Identity not valid
     UNDER_LIMITS, // Width * Height over 10 * 10
     OVER_LIMITS, // Width * Height over 800 * 1000
-    ERROR // other error
+    OTHER_ERROR // other error
     };
 
   int GetHeightScan() const;

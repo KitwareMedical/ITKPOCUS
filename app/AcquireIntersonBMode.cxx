@@ -2,8 +2,9 @@
 
 #include "itkImageFileWriter.h"
 
-#include "IntersonCxxImagingScan2DClass.h"
 #include "IntersonCxxControlsHWControls.h"
+#include "IntersonCxxImagingScan2DClass.h"
+#include "IntersonCxxImagingScanConverter.h"
 
 #include "AcquireIntersonBModeCLP.h"
 
@@ -20,13 +21,15 @@ struct CallbackClientData
   itk::SizeValueType FrameIndex;
 };
 
+
 void __stdcall pasteIntoImage( PixelType * buffer, void * clientData )
 {
   CallbackClientData * callbackClientData = static_cast< CallbackClientData * >( clientData );
   ImageType * image = callbackClientData->Image;
 
   const ImageType::RegionType & largestRegion = image->GetLargestPossibleRegion();
-  const itk::SizeValueType imageFrames = largestRegion.GetSize()[2];
+  const ImageType::SizeType imageSize = largestRegion.GetSize();
+  const itk::SizeValueType imageFrames = imageSize[2];
   if( callbackClientData->FrameIndex >= imageFrames )
     {
     return;
@@ -44,15 +47,42 @@ void __stdcall pasteIntoImage( PixelType * buffer, void * clientData )
   ++(callbackClientData->FrameIndex);
 }
 
+
+void __stdcall pasteIntoScanConvertedImage( PixelType * buffer, void * clientData )
+{
+  CallbackClientData * callbackClientData = static_cast< CallbackClientData * >( clientData );
+  ImageType * image = callbackClientData->Image;
+
+  const ImageType::RegionType & largestRegion = image->GetLargestPossibleRegion();
+  const ImageType::SizeType imageSize = largestRegion.GetSize();
+  const itk::SizeValueType imageFrames = imageSize[2];
+  if( callbackClientData->FrameIndex >= imageFrames )
+    {
+    return;
+    }
+
+  const int framePixels = imageSize[0] * imageSize[1];
+
+  PixelType * imageBuffer = image->GetPixelContainer()->GetBufferPointer();
+  imageBuffer += framePixels * callbackClientData->FrameIndex;
+  std::memcpy( imageBuffer, buffer, framePixels * sizeof( PixelType ) );
+
+  std::cout << "Acquired frame: " << callbackClientData->FrameIndex << std::endl;
+  ++(callbackClientData->FrameIndex);
+}
+
+
 int main( int argc, char * argv[] )
 {
   PARSE_ARGS;
-
 
   typedef IntersonCxx::Controls::HWControls HWControlsType;
   IntersonCxx::Controls::HWControls hwControls;
 
   Scan2DClassType scan2D;
+
+  typedef IntersonCxx::Imaging::ScanConverter ScanConverterType;
+  ScanConverterType scanConverter;
 
   typedef HWControlsType::FoundProbesType FoundProbesType;
   FoundProbesType foundProbes;
@@ -70,7 +100,30 @@ int main( int argc, char * argv[] )
     return EXIT_FAILURE;
     }
 
-  int ret = EXIT_SUCCESS;
+  const bool upDown = false;
+  const bool leftRight = false;
+  const int width = 1000;
+  const int height = 650;
+  if( hwControls.ValidDepth( depth ) == depth )
+    {
+    ScanConverterType::ScanConverterError converterError =
+      scanConverter.HardInitScanConverter( depth,
+                                           upDown,
+                                           leftRight,
+                                           width,
+                                           height );
+    if( converterError != ScanConverterType::SUCCESS )
+      {
+      std::cerr << "Error during hard scan converter initialization: "
+                << converterError << std::endl;
+      return EXIT_FAILURE;
+      }
+    }
+  else
+    {
+    std::cerr << "Invalid requested depth for probe." << std::endl;
+    }
+
 
   const itk::SizeValueType framesToCollect = frames;
   const int maxVectors = Scan2DClassType::MAX_VECTORS;
@@ -83,18 +136,34 @@ int main( int argc, char * argv[] )
   imageIndex.Fill( 0 );
   imageRegion.SetIndex( imageIndex );
   ImageType::SizeType imageSize;
-  imageSize[0] = maxSamples;
-  imageSize[1] = maxVectors;
+  if( scanConvert )
+    {
+    imageSize[0] = width;
+    imageSize[1] = height;
+    }
+  else
+    {
+    imageSize[0] = maxSamples;
+    imageSize[1] = maxVectors;
+    }
   imageSize[2] = framesToCollect;
   imageRegion.SetSize( imageSize );
   image->SetRegions( imageRegion );
   image->Allocate();
 
   CallbackClientData clientData;
+
   clientData.Image = image.GetPointer();
   clientData.FrameIndex = 0;
 
-  scan2D.SetNewBmodeImageCallback( &pasteIntoImage, &clientData );
+  if( scanConvert )
+    {
+    scan2D.SetNewScanConvertedBmodeImageCallback( &pasteIntoScanConvertedImage, &clientData );
+    }
+  else
+    {
+    scan2D.SetNewBmodeImageCallback( &pasteIntoImage, &clientData );
+    }
 
   HWControlsType::FrequenciesType frequencies;
   hwControls.GetFrequency( frequencies );
@@ -121,14 +190,6 @@ int main( int argc, char * argv[] )
     }
 
   hwControls.DisableHardButton();
-
-  if( hwControls.ValidDepth( depth ) == depth )
-    {
-    }
-  else
-    {
-    std::cerr << "Invalid requested depth for probe." << std::endl;
-    }
 
   scan2D.AbortScan();
   scan2D.SetRFData( false );
@@ -170,5 +231,5 @@ int main( int argc, char * argv[] )
     return EXIT_FAILURE;
     }
 
-  return ret;
+  return EXIT_SUCCESS;
 }

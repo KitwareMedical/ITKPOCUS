@@ -54,12 +54,19 @@
     <integer>
       <name>depth</name>
       <label>Depth</label>
-      <description>Depth of acquisition [mm].</description>
+      <description>Depth of acquisition [mm]. Only relevant with scanConvert.</description>
       <longflag>depth</longflag>
       <flag>d</flag>
       <default>100</default>
       <minimum>0</minimum>
       <maximum>200</maximum>
     </integer>
+    <boolean>
+      <name>scanConvert</name>
+      <label>Scan Convert</label>
+      <description>Do scan conversion.</description>
+      <longflag>scanConvert</longflag>
+      <flag>s</flag>
+    </boolean>
   </parameters>
 </executable>

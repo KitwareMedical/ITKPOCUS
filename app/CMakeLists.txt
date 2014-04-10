@@ -49,6 +49,19 @@ if( BUILD_TESTING )
       --gain 50
       ${TEMP}/AcquireIntersonBModeTestGain.mha
      )
+  add_test( NAME AcquireIntersonBModeTestScanConvert
+    COMMAND $<TARGET_FILE:AcquireIntersonBMode>
+      --scanConvert
+      --gain 50
+      ${TEMP}/AcquireIntersonBModeTestScanConvert.mha
+     )
+  add_test( NAME AcquireIntersonBModeTestScanConvertFrames
+    COMMAND $<TARGET_FILE:AcquireIntersonBMode>
+      -s
+      -n 4
+      --gain 50
+      ${TEMP}/AcquireIntersonBModeTestScanConvertFrames.mha
+     )
 
   add_test( NAME AcquireIntersonRFTest
     COMMAND $<TARGET_FILE:AcquireIntersonRF>
