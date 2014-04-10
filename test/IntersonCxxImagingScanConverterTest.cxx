@@ -51,6 +51,8 @@ int main( int argc, char * argv[] )
   std::cout << "\nTrueDepth: " << scan2D.GetTrueDepth() << std::endl;
   std::cout << "\nHeightScan: " << scanConverter.GetHeightScan() << std::endl;
   std::cout << "WidthScan: " << scanConverter.GetWidthScan() << std::endl;
+  std::cout << "\nMmPerPixel: " << scanConverter.GetMmPerPixel() << std::endl;
+  std::cout << "\nZeroOfYScale: " << scanConverter.GetZeroOfYScale() << std::endl;
 
   hwControls.StopAcquisition();
   scan2D.StopReadScan();

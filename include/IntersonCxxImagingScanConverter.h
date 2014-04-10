@@ -35,6 +35,8 @@ public:
   int GetHeightScan() const;
   int GetWidthScan() const;
 
+  float GetMmPerPixel() const;
+  int GetZeroOfYScale() const;
 
 private:
   ScanConverter( const ScanConverter & );

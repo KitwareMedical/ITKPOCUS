@@ -36,6 +36,16 @@ public:
     return Wrapped->WidthScan;
     }
 
+  float GetMmPerPixel()
+    {
+    return Wrapped->MmPerPixel;
+    }
+
+  int GetZeroOfYScale()
+    {
+    return Wrapped->ZeroOfYScale;
+    }
+
 
 private:
   gcroot< Interson::Imaging::ScanConverter ^ >    Wrapped;
@@ -72,6 +82,22 @@ ScanConverter
 ::GetWidthScan() const
 {
   return Impl->GetWidthScan();
+}
+
+
+float
+ScanConverter
+::GetMmPerPixel() const
+{
+  return Impl->GetMmPerPixel();
+}
+
+
+int
+ScanConverter
+::GetZeroOfYScale() const
+{
+  return Impl->GetZeroOfYScale();
 }
 
 } // end namespace Imaging
