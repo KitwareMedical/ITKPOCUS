@@ -25,6 +25,12 @@ generate_export_header( IntersonCxx
 set_target_properties( IntersonCxx PROPERTIES
   COMPILE_FLAGS "/clr /EHa /AI${IntersonSDK_DIR}/Libraries"
   )
+
+install( TARGETS IntersonCxx
+  EXPORT IntersonSDKCxxTargets
+  RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT Runtime
+  LIBRARY DESTINATION "${INSTALL_LIB_DIR}" COMPONENT Development
+  )
 if( BUILD_TESTING )
   # For running tests
   add_custom_command( TARGET IntersonCxx

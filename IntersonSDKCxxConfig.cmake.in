@@ -1,0 +1,16 @@
+# Config file for the IntersonSDKCxx library wrapper.
+#
+# It defines the following variables:
+#   IntersonSDKCxx_INCLUDE_DIRS - include directories for IntersonSDKCxx
+#   IntersonSDKCxx_LIBRARIES    - libraries to link against
+#   IntersonSDK_DIR             - Path to the IntersonSDK used to build this library.
+
+get_filename_component( IntersonSDKCxx_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}"
+  PATH
+  )
+
+set( IntersonSDKCxx_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@" )
+
+set( IntersonSDKCxx_LIBRARIES IntersonCxx )
+
+set( IntersonSDK_DIR "@IntersonSDK_DIR@" )
