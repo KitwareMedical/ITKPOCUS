@@ -1,5 +1,6 @@
 #include "IntersonCxxImagingScan2DClass.h"
 #include "IntersonCxxControlsHWControls.h"
+#include "IntersonCxxIntersonClass.h"
 
 #include "PrintIntersonProbeInfoCLP.h"
 
@@ -61,6 +62,9 @@ int main( int argc, char * argv[] )
   std::cout << "FPGA Version:  " << hwControls.ReadFPGAVersion() << std::endl;
   std::cout << "OEM ID:        " << hwControls.GetOEMId() << std::endl;
   std::cout << "Filter ID:     " << hwControls.GetFilterId() << std::endl;
+
+  IntersonCxx::IntersonClass intersonClass;
+  std::cout << "SDK Version:   " << intersonClass.Version() << std::endl;
 
   return EXIT_SUCCESS;
 }
