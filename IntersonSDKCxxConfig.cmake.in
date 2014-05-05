@@ -11,6 +11,10 @@ get_filename_component( IntersonSDKCxx_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}"
 
 set( IntersonSDKCxx_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@" )
 
+if( NOT TARGET IntersonCxx AND NOT IntersonSDKCxx_BINARY_DIR )
+  include( "${IntersonSDKCxx_CMAKE_DIR}/IntersonSDKCxxTargets.cmake" )
+endif()
+
 set( IntersonSDKCxx_LIBRARIES IntersonCxx )
 
 set( IntersonSDK_DIR "@IntersonSDK_DIR@" )
