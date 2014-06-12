@@ -62,8 +62,7 @@ file( RELATIVE_PATH _relative_include_dir
   "${INSTALL_CMAKE_DIR}" "${INSTALL_INCLUDE_DIR}" )
 configure_file( IntersonSDKCxxConfig.cmake.in
   "${PROJECT_BINARY_DIR}/IntersonSDKCxxConfig.cmake" @ONLY )
-set( CONF_INCLUDE_DIRS "\${IntersonSDKCxx_CMAKE_DIR}/${_relative_include_dir}"
-)
+set( CONF_INCLUDE_DIRS "\${IntersonSDKCxx_CMAKE_DIR}/${_relative_include_dir}" )
 configure_file( IntersonSDKCxxConfig.cmake.in
   "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/IntersonSDKCxxConfig.cmake" @ONLY )
 

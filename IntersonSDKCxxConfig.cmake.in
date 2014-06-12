@@ -2,12 +2,12 @@
 #
 # It defines the following variables:
 #   IntersonSDKCxx_INCLUDE_DIRS - include directories for IntersonSDKCxx
+#   IntersonSDKCxx_RUNTIME_LIBRARY_DIRS - directories that store the libraries
+# needed for runtime execution
 #   IntersonSDKCxx_LIBRARIES    - libraries to link against
 #   IntersonSDK_DIR             - Path to the IntersonSDK used to build this library.
 
-get_filename_component( IntersonSDKCxx_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}"
-  PATH
-  )
+get_filename_component( IntersonSDKCxx_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH )
 
 set( IntersonSDKCxx_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@" )
 
@@ -16,5 +16,15 @@ if( NOT TARGET IntersonCxx AND NOT IntersonSDKCxx_BINARY_DIR )
 endif()
 
 set( IntersonSDKCxx_LIBRARIES IntersonCxx )
+
+set( IntersonCxx_RUNTIME_LIBRARY_DIRS )
+get_property( _configs TARGET IntersonCxx PROPERTY IMPORTED_CONFIGURATIONS )
+foreach( _config ${_configs} )
+  get_property( _libloc TARGET IntersonCxx PROPERTY IMPORTED_LOCATION_${_config} )
+  if( EXISTS "${_libloc}" )
+    get_filename_component( _libpath "${_libloc}" PATH )
+    list( APPEND IntersonCxx_RUNTIME_LIBRARY_DIRS "${_libpath}" )
+  endif()
+endforeach()
 
 set( IntersonSDK_DIR "@IntersonSDK_DIR@" )
