@@ -35,9 +35,6 @@ if( BUILD_TESTING )
   # For running tests
   add_custom_command( TARGET IntersonCxx
     POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:IntersonCxx> "${PROJECT_BINARY_DIR}/test" 
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${IntersonSDK_DIR}/Libraries/Interson.dll" "${PROJECT_BINARY_DIR}/test"
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:IntersonCxx> "${PROJECT_BINARY_DIR}/app/bin" 
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${IntersonSDK_DIR}/Libraries/Interson.dll" "${PROJECT_BINARY_DIR}/app/bin"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${IntersonSDK_DIR}/Libraries/Interson.dll" "${PROJECT_BINARY_DIR}/bin"
     )
 endif()
