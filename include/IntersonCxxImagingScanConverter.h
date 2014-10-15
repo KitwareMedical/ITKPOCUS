@@ -38,6 +38,7 @@ public:
   float GetMmPerPixel() const;
   int GetZeroOfYScale() const;
 
+  // Optimal iHeightScan is 512. Optimal iWidthScan is 776 for 90 degree (GP, SP, EC) probes, and 590 for a 60 degree (VC) probe.
   ScanConverterError HardInitScanConverter( int depth,
                                             bool upDown,
                                             bool leftRight,

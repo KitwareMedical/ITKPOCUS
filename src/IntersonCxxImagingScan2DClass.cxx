@@ -110,15 +110,29 @@ public:
     if( this->NewScanConvertedBmodeImageCallback != NULL )
       {
       scan2D->Build2D( ScanConvertedBmode, ManagedBmodeBuffer );
-      for( int ii = 0; ii < ScanConvertedBmode->Height; ++ii )
-        {
-        for( int jj = 0; jj < ScanConvertedBmode->Width; ++jj )
-          {
-          // Assume it is grayscale, i.e. R = G = B
-          this->ScanConvertedBmodeBuffer[ScanConvertedBmode->Width * ii + jj] =
-            static_cast< BmodePixelType >( ScanConvertedBmode->GetPixel( jj, ii ).B );
-          }
-        }
+
+	    System::Drawing::Rectangle rect = System::Drawing::Rectangle(0, 0, ScanConvertedBmode->Width, ScanConvertedBmode->Height);
+		System::Drawing::Imaging::BitmapData ^ bData = ScanConvertedBmode->LockBits(
+			rect ,
+			System::Drawing::Imaging::ImageLockMode::ReadWrite,
+			System::Drawing::Imaging::PixelFormat::Format8bppIndexed );
+
+		byte* scan0 = (byte*)bData->Scan0.ToPointer();
+
+		for (int i = 0; i < bData->Height; ++i)
+		{
+			for (int j = 0; j < bData->Width; ++j)
+			{
+			byte* data = scan0 + i * bData->Stride + j;
+			this->ScanConvertedBmodeBuffer[ScanConvertedBmode->Width * i + j] = static_cast< BmodePixelType > (data[0]);
+
+			}
+		}
+
+
+
+		ScanConvertedBmode->UnlockBits(bData);
+
       this->NewScanConvertedBmodeImageCallback( this->ScanConvertedBmodeBuffer, this->NewScanConvertedBmodeImageCallbackClientData );
       }
     }
@@ -170,7 +184,7 @@ public:
     {
     Wrapped = gcnew Interson::Imaging::Scan2DClass();
 
-    BmodeBuffer = gcnew BmodeArrayType( Scan2DClass::MAX_VECTORS, Scan2DClass::MAX_SAMPLES );
+    BmodeBuffer = gcnew BmodeArrayType( Scan2DClass::MAX_VECTORS , Scan2DClass::MAX_SAMPLES);
     BmodeHandler = gcnew NewBmodeImageHandler( BmodeBuffer );
     BmodeHandlerDelegate = gcnew
         Interson::Imaging::Scan2DClass::NewImageHandler(BmodeHandler,
@@ -183,6 +197,7 @@ public:
         Interson::Imaging::Scan2DClass::NewImageHandler(RFHandler,
         &NewRFImageHandler::HandleNewRFImage );
     Wrapped->NewImageTick += RFHandlerDelegate;
+
     }
 
   ~Scan2DClassImpl()

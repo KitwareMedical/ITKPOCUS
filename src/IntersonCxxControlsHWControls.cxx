@@ -1,402 +1,408 @@
+// C++
 #pragma unmanaged
 #include "IntersonCxxControlsHWControls.h"
 
+// C#
 #pragma managed
 
 #include <vcclr.h>
 #include <msclr/marshal_cppstd.h>
 
+// Add library from SDK
 #using "Interson.dll"
 
 namespace IntersonCxx
 {
 
-namespace Controls
-{
+	namespace Controls
+	{
+		// Wrapper Class for IntersonClass from SDK
+		class HWControlsImpl
+		{
+		public:
+		  // New defininions look header file
+		  typedef HWControls::FoundProbesType FoundProbesType;
+		  typedef HWControls::FrequenciesType FrequenciesType;
 
-class HWControlsImpl
-{
-public:
-  typedef HWControls::FoundProbesType FoundProbesType;
-  typedef HWControls::FrequenciesType FrequenciesType;
 
+		  HWControlsImpl()
+			{   
+				// New method for managed code. Wrapped is data member or this class
+				Wrapped = gcnew Interson::Controls::HWControls();
+			}
 
-  HWControlsImpl()
-    {
-    Wrapped = gcnew Interson::Controls::HWControls();
-    }
+		  unsigned char GetProbeID()
+			{
+			return Wrapped->GetProbeID();
+			}
 
-  unsigned char GetProbeID()
-    {
-    return Wrapped->GetProbeID();
-    }
+		  void FindAllProbes( FoundProbesType & foundProbes )
+			{
+			System::Collections::Specialized::StringCollection ^ managedProbes =
+			  gcnew System::Collections::Specialized::StringCollection();
+			Wrapped->FindAllProbes( managedProbes );;
+			foundProbes.resize( managedProbes->Count );
+			// Copy all available probes to the C++ class
+			for( int ii = 0; ii < managedProbes->Count; ++ii )
+			  {
+			  foundProbes[ii] = msclr::interop::marshal_as< std::string >(
+			  managedProbes[ii] );
+			  }
+			}
 
-  void FindAllProbes( FoundProbesType & foundProbes )
-    {
-    System::Collections::Specialized::StringCollection ^ managedProbes =
-      gcnew System::Collections::Specialized::StringCollection();
-    Wrapped->FindAllProbes( managedProbes );;
-    foundProbes.resize( managedProbes->Count );
-    for( int ii = 0; ii < managedProbes->Count; ++ii )
-      {
-      foundProbes[ii] = msclr::interop::marshal_as< std::string >(
-      managedProbes[ii] );
-      }
-    }
+		  void FindMyProbe( int probeIndex )
+			{
+			Wrapped->FindMyProbe( probeIndex );
+			}
 
-  void FindMyProbe( int probeIndex )
-    {
-    Wrapped->FindMyProbe( probeIndex );
-    }
+		  int ValidDepth( int depth )
+			{
+			return Wrapped->ValidDepth( depth );
+			}
 
-  int ValidDepth( int depth )
-    {
-    return Wrapped->ValidDepth( depth );
-    }
+		  void GetFrequency( FrequenciesType & frequencies )
+			{
+			array< int > ^ managedFrequencies = Wrapped->GetFrequency();
+			frequencies.resize( managedFrequencies->Length );
+			for( int ii = 0; ii < managedFrequencies->Length; ++ii )
+			  {
+			  frequencies[ii] = managedFrequencies[ii];
+			  }
+			}
 
-  void GetFrequency( FrequenciesType & frequencies )
-    {
-    array< int > ^ managedFrequencies = Wrapped->GetFrequency();
-    frequencies.resize( managedFrequencies->Length );
-    for( int ii = 0; ii < managedFrequencies->Length; ++ii )
-      {
-      frequencies[ii] = managedFrequencies[ii];
-      }
-    }
+		  bool SetFrequency( int frequency )
+			{
+			array< int > ^ managedFrequencies = Wrapped->GetFrequency();
+			int frequencyIndex = -1;
+			for( int ii = 0; ii < managedFrequencies->Length; ++ii )
+			  {
+			  if( frequency == managedFrequencies[ii] )
+				{
+				frequencyIndex = ii;
+				break;
+				}
+			  }
+			if( frequencyIndex == -1 )
+			  {
+			  return false;
+			  }
+			return Wrapped->SetFrequency( frequencyIndex, managedFrequencies[frequencyIndex] );
+			}
 
-  bool SetFrequency( int frequency )
-    {
-    array< int > ^ managedFrequencies = Wrapped->GetFrequency();
-    int frequencyIndex = -1;
-    for( int ii = 0; ii < managedFrequencies->Length; ++ii )
-      {
-      if( frequency == managedFrequencies[ii] )
-        {
-        frequencyIndex = ii;
-        break;
-        }
-      }
-    if( frequencyIndex == -1 )
-      {
-      return false;
-      }
-    return Wrapped->SetFrequency( frequencyIndex, managedFrequencies[frequencyIndex] );
-    }
+		  bool SendHighVoltage( unsigned char voltage )
+			{
+			return Wrapped->SendHighVoltage( voltage );
+			}
 
-  bool SendHighVoltage( unsigned char voltage )
-    {
-    return Wrapped->SendHighVoltage( voltage );
-    }
+		  bool EnableHighVoltage()
+			{
+			return Wrapped->EnableHighVoltage();
+			}
 
-  bool EnableHighVoltage()
-    {
-    return Wrapped->EnableHighVoltage();
-    }
+		  bool DisableHighVoltage()
+			{
+			return Wrapped->DisableHighVoltage();
+			}
 
-  bool DisableHighVoltage()
-    {
-    return Wrapped->DisableHighVoltage();
-    }
+		  bool SendDynamic( unsigned char dynamic )
+			{
+			return Wrapped->SendDynamic( dynamic );
+			}
 
-  bool SendDynamic( unsigned char dynamic )
-    {
-    return Wrapped->SendDynamic( dynamic );
-    }
+		  bool StartMotor()
+			{
+			return Wrapped->StartMotor();
+			}
 
-  bool StartMotor()
-    {
-    return Wrapped->StartMotor();
-    }
+		  bool StopMotor()
+			{
+			return Wrapped->StopMotor();
+			}
 
-  bool StopMotor()
-    {
-    return Wrapped->StopMotor();
-    }
+		  void EnableHardButton()
+			{
+			Wrapped->EnableHardButton();
+			}
 
-  void EnableHardButton()
-    {
-    Wrapped->EnableHardButton();
-    }
+		  void DisableHardButton()
+			{
+			Wrapped->DisableHardButton();
+			}
 
-  void DisableHardButton()
-    {
-    Wrapped->DisableHardButton();
-    }
+		  unsigned char ReadHardButton()
+			{
+			return Wrapped->ReadHardButton();
+			}
 
-  unsigned char ReadHardButton()
-    {
-    return Wrapped->ReadHardButton();
-    }
+		  bool StartBmode()
+			{
+			return Wrapped->StartBmode();
+			}
 
-  bool StartBmode()
-    {
-    return Wrapped->StartBmode();
-    }
+		  bool StartRFmode()
+			{
+			return Wrapped->StartRFmode();
+			}
 
-  bool StartRFmode()
-    {
-    return Wrapped->StartRFmode();
-    }
+		  bool StopAcquisition()
+			{
+			return Wrapped->StopAcquisition();
+			}
 
-  bool StopAcquisition()
-    {
-    return Wrapped->StopAcquisition();
-    }
+		  short GetProbeFrameRate( int depth )
+			{
+			return Wrapped->GetProbeFrameRate( depth );
+			}
 
-  short GetProbeFrameRate( int depth )
-    {
-    return Wrapped->GetProbeFrameRate( depth );
-    }
-
-  std::string GetProbeSerialNumber()
-    {
-    return msclr::interop::marshal_as< std::string >( Wrapped->GetProbeSerialNumber() );
-    }
+		  std::string GetProbeSerialNumber()
+			{
+			return msclr::interop::marshal_as< std::string >( Wrapped->GetProbeSerialNumber() );
+			}
     
-  std::string ReadFPGAVersion()
-    {
-    return msclr::interop::marshal_as< std::string >( Wrapped->ReadFPGAVersion() );
-    }
+		  std::string ReadFPGAVersion()
+			{
+			return msclr::interop::marshal_as< std::string >( Wrapped->ReadFPGAVersion() );
+			}
 
-  std::string GetOEMId()
-    {
-    return msclr::interop::marshal_as< std::string >( Interson::Controls::HWControls::GetOEMId() );
-    }
+		  std::string GetOEMId()
+			{
+			return msclr::interop::marshal_as< std::string >( Interson::Controls::HWControls::GetOEMId() );
+			}
 
-  std::string GetFilterId()
-    {
-    return msclr::interop::marshal_as< std::string >( Interson::Controls::HWControls::GetFilterId() );
-    }
+		  std::string GetFilterId()
+			{
+			return msclr::interop::marshal_as< std::string >( Interson::Controls::HWControls::GetFilterId() );
+			}
 
-  bool EnableRFDecimator()
-    {
-    return Wrapped->EnableRFDecimator();
-    }
+		  bool EnableRFDecimator()
+			{
+			return Wrapped->EnableRFDecimator();
+			}
 
-  bool DisableRFDecimator()
-    {
-    return Wrapped->DisableRFDecimator();
-    }
+		  bool DisableRFDecimator()
+			{
+			return Wrapped->DisableRFDecimator();
+			}
 
-private:
-  gcroot< Interson::Controls::HWControls ^ > Wrapped;
-};
+		private:
+		  gcroot< Interson::Controls::HWControls ^ > Wrapped;
+		};
 
+		// C++
+		#pragma unmanaged
 
-#pragma unmanaged
-
-HWControls
-::HWControls():
-  Impl( new HWControlsImpl() )
-{
-}
-
-
-HWControls
-::~HWControls()
-{
-  delete Impl;
-}
+		HWControls
+		::HWControls():
+		  Impl( new HWControlsImpl() )
+		{
+		}
 
 
-unsigned char
-HWControls
-::GetProbeID() const
-{
-  return Impl->GetProbeID();
-}
+		HWControls
+		::~HWControls()
+		{
+		  delete Impl;
+		}
 
 
-void
-HWControls
-::FindAllProbes( FoundProbesType & foundProbes ) const
-{
-  Impl->FindAllProbes( foundProbes );
-}
+		unsigned char
+		HWControls
+		::GetProbeID() const
+		{
+		  return Impl->GetProbeID();
+		}
 
 
-void
-HWControls
-::FindMyProbe( int probeIndex )
-{
-  Impl->FindMyProbe( probeIndex );
-}
-
-int
-HWControls
-::ValidDepth( int depth ) const
-{
-  return Impl->ValidDepth( depth );
-}
+		void
+		HWControls
+		::FindAllProbes( FoundProbesType & foundProbes ) const
+		{
+		  Impl->FindAllProbes( foundProbes );
+		}
 
 
-void
-HWControls
-::GetFrequency( FrequenciesType & frequencies ) const
-{
-  Impl->GetFrequency( frequencies );
-}
+		void
+		HWControls
+		::FindMyProbe( int probeIndex )
+		{
+		  Impl->FindMyProbe( probeIndex );
+		}
+
+		int
+		HWControls
+		::ValidDepth( int depth ) const
+		{
+		  return Impl->ValidDepth( depth );
+		}
 
 
-bool
-HWControls
-::SetFrequency( int frequency )
-{
-  return Impl->SetFrequency( frequency );
-}
+		void
+		HWControls
+		::GetFrequency( FrequenciesType & frequencies ) const
+		{
+		  Impl->GetFrequency( frequencies );
+		}
 
 
-bool
-HWControls
-::SendHighVoltage( unsigned char voltage )
-{
-  return Impl->SendHighVoltage( voltage );
-}
+		bool
+		HWControls
+		::SetFrequency( int frequency )
+		{
+		  return Impl->SetFrequency( frequency );
+		}
 
 
-bool
-HWControls
-::EnableHighVoltage()
-{
-  return Impl->EnableHighVoltage();
-}
+		bool
+		HWControls
+		::SendHighVoltage( unsigned char voltage )
+		{
+		  return Impl->SendHighVoltage( voltage );
+		}
 
 
-bool
-HWControls
-::DisableHighVoltage()
-{
-  return Impl->DisableHighVoltage();
-}
+		bool
+		HWControls
+		::EnableHighVoltage()
+		{
+		  return Impl->EnableHighVoltage();
+		}
 
 
-bool
-HWControls
-::SendDynamic( unsigned char dynamic )
-{
-  return Impl->SendDynamic( dynamic );
-}
+		bool
+		HWControls
+		::DisableHighVoltage()
+		{
+		  return Impl->DisableHighVoltage();
+		}
 
 
-bool
-HWControls
-::StartMotor()
-{
-  return Impl->StartMotor();
-}
+		bool
+		HWControls
+		::SendDynamic( unsigned char dynamic )
+		{
+		  return Impl->SendDynamic( dynamic );
+		}
 
 
-bool
-HWControls
-::StopMotor()
-{
-  return Impl->StopMotor();
-}
+		bool
+		HWControls
+		::StartMotor()
+		{
+		  return Impl->StartMotor();
+		}
 
 
-void
-HWControls
-::EnableHardButton()
-{
-  Impl->EnableHardButton();
-}
+		bool
+		HWControls
+		::StopMotor()
+		{
+		  return Impl->StopMotor();
+		}
 
 
-void
-HWControls
-::DisableHardButton()
-{
-  Impl->DisableHardButton();
-}
+		void
+		HWControls
+		::EnableHardButton()
+		{
+		  Impl->EnableHardButton();
+		}
 
 
-unsigned char
-HWControls
-::ReadHardButton()
-{
-  return Impl->ReadHardButton();
-}
+		void
+		HWControls
+		::DisableHardButton()
+		{
+		  Impl->DisableHardButton();
+		}
 
 
-bool
-HWControls
-::StartBmode()
-{
-  return Impl->StartBmode();
-}
+		unsigned char
+		HWControls
+		::ReadHardButton()
+		{
+		  return Impl->ReadHardButton();
+		}
 
 
-bool
-HWControls
-::StartRFmode()
-{
-  return Impl->StartRFmode();
-}
+		bool
+		HWControls
+		::StartBmode()
+		{
+		  return Impl->StartBmode();
+		}
 
 
-bool
-HWControls
-::StopAcquisition()
-{
-  return Impl->StopAcquisition();
-}
+		bool
+		HWControls
+		::StartRFmode()
+		{
+		  return Impl->StartRFmode();
+		}
 
 
-short
-HWControls
-::GetProbeFrameRate( int depth )
-{
-  return Impl->GetProbeFrameRate( depth );
-}
+		bool
+		HWControls
+		::StopAcquisition()
+		{
+		  return Impl->StopAcquisition();
+		}
 
 
-std::string
-HWControls
-::GetProbeSerialNumber() const
-{
-  return Impl->GetProbeSerialNumber();
-}
+		short
+		HWControls
+		::GetProbeFrameRate( int depth )
+		{
+		  return Impl->GetProbeFrameRate( depth );
+		}
 
 
-std::string
-HWControls
-::ReadFPGAVersion() const
-{
-  return Impl->ReadFPGAVersion();
-}
+		std::string
+		HWControls
+		::GetProbeSerialNumber() const
+		{
+		  return Impl->GetProbeSerialNumber();
+		}
 
 
-std::string
-HWControls
-::GetOEMId() const
-{
-  return Impl->GetOEMId();
-}
+		std::string
+		HWControls
+		::ReadFPGAVersion() const
+		{
+		  return Impl->ReadFPGAVersion();
+		}
 
 
-std::string
-HWControls
-::GetFilterId() const
-{
-  return Impl->GetFilterId();
-}
+		std::string
+		HWControls
+		::GetOEMId() const
+		{
+		  return Impl->GetOEMId();
+		}
 
 
-bool
-HWControls
-::EnableRFDecimator()
-{
-  return Impl->EnableRFDecimator();
-}
+		std::string
+		HWControls
+		::GetFilterId() const
+		{
+		  return Impl->GetFilterId();
+		}
 
 
-bool
-HWControls
-::DisableRFDecimator()
-{
-  return Impl->DisableRFDecimator();
-}
+		bool
+		HWControls
+		::EnableRFDecimator()
+		{
+		  return Impl->EnableRFDecimator();
+		}
 
-} // end namespace Controls
+
+		bool
+		HWControls
+		::DisableRFDecimator()
+		{
+		  return Impl->DisableRFDecimator();
+		}
+
+	} // end namespace Controls
 
 } // end namespace IntersonCxx
