@@ -10,36 +10,36 @@
 
 /*
 The library is organized via namespaces; the root is “Interson”,
-then “Interson.Controls” to get the methods which access to the 
-USB probe controls, “Interson.Imaging” is the scan converter, to 
-build the 2D image B-Scan bitmap from the log-compressed A-Scan 
+then “Interson.Controls” to get the methods which access to the
+USB probe controls, “Interson.Imaging” is the scan converter, to
+build the 2D image B-Scan bitmap from the log-compressed A-Scan
 vectors.
 */
 namespace IntersonCxx
 {
-	// Wrapper Class for IntersonClass from SDK
-	class IntersonClassImpl;
+// Wrapper Class for IntersonClass from SDK
+class IntersonClassImpl;
 
-	// IntersonClass similar to IntersonClass from SDK
-	class IntersonCxx_EXPORT IntersonClass
-	{
-		public:
-		  IntersonClass();
-		  ~IntersonClass();
+// IntersonClass similar to IntersonClass from SDK
+class IntersonCxx_EXPORT IntersonClass
+{
+public:
+    IntersonClass();
+    ~IntersonClass();
 
-		  /*
-			Summary: To Get the version of Interson.dll
-			Returns: Returns the String of the version.
-		  */
-		  std::string Version() const;
+    /*
+    Summary: To Get the version of Interson.dll
+    Returns: Returns the String of the version.
+    */
+    std::string Version() const;
 
-		private:
-		  IntersonClass( const IntersonClass & );
-		  void operator=( const IntersonClass & );
+private:
+    IntersonClass( const IntersonClass &);
+    void operator=( const IntersonClass &);
 
-		  // Add the wrapper to the main class to use dll function in C#
-		  IntersonClassImpl * Impl;
-	};
+    // Add the wrapper to the main class to use dll function in C#
+    IntersonClassImpl *Impl;
+};
 
 } // end namespace IntersonCxx
 

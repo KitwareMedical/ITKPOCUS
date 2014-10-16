@@ -17,58 +17,58 @@ namespace Imaging
 class ScanConverterImpl
 {
 public:
-  ScanConverterImpl()
+    ScanConverterImpl()
     {
-    Wrapped = gcnew Interson::Imaging::ScanConverter();
+        Wrapped = gcnew Interson::Imaging::ScanConverter();
     }
 
-  ~ScanConverterImpl()
+    ~ScanConverterImpl()
     {
     }
 
-  int GetHeightScan()
+    int GetHeightScan()
     {
-    return Wrapped->HeightScan;
+        return Wrapped->HeightScan;
     }
 
-  int GetWidthScan()
+    int GetWidthScan()
     {
-    return Wrapped->WidthScan;
+        return Wrapped->WidthScan;
     }
 
-  float GetMmPerPixel()
+    float GetMmPerPixel()
     {
-    return Wrapped->MmPerPixel;
+        return Wrapped->MmPerPixel;
     }
 
-  int GetZeroOfYScale()
+    int GetZeroOfYScale()
     {
-    return Wrapped->ZeroOfYScale;
+        return Wrapped->ZeroOfYScale;
     }
 
-  ScanConverter::ScanConverterError HardInitScanConverter( int depth,
-                                                           bool upDown,
-                                                           bool leftRight,
-                                                           int widthScan,
-                                                           int heightScan )
+    ScanConverter::ScanConverterError HardInitScanConverter( int depth,
+            bool upDown,
+            bool leftRight,
+            int widthScan,
+            int heightScan )
     {
-    return static_cast< ScanConverter::ScanConverterError >(
-      Wrapped->HardInitScanConverter( depth, upDown, leftRight, widthScan, heightScan ) );
+        return static_cast< ScanConverter::ScanConverterError >(
+                   Wrapped->HardInitScanConverter( depth, upDown, leftRight, widthScan, heightScan ) );
     }
 
-  ScanConverter::ScanConverterError IdleInitScanConverter( int depth,
-                                                           bool upDown,
-                                                           bool leftRight,
-                                                           int widthScan,
-                                                           int heightScan,
-                                                           unsigned char probeId )
+    ScanConverter::ScanConverterError IdleInitScanConverter( int depth,
+            bool upDown,
+            bool leftRight,
+            int widthScan,
+            int heightScan,
+            unsigned char probeId )
     {
-    return static_cast< ScanConverter::ScanConverterError >(
-      Wrapped->IdleInitScanConverter( depth, upDown, leftRight, widthScan, heightScan, probeId ) );
+        return static_cast< ScanConverter::ScanConverterError >(
+                   Wrapped->IdleInitScanConverter( depth, upDown, leftRight, widthScan, heightScan, probeId ) );
     }
 
 private:
-  gcroot< Interson::Imaging::ScanConverter ^ >    Wrapped;
+    gcroot< Interson::Imaging::ScanConverter ^ >    Wrapped;
 
 };
 
@@ -77,7 +77,7 @@ private:
 
 ScanConverter
 ::ScanConverter():
-  Impl( new ScanConverterImpl() )
+    Impl( new ScanConverterImpl() )
 {
 }
 
@@ -85,7 +85,7 @@ ScanConverter
 ScanConverter
 ::~ScanConverter()
 {
-  delete Impl;
+    delete Impl;
 }
 
 
@@ -93,7 +93,7 @@ int
 ScanConverter
 ::GetHeightScan() const
 {
-  return Impl->GetHeightScan();
+    return Impl->GetHeightScan();
 }
 
 
@@ -101,7 +101,7 @@ int
 ScanConverter
 ::GetWidthScan() const
 {
-  return Impl->GetWidthScan();
+    return Impl->GetWidthScan();
 }
 
 
@@ -109,7 +109,7 @@ float
 ScanConverter
 ::GetMmPerPixel() const
 {
-  return Impl->GetMmPerPixel();
+    return Impl->GetMmPerPixel();
 }
 
 
@@ -117,7 +117,7 @@ int
 ScanConverter
 ::GetZeroOfYScale() const
 {
-  return Impl->GetZeroOfYScale();
+    return Impl->GetZeroOfYScale();
 }
 
 
@@ -129,11 +129,11 @@ ScanConverter
                          int widthScan,
                          int heightScan )
 {
-  return Impl->HardInitScanConverter( depth,
-                                      upDown,
-                                      leftRight,
-                                      widthScan,
-                                      heightScan );
+    return Impl->HardInitScanConverter( depth,
+                                        upDown,
+                                        leftRight,
+                                        widthScan,
+                                        heightScan );
 }
 
 
@@ -146,12 +146,12 @@ ScanConverter
                          int heightScan,
                          unsigned char probeId )
 {
-  return Impl->IdleInitScanConverter( depth,
-                                      upDown,
-                                      leftRight,
-                                      widthScan,
-                                      heightScan,
-                                      probeId );
+    return Impl->IdleInitScanConverter( depth,
+                                        upDown,
+                                        leftRight,
+                                        widthScan,
+                                        heightScan,
+                                        probeId );
 }
 
 } // end namespace Imaging

@@ -10,9 +10,9 @@
 // Namespace similar to Interson Namespace from SDK
 
 /*
-The library is organized via namespaces; the root is “Interson”,
-then “Interson.Controls” to get the methods which access to the 
-USB probe controls, “Interson.Imaging” is the scan converter, to 
+The library is organized via namespaces; the root is Interson,
+then Interson.Controls to get the methods which access to the 
+USB probe controls, Interson.Imaging is the scan converter, to 
 build the 2D image B-Scan bitmap from the log-compressed A-Scan 
 vectors.
 */
