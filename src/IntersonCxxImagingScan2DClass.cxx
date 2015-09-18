@@ -23,45 +23,45 @@ public:
   typedef IntersonCxx::Imaging::Scan2DClass::RFPixelType RFPixelType;
   typedef cli::array< unsigned short, 2 >                RFArrayType;
 
-  NewRFImageHandler( RFArrayType ^ managedRFBuffer ):
-      NewRFImageCallback( NULL ),
-      NewRFImageCallbackClientData( NULL ),
-      NativeRFBuffer( new RFPixelType[Scan2DClass::MAX_RFSAMPLES * Scan2DClass::MAX_VECTORS] ),
-      ManagedRFBuffer( managedRFBuffer )
-    {
-    }
+  NewRFImageHandler( RFArrayType ^managedRFBuffer ):
+    NewRFImageCallback( NULL ),
+    NewRFImageCallbackClientData( NULL ),
+    NativeRFBuffer( new RFPixelType[Scan2DClass::MAX_RFSAMPLES * Scan2DClass::MAX_VECTORS] ),
+    ManagedRFBuffer( managedRFBuffer )
+  {
+  }
 
   ~NewRFImageHandler()
-    {
+  {
     delete [] NativeRFBuffer;
-    }
+  }
 
-  void HandleNewRFImage( Interson::Imaging::Scan2DClass ^ scan2D, System::EventArgs ^ eventArgs )
+  void HandleNewRFImage( Interson::Imaging::Scan2DClass ^scan2D, System::EventArgs ^eventArgs )
+  {
+    if ( this->NewRFImageCallback != NULL )
     {
-    if( this->NewRFImageCallback != NULL )
+      for ( int ii = 0; ii < Scan2DClass::MAX_VECTORS; ++ii )
       {
-      for( int ii = 0; ii < Scan2DClass::MAX_VECTORS; ++ii )
+        for ( int jj = 0; jj < Scan2DClass::MAX_RFSAMPLES; ++jj )
         {
-        for( int jj = 0; jj < Scan2DClass::MAX_RFSAMPLES; ++jj )
-          {
           this->NativeRFBuffer[Scan2DClass::MAX_RFSAMPLES * ii + jj] = this->ManagedRFBuffer[ii, jj];
-          }
         }
-      this->NewRFImageCallback( this->NativeRFBuffer, this->NewRFImageCallbackClientData );
       }
+      this->NewRFImageCallback( this->NativeRFBuffer, this->NewRFImageCallbackClientData );
     }
+  }
 
-  void SetNewRFImageCallback( NewRFImageCallbackType callback, void * clientData )
-    {
+  void SetNewRFImageCallback( NewRFImageCallbackType callback, void *clientData )
+  {
     this->NewRFImageCallback = callback;
     this->NewRFImageCallbackClientData = clientData;
-    }
+  }
 
 private:
   NewRFImageCallbackType NewRFImageCallback;
-  void * NewRFImageCallbackClientData;
-  RFPixelType * NativeRFBuffer;
-  RFArrayType ^ ManagedRFBuffer;
+  void *NewRFImageCallbackClientData;
+  RFPixelType *NativeRFBuffer;
+  RFArrayType ^ManagedRFBuffer;
 };
 
 
@@ -70,88 +70,102 @@ ref class NewBmodeImageHandler
 public:
   typedef Scan2DClass::NewBmodeImageCallbackType            NewBmodeImageCallbackType;
   typedef Scan2DClass::NewScanConvertedBmodeImageCallbackType
-                                                            NewScanConvertedBmodeImageCallbackType;
+  NewScanConvertedBmodeImageCallbackType;
   typedef IntersonCxx::Imaging::Scan2DClass::BmodePixelType BmodePixelType;
   typedef cli::array< byte, 2 >                             BmodeArrayType;
 
-  NewBmodeImageHandler( BmodeArrayType ^ managedBmodeBuffer ):
-      NewBmodeImageCallback( NULL ),
-      NewBmodeImageCallbackClientData( NULL ),
-      NativeBmodeBuffer( new BmodePixelType[Scan2DClass::MAX_SAMPLES * Scan2DClass::MAX_VECTORS] ),
-      ManagedBmodeBuffer( managedBmodeBuffer ),
-      NewScanConvertedBmodeImageCallback( NULL ),
-      NewScanConvertedBmodeImageCallbackClientData( NULL ),
-      ScanConvertedBmodeBuffer( new BmodePixelType[0] )
-    {
+  NewBmodeImageHandler( BmodeArrayType ^managedBmodeBuffer ):
+    NewBmodeImageCallback( NULL ),
+    NewBmodeImageCallbackClientData( NULL ),
+    NativeBmodeBuffer( new BmodePixelType[Scan2DClass::MAX_SAMPLES * Scan2DClass::MAX_VECTORS] ),
+    ManagedBmodeBuffer( managedBmodeBuffer ),
+    NewScanConvertedBmodeImageCallback( NULL ),
+    NewScanConvertedBmodeImageCallbackClientData( NULL ),
+    ScanConvertedBmodeBuffer( new BmodePixelType[0] )
+  {
     ScanConverter = gcnew Interson::Imaging::ScanConverter();
-    }
+  }
 
   ~NewBmodeImageHandler()
-    {
+  {
     delete [] NativeBmodeBuffer;
     delete [] ScanConvertedBmodeBuffer;
-    }
+  }
 
-  void HandleNewBmodeImage( Interson::Imaging::Scan2DClass ^ scan2D, System::EventArgs ^ eventArgs )
+  void HandleNewBmodeImage( Interson::Imaging::Scan2DClass ^scan2D, System::EventArgs ^eventArgs )
+  {
+    if ( this->NewBmodeImageCallback != NULL )
     {
-    if( this->NewBmodeImageCallback != NULL )
+      for ( int ii = 0; ii < Scan2DClass::MAX_VECTORS; ++ii )
       {
-      for( int ii = 0; ii < Scan2DClass::MAX_VECTORS; ++ii )
+        for ( int jj = 0; jj < Scan2DClass::MAX_SAMPLES; ++jj )
         {
-        for( int jj = 0; jj < Scan2DClass::MAX_SAMPLES; ++jj )
-          {
           this->NativeBmodeBuffer[Scan2DClass::MAX_SAMPLES * ii + jj] =
             this->ManagedBmodeBuffer[ii, jj];
-          }
         }
+      }
       this->NewBmodeImageCallback( this->NativeBmodeBuffer, this->NewBmodeImageCallbackClientData );
-      }
-
-    if( this->NewScanConvertedBmodeImageCallback != NULL )
-      {
-      scan2D->Build2D( ScanConvertedBmode, ManagedBmodeBuffer );
-      for( int ii = 0; ii < ScanConvertedBmode->Height; ++ii )
-        {
-        for( int jj = 0; jj < ScanConvertedBmode->Width; ++jj )
-          {
-          // Assume it is grayscale, i.e. R = G = B
-          this->ScanConvertedBmodeBuffer[ScanConvertedBmode->Width * ii + jj] =
-            static_cast< BmodePixelType >( ScanConvertedBmode->GetPixel( jj, ii ).B );
-          }
-        }
-      this->NewScanConvertedBmodeImageCallback( this->ScanConvertedBmodeBuffer, this->NewScanConvertedBmodeImageCallbackClientData );
-      }
     }
 
-  void SetNewBmodeImageCallback( NewBmodeImageCallbackType callback, void * clientData )
+    if ( this->NewScanConvertedBmodeImageCallback != NULL )
     {
+      scan2D->Build2D( ScanConvertedBmode, ManagedBmodeBuffer );
+
+      System::Drawing::Rectangle rect = System::Drawing::Rectangle(0, 0, ScanConvertedBmode->Width, ScanConvertedBmode->Height);
+      System::Drawing::Imaging::BitmapData ^bData = ScanConvertedBmode->LockBits(
+            rect ,
+            System::Drawing::Imaging::ImageLockMode::ReadWrite,
+            System::Drawing::Imaging::PixelFormat::Format8bppIndexed );
+
+      byte *scan0 = (byte *)bData->Scan0.ToPointer();
+
+      for (int i = 0; i < bData->Height; ++i)
+      {
+        for (int j = 0; j < bData->Width; ++j)
+        {
+          byte *data = scan0 + i * bData->Stride + j;
+          this->ScanConvertedBmodeBuffer[ScanConvertedBmode->Width * i + j] = static_cast< BmodePixelType > (data[0]);
+
+        }
+      }
+
+
+
+      ScanConvertedBmode->UnlockBits(bData);
+
+      this->NewScanConvertedBmodeImageCallback( this->ScanConvertedBmodeBuffer, this->NewScanConvertedBmodeImageCallbackClientData );
+    }
+  }
+
+  void SetNewBmodeImageCallback( NewBmodeImageCallbackType callback, void *clientData )
+  {
     this->NewBmodeImageCallback = callback;
     this->NewBmodeImageCallbackClientData = clientData;
-    }
+  }
 
-  void SetNewScanConvertedBmodeImageCallback( NewScanConvertedBmodeImageCallbackType callback, void * clientData )
-    {
+  void SetNewScanConvertedBmodeImageCallback( NewScanConvertedBmodeImageCallbackType callback, void *clientData )
+  {
     this->NewScanConvertedBmodeImageCallback = callback;
     this->NewScanConvertedBmodeImageCallbackClientData = clientData;
 
     ScanConvertedBmode = gcnew System::Drawing::Bitmap( ScanConverter->WidthScan,
-                                                        ScanConverter->HeightScan,
-                                                        System::Drawing::Imaging::PixelFormat::Format8bppIndexed );
+                         ScanConverter->HeightScan,
+                         System::Drawing::Imaging::PixelFormat::Format8bppIndexed );
     delete [] ScanConvertedBmodeBuffer;
     ScanConvertedBmodeBuffer = new BmodePixelType[ScanConverter->WidthScan * ScanConverter->HeightScan];
-    }
+  }
 
 private:
   NewBmodeImageCallbackType NewBmodeImageCallback;
-  void * NewBmodeImageCallbackClientData;
-  BmodePixelType * NativeBmodeBuffer;
-  BmodeArrayType ^ ManagedBmodeBuffer;
-  System::Drawing::Bitmap ^          ScanConvertedBmode;
+  void *NewBmodeImageCallbackClientData;
+  BmodePixelType *NativeBmodeBuffer;
+  BmodeArrayType ^ManagedBmodeBuffer;
+  System::Drawing::Bitmap           ^ScanConvertedBmode;
 
   NewScanConvertedBmodeImageCallbackType NewScanConvertedBmodeImageCallback;
-  void * NewScanConvertedBmodeImageCallbackClientData;
-  Interson::Imaging::ScanConverter ^ ScanConverter;
-  BmodePixelType * ScanConvertedBmodeBuffer;
+  void *NewScanConvertedBmodeImageCallbackClientData;
+  Interson::Imaging::ScanConverter ^ScanConverter;
+  BmodePixelType *ScanConvertedBmodeBuffer;
 };
 
 
@@ -163,103 +177,104 @@ public:
 
   typedef Scan2DClass::NewBmodeImageCallbackType NewBmodeImageCallbackType;
   typedef Scan2DClass::NewScanConvertedBmodeImageCallbackType
-                                                 NewScanConvertedBmodeImageCallbackType;
+  NewScanConvertedBmodeImageCallbackType;
   typedef Scan2DClass::NewRFImageCallbackType    NewRFImageCallbackType;
 
   Scan2DClassImpl()
-    {
+  {
     Wrapped = gcnew Interson::Imaging::Scan2DClass();
 
-    BmodeBuffer = gcnew BmodeArrayType( Scan2DClass::MAX_VECTORS, Scan2DClass::MAX_SAMPLES );
+    BmodeBuffer = gcnew BmodeArrayType( Scan2DClass::MAX_VECTORS , Scan2DClass::MAX_SAMPLES);
     BmodeHandler = gcnew NewBmodeImageHandler( BmodeBuffer );
     BmodeHandlerDelegate = gcnew
-        Interson::Imaging::Scan2DClass::NewImageHandler(BmodeHandler,
-        &NewBmodeImageHandler::HandleNewBmodeImage );
+                           Interson::Imaging::Scan2DClass::NewImageHandler(BmodeHandler,
+                               &NewBmodeImageHandler::HandleNewBmodeImage );
     Wrapped->NewImageTick += BmodeHandlerDelegate;
 
     RFBuffer = gcnew RFArrayType( Scan2DClass::MAX_VECTORS, Scan2DClass::MAX_RFSAMPLES );
     RFHandler = gcnew NewRFImageHandler( RFBuffer );
     RFHandlerDelegate = gcnew
-        Interson::Imaging::Scan2DClass::NewImageHandler(RFHandler,
-        &NewRFImageHandler::HandleNewRFImage );
+                        Interson::Imaging::Scan2DClass::NewImageHandler(RFHandler,
+                            &NewRFImageHandler::HandleNewRFImage );
     Wrapped->NewImageTick += RFHandlerDelegate;
-    }
+
+  }
 
   ~Scan2DClassImpl()
-    {
+  {
     Wrapped->NewImageTick -= RFHandlerDelegate;
     Wrapped->NewImageTick -= BmodeHandlerDelegate;
-    }
+  }
 
   bool GetScanOn()
-    {
+  {
     return Wrapped->ScanOn;
-    }
+  }
 
   bool GetRFData()
-    {
+  {
     return Wrapped->RFData;
-    }
+  }
 
   void SetRFData( bool transferOn )
-    {
+  {
     Wrapped->RFData = transferOn;
-    }
+  }
 
   bool GetFrameAvg()
-    {
+  {
     return Wrapped->FrameAvg;
-    }
+  }
 
   void SetFrameAvg( bool doAveraging )
-    {
+  {
     return Wrapped->FrameAvg = doAveraging;
-    }
+  }
 
   double GetTrueDepth()
-    {
+  {
     return Wrapped->TrueDepth;
-    }
+  }
 
   void StartReadScan()
-    {
+  {
     Wrapped->StartReadScan( (BmodeArrayType ^)BmodeBuffer );
-    }
+  }
 
   void StartRFReadScan()
-    {
+  {
     Wrapped->StartRFReadScan( (RFArrayType ^)RFBuffer );
-    }
+  }
 
   void StopReadScan()
-    {
+  {
     Wrapped->StopReadScan();
-    }
+  }
 
   void DisposeScan()
-    {
+  {
     Wrapped->DisposeScan();
-    }
+  }
 
   void AbortScan()
-    {
+  {
     Wrapped->AbortScan();
-    }
+  }
 
-  void SetNewBmodeImageCallback( NewBmodeImageCallbackType callback, void * clientData = 0 )
-    {
+  void SetNewBmodeImageCallback( NewBmodeImageCallbackType callback, void *clientData = 0 )
+  {
     this->BmodeHandler->SetNewBmodeImageCallback( callback, clientData );
-    }
+  }
 
-  void SetNewScanConvertedBmodeImageCallback( NewScanConvertedBmodeImageCallbackType callback, void * clientData = 0 )
-    {
+  void SetNewScanConvertedBmodeImageCallback( NewScanConvertedBmodeImageCallbackType callback, void *clientData = 0 )
+  {
     this->BmodeHandler->SetNewScanConvertedBmodeImageCallback( callback, clientData );
-    }
+  }
 
-  void SetNewRFImageCallback( NewRFImageCallbackType callback, void * clientData = 0 )
-    {
+  void SetNewRFImageCallback( NewRFImageCallbackType callback, void *clientData = 0 )
+  {
     this->RFHandler->SetNewRFImageCallback( callback, clientData );
-    }
+  }
 
 
 private:
@@ -373,7 +388,7 @@ Scan2DClass
 void
 Scan2DClass
 ::SetNewBmodeImageCallback( NewBmodeImageCallbackType callback,
-                            void * clientData )
+                            void *clientData )
 {
   Impl->SetNewBmodeImageCallback( callback, clientData );
 }
@@ -382,7 +397,7 @@ Scan2DClass
 void
 Scan2DClass
 ::SetNewScanConvertedBmodeImageCallback( NewScanConvertedBmodeImageCallbackType callback,
-                            void * clientData )
+    void *clientData )
 {
   Impl->SetNewScanConvertedBmodeImageCallback( callback, clientData );
 }
@@ -391,7 +406,7 @@ Scan2DClass
 void
 Scan2DClass
 ::SetNewRFImageCallback( NewRFImageCallbackType callback,
-                            void * clientData )
+                         void *clientData )
 {
   Impl->SetNewRFImageCallback( callback, clientData );
 }

@@ -18,54 +18,54 @@ class ScanConverterImpl
 {
 public:
   ScanConverterImpl()
-    {
+  {
     Wrapped = gcnew Interson::Imaging::ScanConverter();
-    }
+  }
 
   ~ScanConverterImpl()
-    {
-    }
+  {
+  }
 
   int GetHeightScan()
-    {
+  {
     return Wrapped->HeightScan;
-    }
+  }
 
   int GetWidthScan()
-    {
+  {
     return Wrapped->WidthScan;
-    }
+  }
 
   float GetMmPerPixel()
-    {
+  {
     return Wrapped->MmPerPixel;
-    }
+  }
 
   int GetZeroOfYScale()
-    {
+  {
     return Wrapped->ZeroOfYScale;
-    }
+  }
 
   ScanConverter::ScanConverterError HardInitScanConverter( int depth,
-                                                           bool upDown,
-                                                           bool leftRight,
-                                                           int widthScan,
-                                                           int heightScan )
-    {
+      bool upDown,
+      bool leftRight,
+      int widthScan,
+      int heightScan )
+  {
     return static_cast< ScanConverter::ScanConverterError >(
-      Wrapped->HardInitScanConverter( depth, upDown, leftRight, widthScan, heightScan ) );
-    }
+             Wrapped->HardInitScanConverter( depth, upDown, leftRight, widthScan, heightScan ) );
+  }
 
   ScanConverter::ScanConverterError IdleInitScanConverter( int depth,
-                                                           bool upDown,
-                                                           bool leftRight,
-                                                           int widthScan,
-                                                           int heightScan,
-                                                           unsigned char probeId )
-    {
+      bool upDown,
+      bool leftRight,
+      int widthScan,
+      int heightScan,
+      unsigned char probeId )
+  {
     return static_cast< ScanConverter::ScanConverterError >(
-      Wrapped->IdleInitScanConverter( depth, upDown, leftRight, widthScan, heightScan, probeId ) );
-    }
+             Wrapped->IdleInitScanConverter( depth, upDown, leftRight, widthScan, heightScan, probeId ) );
+  }
 
 private:
   gcroot< Interson::Imaging::ScanConverter ^ >    Wrapped;

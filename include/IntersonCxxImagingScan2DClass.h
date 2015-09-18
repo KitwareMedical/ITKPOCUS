@@ -43,28 +43,28 @@ public:
   void DisposeScan();
   void AbortScan();
 
-  typedef void (__stdcall * NewBmodeImageCallbackType)( BmodePixelType * buffer,
-    void * clientData );
+  typedef void (__stdcall *NewBmodeImageCallbackType)( BmodePixelType *buffer,
+      void *clientData );
   void SetNewBmodeImageCallback( NewBmodeImageCallbackType callback,
-    void * clientData = NULL );
+                                 void *clientData = NULL );
 
-  typedef void (__stdcall * NewScanConvertedBmodeImageCallbackType)( BmodePixelType * buffer,
-    void * clientData );
+  typedef void (__stdcall *NewScanConvertedBmodeImageCallbackType)( BmodePixelType *buffer,
+      void *clientData );
   /** \warning The WidthScan and HeightScan must be initialized on the
    * ScanConverter before calling this method. */
   void SetNewScanConvertedBmodeImageCallback( NewScanConvertedBmodeImageCallbackType callback,
-    void * clientData = NULL );
+      void *clientData = NULL );
 
-  typedef void (__stdcall * NewRFImageCallbackType)( RFPixelType * buffer,
-    void * clientData );
+  typedef void (__stdcall *NewRFImageCallbackType)( RFPixelType *buffer,
+      void *clientData );
   void SetNewRFImageCallback( NewRFImageCallbackType callback,
-    void * clientData = NULL );
+                              void *clientData = NULL );
 
 private:
-  Scan2DClass( const Scan2DClass & );
-  void operator=( const Scan2DClass & );
+  Scan2DClass( const Scan2DClass &);
+  void operator=( const Scan2DClass &);
 
-  Scan2DClassImpl * Impl;
+  Scan2DClassImpl *Impl;
 };
 
 } // end namespace Imaging
