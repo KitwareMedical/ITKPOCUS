@@ -1,11 +1,12 @@
-IntersonSDKCxx
-==============
-C++ Wrapper for the Interson C# SDK
------------------------------------
+IntersonArraySDKCxx
+===================
+
+C++ Wrapper for the C# SDK for Interson's Linear Array Probe
+-------------------------------------------------------------
 
 Dependencies
 ------------
 
 - CMake
-- Interson SDK >= 1.15 (Interson.dll >= 1.0.38.0) 
+- Interson Array SDK 
 - Visual Studio >= 2012 
