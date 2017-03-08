@@ -9,4 +9,4 @@ Dependencies
 
 - CMake
 - Interson Array SDK 
-- Visual Studio >= 2012 
+- Visual Studio >= 2015 
