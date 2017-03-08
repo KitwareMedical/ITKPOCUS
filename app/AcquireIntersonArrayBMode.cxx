@@ -1,14 +1,36 @@
+/*=========================================================================
+
+Library:   IntersonArray
+
+Copyright Kitware Inc. 28 Corporate Drive,
+Clifton Park, NY, 12065, USA.
+
+All rights reserved.
+
+Licensed under the Apache License, Version 2.0 ( the "License" );
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+=========================================================================*/
 #include <Windows.h> // Sleep
 
 #include "itkImageFileWriter.h"
 
-#include "IntersonCxxControlsHWControls.h"
-#include "IntersonCxxImagingScan2DClass.h"
-#include "IntersonCxxImagingScanConverter.h"
+#include "IntersonArrayCxxControlsHWControls.h"
+#include "IntersonArrayCxxImagingCapture.h"
+#include "IntersonArrayCxxImagingScanConverter.h"
 
-#include "AcquireIntersonBModeCLP.h"
+#include "AcquireIntersonArrayBModeCLP.h"
 
-typedef IntersonCxx::Imaging::Scan2DClass Scan2DClassType;
+typedef IntersonArrayCxx::Imaging::Scan2DClass Scan2DClassType;
 
 const unsigned int Dimension = 3;
 typedef Scan2DClassType::BmodePixelType    PixelType;
@@ -76,12 +98,12 @@ int main( int argc, char * argv[] )
 {
   PARSE_ARGS;
 
-  typedef IntersonCxx::Controls::HWControls HWControlsType;
-  IntersonCxx::Controls::HWControls hwControls;
+  typedef IntersonArrayCxx::Controls::HWControls HWControlsType;
+  IntersonArrayCxx::Controls::HWControls hwControls;
 
   Scan2DClassType scan2D;
 
-  typedef IntersonCxx::Imaging::ScanConverter ScanConverterType;
+  typedef IntersonArrayCxx::Imaging::ScanConverter ScanConverterType;
   ScanConverterType scanConverter;
 
   typedef HWControlsType::FoundProbesType FoundProbesType;

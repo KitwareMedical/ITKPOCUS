@@ -1,0 +1,58 @@
+##############################################################################
+#
+# Library:   IntersonArraySDK
+#
+# Copyright Kitware Inc. 28 Corporate Drive,
+# Clifton Park, NY, 12065, USA.
+#
+# All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+##############################################################################
+
+# Config file for the IntersonArraySDKCxx library wrapper.
+#
+# It defines the following variables:
+#   IntersonArraySDKCxx_INCLUDE_DIRS - include directories for
+#     IntersonArraySDKCxx
+#   IntersonArraySDKCxx_RUNTIME_LIBRARY_DIRS - directories that store the
+#     libraries needed for runtime execution
+#   IntersonArraySDKCxx_LIBRARIES    - libraries to link against
+#   IntersonArraySDK_DIR             - Path to the IntersonArraySDK used to
+#     build this library.
+
+get_filename_component( IntersonArraySDKCxx_CMAKE_DIR
+ "${CMAKE_CURRENT_LIST_FILE}" PATH )
+
+set( IntersonArraySDKCxx_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@" )
+
+if( NOT TARGET IntersonArrayCxx AND NOT IntersonArraySDKCxx_BINARY_DIR )
+  include( "${IntersonArraySDKCxx_CMAKE_DIR}/IntersonArraySDKCxxTargets.cmake" )
+endif()
+
+set( IntersonArraySDKCxx_LIBRARIES IntersonArrayCxx )
+
+set( IntersonArrayCxx_RUNTIME_LIBRARY_DIRS )
+get_property( _configs TARGET IntersonArrayCxx PROPERTY
+  IMPORTED_CONFIGURATIONS )
+foreach( _config ${_configs} )
+  get_property( _libloc TARGET IntersonArrayCxx PROPERTY
+    IMPORTED_LOCATION_${_config} )
+  if( EXISTS "${_libloc}" )
+    get_filename_component( _libpath "${_libloc}" PATH )
+    list( APPEND IntersonArrayCxx_RUNTIME_LIBRARY_DIRS "${_libpath}" )
+  endif()
+endforeach()
+
+set( IntersonArraySDK_DIR "@IntersonArraySDK_DIR@" )
