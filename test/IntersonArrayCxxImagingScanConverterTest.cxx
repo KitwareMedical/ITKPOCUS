@@ -1,6 +1,29 @@
-#include "IntersonCxxImagingScan2DClass.h"
-#include "IntersonCxxControlsHWControls.h"
-#include "IntersonCxxImagingScanConverter.h"
+/*=========================================================================
+
+Library:   IntersonArrayArray
+
+Copyright Kitware Inc. 28 Corporate Drive,
+Clifton Park, NY, 12065, USA.
+
+All rights reserved.
+
+Licensed under the Apache License, Version 2.0 ( the "License" );
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+=========================================================================*/
+#include "IntersonArrayCxxImagingCapture.h"
+#include "IntersonArrayCxxControlsHWControls.h"
+#include "IntersonArrayCxxImagingScanConverter.h"
+#include "IntersonArrayCxxImagingImageBuilding.h"
 
 #include <cstdlib>
 #include <iostream>
@@ -10,13 +33,16 @@
 
 int main( int argc, char * argv[] )
 {
-  typedef IntersonCxx::Controls::HWControls HWControlsType;
+  typedef IntersonArrayCxx::Controls::HWControls HWControlsType;
   HWControlsType hwControls;
 
-  typedef IntersonCxx::Imaging::Scan2DClass Scan2DClassType;
-  Scan2DClassType scan2D;
+  typedef IntersonArrayCxx::Imaging::Capture CaptureType;
+  CaptureType capture;
 
-  typedef IntersonCxx::Imaging::ScanConverter ScanConverterType;
+  typedef IntersonArrayCxx::Imaging::ImageBuilding ImageBuildingType;
+  ImageBuildingType imageBuilding;
+
+  typedef IntersonArrayCxx::Imaging::ScanConverter ScanConverterType;
   ScanConverterType scanConverter;
 
   typedef HWControlsType::FoundProbesType FoundProbesType;
@@ -27,6 +53,7 @@ int main( int argc, char * argv[] )
     std::cerr << "Could not find the probe." << std::endl;
     return EXIT_FAILURE;
     }
+
   hwControls.FindMyProbe( 0 );
   const unsigned int probeId = hwControls.GetProbeID();
   std::cout << "ProbeID after FindMyProbe: " << probeId << std::endl;
@@ -42,30 +69,21 @@ int main( int argc, char * argv[] )
     std::cerr << "Did not request a valid depth" << std::endl;
     return EXIT_SUCCESS;
     }
-  const bool upDown = true;
-  const bool leftRight = true;
   const int width = 776;
   const int height = 512; 
 
+  int steering = 0;
   ScanConverterType::ScanConverterError converterError =
-    scanConverter.IdleInitScanConverter( depth,
-                                         upDown,
-                                         leftRight,
-                                         width,
-                                         height,
-                                         probeId );
+    scanConverter.IdleInitScanConverter( depth, width, height, probeId,
+    steering, false, false, 0, imageBuilding );
   if( converterError != ScanConverterType::SUCCESS )
     {
     std::cerr << "Error during idle scan converter initialization: "
               << converterError << std::endl;
     return EXIT_FAILURE;
     }
-  converterError =
-    scanConverter.HardInitScanConverter( depth,
-                                         upDown,
-                                         leftRight,
-                                         width,
-                                         height );
+  converterError = scanConverter.HardInitScanConverter( depth, width,
+    height, steering, capture, imageBuilding );
   if( converterError != ScanConverterType::SUCCESS )
     {
     std::cerr << "Error during hard scan converter initialization: "
@@ -73,25 +91,23 @@ int main( int argc, char * argv[] )
     return EXIT_FAILURE;
     }
 
-  scan2D.AbortScan();
-  hwControls.StartMotor();
+  capture.AbortScan();
   std::cout << "\nStarting BMode scanning..." << std::endl;
-  scan2D.StartReadScan();
+  capture.StartReadScan();
   Sleep( 100 ); // "time to start"
   hwControls.StartBmode();
 
-  std::cout << "\nScan is on: " << scan2D.GetScanOn() << std::endl;
-  std::cout << "\nTrueDepth: " << scan2D.GetTrueDepth() << std::endl;
+  std::cout << "\nScan is on: " << capture.GetScanOn() << std::endl;
+  std::cout << "\nTrueDepth: " << scanConverter.GetTrueDepth() << std::endl;
   std::cout << "\nHeightScan: " << scanConverter.GetHeightScan() << std::endl;
   std::cout << "WidthScan:  " << scanConverter.GetWidthScan() << std::endl;
   std::cout << "\nMmPerPixel: " << scanConverter.GetMmPerPixel() << std::endl;
   std::cout << "\nZeroOfYScale: " << scanConverter.GetZeroOfYScale() << std::endl;
 
   hwControls.StopAcquisition();
-  scan2D.StopReadScan();
+  capture.StopReadScan();
   Sleep( 100 ); // "time to stop"
-  scan2D.DisposeScan();
-  hwControls.StopMotor();
+  capture.DisposeScan();
 
   return EXIT_SUCCESS;
 }

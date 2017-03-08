@@ -20,14 +20,3 @@
 # limitations under the License.
 #
 ##############################################################################
-set( IntersonArrayCxx_HEADERS
-  IntersonArrayCxxControlsHWControls.h
-  IntersonArrayCxxImagingCapture.h
-  IntersonArrayCxxImagingImageBuilding.h
-  IntersonArrayCxxImagingScanConverter.h
-  IntersonArrayCxxIntersonArrayClass.h
-  )
-install( FILES
-  ${IntersonArrayCxx_HEADERS}
-  DESTINATION "${INSTALL_INCLUDE_DIR}" COMPONENT Development
-  )
