@@ -32,6 +32,14 @@
       <default>1</default>
     </integer>
     <integer>
+      <name>focusIndex</name>
+      <label>Focus Index</label>
+      <description>Index of the focus to examine.  See the output of PrintIntersonProbeInfo.</description>
+      <longflag>focusIndex</longflag>
+      <flag>F</flag> 
+      <default>0</default>
+    </integer>
+    <integer>
       <name>highVoltage</name>
       <label>High Voltage</label>
       <description>Percentage of the high voltage for transducer excitation.</description>
@@ -41,13 +49,16 @@
       <minimum>0</minimum>
       <maximum>100</maximum>
     </integer>
-    <boolean>
-      <name>decimator</name>
-      <label>Enable RF Decimator</label>
-      <description>For GV and GP (low frequency probes) sampling rate is 15 Msamples/sec with decimator off and with decimator on sampling rate is 7.5 Msamples/sec. For higher frequency probes sampling rate is 30 Ms/sec with decimator off and 15 Ms/sec with decimator on.</description>
-      <longflag>decimator</longflag>
+    <integer>
+      <name>depth</name>
+      <label>Depth</label>
+      <description>Depth of acquisition [mm]. Only relevant with scanConvert.</description>
+      <longflag>depth</longflag>
       <flag>d</flag>
-    </boolean>
+      <default>40</default>
+      <minimum>0</minimum>
+      <maximum>200</maximum>
+    </integer>
 
   </parameters>
 </executable>

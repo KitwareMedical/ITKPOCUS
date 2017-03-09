@@ -1,0 +1,556 @@
+/*=========================================================================
+
+Library:   IntersonArray
+
+Copyright Kitware Inc. 28 Corporate Drive,
+Clifton Park, NY, 12065, USA.
+
+All rights reserved.
+
+Licensed under the Apache License, Version 2.0 ( the "License" );
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+=========================================================================*/
+#pragma unmanaged
+#include "IntersonArrayCxxImagingContainer.h"
+#include <iostream>
+#pragma managed
+
+#include <vcclr.h>
+#include <msclr/marshal_cppstd.h>
+#include <msclr/auto_gcroot.h>
+
+#using "IntersonArray.dll"
+
+namespace IntersonArrayCxx
+{
+
+namespace Imaging
+{
+
+//
+// Begin Capture
+//
+ref class NewRFImageHandler
+{
+public:
+
+  typedef Container::NewRFImageCallbackType   NewRFImageCallbackType;
+
+  typedef IntersonArrayCxx::Imaging::Container::RFPixelType   RFPixelType;
+  typedef cli::array< RFPixelType, 2 >                        RFArrayType;
+
+  NewRFImageHandler( RFArrayType ^managedRFBuffer ):
+    NewRFImageCallback( NULL ),
+    NewRFImageCallbackClientData( NULL ),
+    NativeRFBuffer( new RFPixelType[Container::MAX_RFSAMPLES
+      * Container::MAX_RFSAMPLES] ),
+    ManagedRFBuffer( managedRFBuffer )
+  {
+  }
+
+  ~NewRFImageHandler()
+  {
+    delete [] NativeRFBuffer;
+  }
+
+  void HandleNewRFImage( IntersonArray::Imaging::Capture ^scan2D,
+    System::EventArgs ^eventArgs )
+  {
+    if ( this->NewRFImageCallback != NULL )
+    {
+      for ( int ii = 0; ii < Container::MAX_RFSAMPLES; ++ii )
+      {
+        for ( int jj = 0; jj < Container::MAX_RFSAMPLES; ++jj )
+        {
+          this->NativeRFBuffer[Container::MAX_RFSAMPLES * ii + jj] =
+            this->ManagedRFBuffer[ii, jj];
+        }
+      }
+      this->NewRFImageCallback( this->NativeRFBuffer,
+        this->NewRFImageCallbackClientData );
+    }
+  }
+
+  void SetNewRFImageCallback( NewRFImageCallbackType callback,
+    void *clientData )
+  {
+    this->NewRFImageCallback = callback;
+    this->NewRFImageCallbackClientData = clientData;
+  }
+
+private:
+  NewRFImageCallbackType   NewRFImageCallback;
+  void                   * NewRFImageCallbackClientData;
+  RFPixelType            * NativeRFBuffer;
+  RFArrayType            ^ ManagedRFBuffer;
+};
+
+
+ref class NewImageHandler
+{
+public:
+  typedef Container::NewImageCallbackType        NewImageCallbackType;
+
+  typedef IntersonArrayCxx::Imaging::Container::PixelType     PixelType;
+  typedef cli::array< byte, 2 >                               ArrayType;
+
+  NewImageHandler( ArrayType ^managedBuffer ):
+    NewImageCallback( NULL ),
+    NewImageCallbackClientData( NULL ),
+    NativeBuffer( new PixelType[Container::MAX_SAMPLES *
+      Container::MAX_SAMPLES] ),
+    ManagedBuffer( managedBuffer )
+  {
+  }
+
+  ~NewImageHandler()
+  {
+    delete [] NativeBuffer;
+  }
+
+  void HandleNewImage( IntersonArray::Imaging::Capture ^scan2D,
+    System::EventArgs ^eventArgs )
+  {
+    if ( this->NewImageCallback != NULL )
+    {
+      for ( int ii = 0; ii < Container::MAX_SAMPLES; ++ii )
+      {
+        for ( int jj = 0; jj < Container::MAX_SAMPLES; ++jj )
+        {
+          this->NativeBuffer[Container::MAX_SAMPLES * ii + jj] =
+            this->ManagedBuffer[ii, jj];
+        }
+      }
+      this->NewImageCallback( this->NativeBuffer,
+        this->NewImageCallbackClientData );
+    }
+  }
+
+  void SetNewImageCallback( NewImageCallbackType callback,
+    void *clientData )
+  {
+    this->NewImageCallback = callback;
+    this->NewImageCallbackClientData = clientData;
+  }
+
+private:
+  NewImageCallbackType   NewImageCallback;
+  void                 * NewImageCallbackClientData;
+  PixelType            * NativeBuffer;
+  ArrayType            ^ ManagedBuffer;
+};
+
+// End Capture
+
+class ContainerImpl
+{
+public:
+  typedef cli::array< Container::PixelType, 2 >      ArrayType;
+  typedef cli::array< Container::RFPixelType, 2 >    RFArrayType;
+
+  typedef Container::NewImageCallbackType      NewImageCallbackType;
+  typedef Container::NewRFImageCallbackType    NewRFImageCallbackType;
+
+  ContainerImpl()
+  {
+    WrappedScanConverter = gcnew IntersonArray::Imaging::ScanConverter();
+    WrappedImageBuilding = gcnew IntersonArray::Imaging::ImageBuilding();
+    WrappedCapture = gcnew IntersonArray::Imaging::Capture();
+
+    Buffer = gcnew ArrayType( Container::MAX_SAMPLES,
+      Container::MAX_SAMPLES);
+    Handler = gcnew NewImageHandler( Buffer );
+    HandlerDelegate = gcnew
+      IntersonArray::Imaging::Capture::NewImageHandler( Handler,
+        & NewImageHandler::HandleNewImage );
+    WrappedCapture->NewImageTick += HandlerDelegate;
+
+    RFBuffer = gcnew RFArrayType( Container::MAX_RFSAMPLES,
+      Container::MAX_RFSAMPLES );
+    RFHandler = gcnew NewRFImageHandler( RFBuffer );
+    RFHandlerDelegate = gcnew
+      IntersonArray::Imaging::Capture::NewImageHandler( RFHandler,
+        & NewRFImageHandler::HandleNewRFImage );
+    WrappedCapture->NewImageTick += RFHandlerDelegate;
+
+  }
+
+  ~ContainerImpl()
+  {
+    WrappedCapture->NewImageTick -= RFHandlerDelegate;
+    WrappedCapture->NewImageTick -= HandlerDelegate;
+  }
+
+  bool GetCompound()
+  {
+    return WrappedScanConverter->Compound;
+  }
+
+  void SetCompound( bool value )
+  {
+    WrappedScanConverter->Compound = value;
+  }
+
+  bool GetDoubler()
+  {
+    return WrappedScanConverter->Doubler;
+  }
+
+  void SetDoubler( bool value )
+  {
+    WrappedScanConverter->Doubler = value;
+  }
+
+  int GetHeightScan() const
+  {
+    return WrappedScanConverter->HeightScan;
+  }
+
+  float GetMmPerPixel() const
+  {
+    return WrappedScanConverter->MmPerPixel;
+  }
+
+  double GetTrueDepth() const
+  {
+    return WrappedScanConverter->TrueDepth;
+  }
+
+  int GetWidthScan() const
+  {
+    return WrappedScanConverter->WidthScan;
+  }
+
+  int GetZeroOfYScale() const
+  {
+    return WrappedScanConverter->ZeroOfYScale;
+  }
+
+  Container::ScanConverterError HardInitScanConverter( int depth,
+    int widthScan, int heightScan, int steering )
+  {
+    return static_cast< Container::ScanConverterError >(
+      WrappedScanConverter->HardInitScanConverter( depth, widthScan,
+        heightScan, steering, WrappedCapture.get(),
+        WrappedImageBuilding.get() ) );
+  }
+
+  Container::ScanConverterError IdleInitScanConverter( int depth,
+    int widthScan, int heightScan, short idleId, int idleSteering,
+    bool idleDoubler, bool idleCompound, int idleCompoundAngle )
+  {
+    return static_cast< Container::ScanConverterError >(
+      WrappedScanConverter->IdleInitScanConverter( depth, widthScan,
+        heightScan, idleId, idleSteering, idleDoubler, idleCompound,
+        idleCompoundAngle, WrappedImageBuilding.get() ) );
+  }
+
+  // 
+  // Begin Capture
+  //
+  bool GetFrameAvg()
+  {
+    return WrappedCapture->FrameAvg;
+  }
+
+  void SetFrameAvg( bool value)
+  {
+    WrappedCapture->FrameAvg = value;
+  }
+
+  bool GetRFData()
+  {
+    return WrappedCapture->RFData;
+  }
+
+  void SetRFData( bool value )
+  {
+    WrappedCapture->RFData = value;
+  }
+
+  double GetScanOn()
+  {
+    return WrappedCapture->ScanOn;
+  }
+
+  void AbortScan()
+  {
+    WrappedCapture->AbortScan();
+  }
+
+  void DisposeScan()
+  {
+    WrappedCapture->DisposeScan();
+  }
+
+  void StartReadScan()
+  {
+    WrappedCapture->StartReadScan( (ArrayType ^)Buffer );
+  }
+
+  void StartRFReadScan()
+  {
+    WrappedCapture->StartRFReadScan( (RFArrayType ^)RFBuffer );
+  }
+
+  void StopReadScan()
+  {
+    WrappedCapture->StopReadScan();
+  }
+
+  void SetNewImageCallback( NewImageCallbackType callback,
+    void *clientData = 0 )
+  {
+    this->Handler->SetNewImageCallback( callback, clientData );
+  }
+
+  void SetNewRFImageCallback( NewRFImageCallbackType callback,
+    void *clientData = 0 )
+  {
+    this->RFHandler->SetNewRFImageCallback( callback, clientData );
+  }
+
+  // 
+  // Begin Wrapped ImageBuilding
+  //
+
+private:
+  msclr::auto_gcroot< IntersonArray::Imaging::ScanConverter ^ >
+    WrappedScanConverter;
+  msclr::auto_gcroot< IntersonArray::Imaging::ImageBuilding ^ >
+    WrappedImageBuilding;
+  msclr::auto_gcroot< IntersonArray::Imaging::Capture ^ >
+    WrappedCapture;
+
+  gcroot< ArrayType ^ >                         Buffer;
+  gcroot< RFArrayType ^ >                       RFBuffer;
+  gcroot< NewImageHandler ^ >                   Handler;
+  gcroot< NewRFImageHandler ^ >                 RFHandler;
+
+  gcroot< IntersonArray::Imaging::Capture::NewImageHandler ^ >
+    HandlerDelegate;
+  gcroot< IntersonArray::Imaging::Capture::NewImageHandler ^ >
+    RFHandlerDelegate;
+
+};
+
+
+#pragma unmanaged
+
+Container
+::Container():
+  Impl( new ContainerImpl() )
+{
+}
+
+
+Container
+::~Container()
+{
+  delete Impl;
+}
+
+
+bool
+Container
+::GetCompound()
+{
+  return Impl->GetCompound();
+}
+
+
+void
+Container
+::SetCompound( bool value )
+{
+  Impl->SetCompound( value );
+}
+
+
+bool
+Container
+::GetDoubler()
+{
+  return Impl->GetDoubler();
+}
+
+
+void
+Container
+::SetDoubler( bool value )
+{
+  Impl->SetDoubler( value );
+}
+
+
+int
+Container
+::GetHeightScan() const
+{
+  return Impl->GetHeightScan();
+}
+
+
+float
+Container
+::GetMmPerPixel() const
+{
+  return Impl->GetMmPerPixel();
+}
+
+
+double
+Container
+::GetTrueDepth() const
+{
+  return Impl->GetMmPerPixel();
+}
+
+
+int
+Container
+::GetWidthScan() const
+{
+  return Impl->GetWidthScan();
+}
+
+
+int
+Container
+::GetZeroOfYScale() const
+{
+  return Impl->GetZeroOfYScale();
+}
+
+
+Container::ScanConverterError
+Container
+::HardInitScanConverter( int depth, int widthScan, int heightScan,
+  int steering )
+{
+  return Impl->HardInitScanConverter( depth, widthScan, heightScan,
+    steering );
+}
+
+
+Container::ScanConverterError
+Container
+::IdleInitScanConverter( int depth, int width, int height, short idleId,
+  int idleSteering, bool idleDoubler, bool idleCompound,
+  int idleCompoundAngle )
+{
+  return Impl->IdleInitScanConverter( depth, width, height, idleId,
+    idleSteering, idleDoubler, idleCompound, idleCompoundAngle );
+}
+
+//
+// Begin Capture
+//
+bool
+Container
+::GetRFData()
+{
+  return Impl->GetRFData();
+}
+
+void
+Container
+::SetRFData( bool transferOn )
+{
+  Impl->SetRFData( transferOn );
+}
+
+
+bool
+Container
+::GetFrameAvg()
+{
+  return Impl->GetFrameAvg();
+}
+
+void
+Container
+::SetFrameAvg( bool doAveraging )
+{
+  Impl->SetFrameAvg( doAveraging );
+}
+
+
+bool
+Container
+::GetScanOn() const
+{
+  return Impl->GetScanOn();
+}
+
+
+void
+Container
+::AbortScan()
+{
+  Impl->AbortScan();
+}
+
+
+void
+Container
+::DisposeScan()
+{
+  Impl->DisposeScan();
+}
+
+
+void
+Container
+::StartReadScan()
+{
+  Impl->StartReadScan();
+}
+
+
+void
+Container
+::StartRFReadScan()
+{
+  Impl->StartRFReadScan();
+}
+
+
+void
+Container
+::StopReadScan()
+{
+  Impl->StopReadScan();
+}
+
+
+void
+Container
+::SetNewImageCallback( NewImageCallbackType callback,
+  void *clientData )
+{
+  Impl->SetNewImageCallback( callback, clientData );
+}
+
+
+void
+Container
+::SetNewRFImageCallback( NewRFImageCallbackType callback,
+  void *clientData )
+{
+  Impl->SetNewRFImageCallback( callback, clientData );
+}
+
+} // end namespace Imaging
+
+} // end namespace IntersonArrayCxx

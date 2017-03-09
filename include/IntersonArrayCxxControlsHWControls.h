@@ -169,10 +169,10 @@ public:
   //To get the identification of the filter.
   std::string GetFilterId() const;
 
-  bool DoReadOEMEEPROM( unsigned char & bytDataStage, unsigned short addr,
+  bool DoReadOEMEEPROM( unsigned char * bytDataStage, unsigned short addr,
     unsigned short length );
 
-  bool DoWriteOEMEEPROM( unsigned char & bytDataStage, unsigned short addr,
+  bool DoWriteOEMEEPROM( unsigned char * bytDataStage, unsigned short addr,
     unsigned short length );
 
 

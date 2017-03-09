@@ -32,6 +32,7 @@ set( COMPILE_FLAGS "/clr /EHa /AI${IntersonArraySDK_DIR}/Libraries" )
 
 set( IntersonArrayCxx_SRCS
   IntersonArrayCxxControlsHWControls.cxx
+  IntersonArrayCxxImagingContainer.cxx
   IntersonArrayCxxImagingCapture.cxx
   IntersonArrayCxxImagingImageBuilding.cxx
   IntersonArrayCxxImagingScanConverter.cxx
@@ -62,5 +63,15 @@ if( BUILD_TESTING )
   add_custom_command( TARGET IntersonArrayCxx
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${IntersonArraySDK_DIR}/Libraries/IntersonArray.dll" "${PROJECT_BINARY_DIR}/bin"
+    )
+endif()
+if( BUILD_APPLICATIONS )
+  add_custom_command( TARGET IntersonArrayCxx
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${IntersonArraySDK_DIR}/Libraries/IntersonArray.dll" "${PROJECT_BINARY_DIR}/app/bin"
+    )
+  add_custom_command( TARGET IntersonArrayCxx
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${PROJECT_BINARY_DIR}/bin/IntersonArrayCxx.dll" "${PROJECT_BINARY_DIR}/app/bin"
     )
 endif()

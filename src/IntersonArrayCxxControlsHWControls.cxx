@@ -314,6 +314,38 @@ public:
       IntersonArray::Controls::HWControls::GetFilterId() );
   }
 
+  bool DoReadOEMEEPROM( unsigned char * bytDataStage, unsigned short addr,
+    unsigned short length ) 
+  {
+    typedef cli::array< unsigned char, 1 >  DataType;
+    DataType ^ managedData;
+
+    if( Wrapped->DoReadOEMEEPROM( managedData, addr, length ) )
+      {
+      bytDataStage = new unsigned char[ length ];
+      for( unsigned int ii=0; ii<length; ++ii )
+        {
+        bytDataStage[ii] = managedData[ii];
+        }
+      return true;
+      }
+    return false;
+  }
+
+  bool DoWriteOEMEEPROM( unsigned char * bytDataStage, unsigned short addr,
+    unsigned short length ) 
+  {
+    typedef cli::array< unsigned char, 1 >  DataType;
+    DataType ^ managedData;
+
+    for( unsigned int ii=0; ii<length; ++ii )
+      {
+      managedData[ii] = bytDataStage[ii];
+      }
+
+    return Wrapped->DoWriteOEMEEPROM( managedData, addr, length );
+  }
+
 
 private:
 
@@ -341,6 +373,46 @@ HWControls
 }
 
 
+int
+HWControls
+::GetCompoundAngle() const
+{
+  return Impl->GetCompoundAngle();
+}
+
+
+bool
+HWControls
+::EnableCompound()
+{
+  return Impl->EnableCompound();
+}
+
+
+bool
+HWControls
+::DisableCompound()
+{
+  return Impl->DisableCompound();
+}
+
+
+bool
+HWControls
+::EnableDoubler()
+{
+  return Impl->EnableDoubler();
+}
+
+
+bool
+HWControls
+::DisableDoubler()
+{
+  return Impl->DisableDoubler();
+}
+
+
 short
 HWControls
 ::GetProbeID() const
@@ -364,6 +436,39 @@ HWControls
   Impl->FindMyProbe( probeIndex );
 }
 
+
+float
+HWControls
+::GetArrayAngle() const
+{
+  return Impl->GetArrayAngle();
+}
+
+
+float
+HWControls
+::GetArrayRadius() const
+{
+  return Impl->GetArrayRadius();
+}
+
+
+float
+HWControls
+::GetArrayWidth() const
+{
+  return Impl->GetArrayWidth();
+}
+
+
+void
+HWControls
+::GetFocus( FocusType &focus ) const
+{
+  Impl->GetFocus( focus );
+}
+
+
 int
 HWControls
 ::ValidDepth( int depth ) const
@@ -380,20 +485,20 @@ HWControls
 }
 
 
-void
-HWControls
-::GetFocus( FocusType &focus ) const
-{
-  Impl->GetFocus( focus );
-}
-
-
 bool
 HWControls
 ::SetFrequencyAndFocus( unsigned char frequency, unsigned char focus,
   int steering )
 {
   return Impl->SetFrequencyAndFocus( frequency, focus, steering );
+}
+
+
+unsigned int
+HWControls
+::GetLinesPerArray() const
+{
+  return Impl->GetLinesPerArray();
 }
 
 
@@ -452,6 +557,13 @@ HWControls
   return Impl->ReadHardButton();
 }
 
+void
+HWControls
+::SetNewHardButtonCallback( HWControls::NewHardButtonCallbackType callback,
+    void * clientData )
+{
+  Impl->SetNewHardButtonCallback( callback, clientData );
+}
 
 bool
 HWControls
@@ -511,9 +623,34 @@ HWControls
 
 std::string
 HWControls
+::Get3DId() const
+{
+  return Impl->Get3DId();
+}
+
+
+std::string
+HWControls
 ::GetFilterId() const
 {
   return Impl->GetFilterId();
+}
+
+
+bool
+HWControls
+::DoReadOEMEEPROM( unsigned char * bytDataStage, unsigned short addr,
+  unsigned short length ) 
+{
+  return Impl->DoReadOEMEEPROM( bytDataStage, addr, length );
+}
+
+bool
+HWControls
+::DoWriteOEMEEPROM( unsigned char * bytDataStage, unsigned short addr,
+  unsigned short length ) 
+{
+  return Impl->DoWriteOEMEEPROM( bytDataStage, addr, length );
 }
 
 } // end namespace Controls

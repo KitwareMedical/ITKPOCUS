@@ -21,7 +21,9 @@ limitations under the License.
 
 =========================================================================*/
 #include "IntersonArrayCxxControlsHWControls.h"
-#include "IntersonArrayCxxIntersonClass.h"
+
+#include <cstdlib>
+#include <iostream>
 
 #include "PrintIntersonArrayProbeInfoCLP.h"
 
@@ -29,8 +31,13 @@ int main( int argc, char * argv[] )
 {
   PARSE_ARGS;
 
+  std::cout << "Start---" << std::endl;
   typedef IntersonArrayCxx::Controls::HWControls HWControlsType;
+
   IntersonArrayCxx::Controls::HWControls hwControls;
+ 
+  std::cout << "ProbeID: " << static_cast< int >(
+    hwControls.GetProbeID() ) << std::endl;
 
   typedef HWControlsType::FoundProbesType FoundProbesType;
   FoundProbesType foundProbes;
@@ -40,7 +47,7 @@ int main( int argc, char * argv[] )
     std::cerr << "Could not find the probe." << std::endl;
     return EXIT_FAILURE;
     }
-  std::cout << "\nProbes Found: " << std::endl;
+  std::cout << "Probes Found: " << std::endl;
   for( size_t ii = 0; ii < foundProbes.size(); ++ii )
     {
     std::cout << "    " << ii << ": " << foundProbes[ii] << std::endl;
@@ -66,22 +73,40 @@ int main( int argc, char * argv[] )
     std::cout << "    " << ii << ": " << frequencies[ii] << std::endl;
     }
 
+  HWControlsType::FocusType focus;
+  hwControls.GetFocus( focus );
+  std::cout << "\nFocus: [mm]" << std::endl;
+  for( size_t ii = 0; ii < focus.size(); ++ii )
+    {
+    std::cout << "    " << ii << ": " << focus[ii] << std::endl;
+    }
+
   std::cout << "\nSupported Depth [mm]: FrameRate [fps]" << std::endl;
   int depth = 20;
   while( hwControls.ValidDepth( depth ) == depth )
     {
-    short frameRate = hwControls.GetProbeFrameRate( depth );
+    short frameRate = hwControls.GetProbeFrameRate();
     std::cout << "    " << depth << ":\t" << frameRate << std::endl;
     depth += 20;
     }
 
-  std::cout << "\nSerial number: " << hwControls.GetProbeSerialNumber() << std::endl;
-  std::cout << "FPGA Version:  " << hwControls.ReadFPGAVersion() << std::endl;
+  std::cout << "Lines per array = " << hwControls.GetLinesPerArray()
+    << std::endl;
+  std::cout << "Array CompoundAngle = " << hwControls.GetCompoundAngle()
+    << std::endl;
+  std::cout << "Array Radius = " << hwControls.GetArrayRadius()
+    << std::endl;
+  std::cout << "Array Angle = " << hwControls.GetArrayAngle()
+    << std::endl;
+  std::cout << "Array Width = " << hwControls.GetArrayWidth()
+    << std::endl;
+
+  std::cout << "\nSerial number: " << hwControls.GetProbeSerialNumber()
+    << std::endl;
+  std::cout << "FPGA Version:  " << hwControls.ReadFPGAVersion()
+    << std::endl;
   std::cout << "OEM ID:        " << hwControls.GetOEMId() << std::endl;
   std::cout << "Filter ID:     " << hwControls.GetFilterId() << std::endl;
-
-  IntersonArrayCxx::IntersonClass intersonClass;
-  std::cout << "SDK Version:   " << intersonClass.Version() << std::endl;
 
   return EXIT_SUCCESS;
 }

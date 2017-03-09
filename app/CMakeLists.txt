@@ -71,19 +71,6 @@ if( BUILD_TESTING )
       --gain 50
       ${TEMP}/AcquireIntersonArrayBModeTestGain.mha
      )
-  add_test( NAME AcquireIntersonArrayBModeTestScanConvert
-    COMMAND $<TARGET_FILE:AcquireIntersonArrayBMode>
-      --scanConvert
-      --gain 50
-      ${TEMP}/AcquireIntersonArrayBModeTestScanConvert.mha
-     )
-  add_test( NAME AcquireIntersonArrayBModeTestScanConvertFrames
-    COMMAND $<TARGET_FILE:AcquireIntersonArrayBMode>
-      -s
-      -n 4
-      --gain 50
-      ${TEMP}/AcquireIntersonArrayBModeTestScanConvertFrames.mha
-     )
 
   add_test( NAME AcquireIntersonArrayRFTest
     COMMAND $<TARGET_FILE:AcquireIntersonArrayRF>
@@ -99,12 +86,6 @@ if( BUILD_TESTING )
       --highVoltage 30
       ${TEMP}/AcquireIntersonArrayRFTestVoltage.mha
      )
-  add_test( NAME AcquireIntersonArrayRFTestDecimator
-    COMMAND $<TARGET_FILE:AcquireIntersonArrayRF>
-      --decimator
-      ${TEMP}/AcquireIntersonArrayRFTestDecimator.mha
-     )
-
   add_test( NAME PrintIntersonArrayProbeInfoTest
     COMMAND $<TARGET_FILE:PrintIntersonArrayProbeInfo>
      )

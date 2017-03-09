@@ -23,15 +23,13 @@ limitations under the License.
 #pragma unmanaged
 #include "IntersonArrayCxxImagingCapture.h"
 #include "IntersonArrayCxxImagingScanConverter.h"
+#include "IntersonArrayCxxControlsHWControls.h"
 #pragma managed
 
 #include <vcclr.h>
 #include <msclr/marshal_cppstd.h>
 
 #using "IntersonArray.dll"
-
-// for Bitmap
-#using "System.Drawing.dll"
 
 namespace IntersonArrayCxx
 {
@@ -52,8 +50,7 @@ public:
     NewRFImageCallback( NULL ),
     NewRFImageCallbackClientData( NULL ),
     NativeRFBuffer( new RFPixelType[ScanConverter::MAX_RFSAMPLES
-      * 512] ),
-      //* ScanConverter::MAX_VECTORS]
+      * ScanConverter::MAX_RFSAMPLES] ),
     ManagedRFBuffer( managedRFBuffer )
   {
   }
@@ -68,8 +65,7 @@ public:
   {
     if ( this->NewRFImageCallback != NULL )
     {
-      //for ( int ii = 0; ii < ScanConverter::MAX_VECTORS; ++ii )
-      for ( int ii = 0; ii < 512; ++ii )
+      for ( int ii = 0; ii < ScanConverter::MAX_RFSAMPLES; ++ii )
       {
         for ( int jj = 0; jj < ScanConverter::MAX_RFSAMPLES; ++jj )
         {
@@ -93,7 +89,7 @@ private:
   NewRFImageCallbackType   NewRFImageCallback;
   void                   * NewRFImageCallbackClientData;
   RFPixelType            * NativeRFBuffer;
-  RFArrayType             ^ManagedRFBuffer;
+  RFArrayType            ^ ManagedRFBuffer;
 };
 
 
@@ -109,8 +105,7 @@ public:
     NewImageCallback( NULL ),
     NewImageCallbackClientData( NULL ),
     NativeBuffer( new PixelType[ScanConverter::MAX_SAMPLES *
-      512] ),
-      //ScanConverter::MAX_VECTORS] ),
+      ScanConverter::MAX_SAMPLES] ),
     ManagedBuffer( managedBuffer )
   {
   }
@@ -125,12 +120,11 @@ public:
   {
     if ( this->NewImageCallback != NULL )
     {
-      for ( int ii = 0; ii < 512; ++ii )
-      //for ( int ii = 0; ii < ScanConverter::MAX_VECTORS; ++ii )
+      for ( int ii = 0; ii < ScanConverter::MAX_RFSAMPLES; ++ii )
       {
-        for ( int jj = 0; jj < ScanConverter::MAX_SAMPLES; ++jj )
+        for ( int jj = 0; jj < ScanConverter::MAX_RFSAMPLES; ++jj )
         {
-          this->NativeBuffer[ScanConverter::MAX_SAMPLES * ii + jj] =
+          this->NativeBuffer[ScanConverter::MAX_RFSAMPLES * ii + jj] =
             this->ManagedBuffer[ii, jj];
         }
       }
@@ -150,7 +144,7 @@ private:
   NewImageCallbackType   NewImageCallback;
   void                 * NewImageCallbackClientData;
   PixelType            * NativeBuffer;
-  ArrayType             ^ManagedBuffer;
+  ArrayType            ^ ManagedBuffer;
 };
 
 
@@ -167,17 +161,15 @@ public:
   {
     Wrapped = gcnew IntersonArray::Imaging::Capture();
 
-    //Buffer = gcnew ArrayType( ScanConverter::MAX_VECTORS,
-    Buffer = gcnew ArrayType( 512,
-      ScanConverter::MAX_SAMPLES);
+    Buffer = gcnew ArrayType( ScanConverter::MAX_SAMPLES,
+      ScanConverter::MAX_SAMPLES );
     Handler = gcnew NewImageHandler( Buffer );
     HandlerDelegate = gcnew
       IntersonArray::Imaging::Capture::NewImageHandler( Handler,
         & NewImageHandler::HandleNewImage );
     Wrapped->NewImageTick += HandlerDelegate;
 
-    //RFBuffer = gcnew RFArrayType( ScanConverter::MAX_VECTORS,
-    RFBuffer = gcnew RFArrayType( 512,
+    RFBuffer = gcnew RFArrayType( ScanConverter::MAX_RFSAMPLES,
       ScanConverter::MAX_RFSAMPLES );
     RFHandler = gcnew NewRFImageHandler( RFBuffer );
     RFHandlerDelegate = gcnew
