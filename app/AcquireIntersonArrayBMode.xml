@@ -32,6 +32,14 @@
       <default>1</default>
     </integer>
     <integer>
+      <name>focusIndex</name>
+      <label>Focus Index</label>
+      <description>Index of the focus to examine.  See the output of PrintIntersonProbeInfo.</description>
+      <longflag>focusIndex</longflag>
+      <flag>F</flag> 
+      <default>0</default>
+    </integer>
+    <integer>
       <name>highVoltage</name>
       <label>High Voltage</label>
       <description>Percentage of the high voltage for transducer excitation.</description>
@@ -61,12 +69,5 @@
       <minimum>0</minimum>
       <maximum>200</maximum>
     </integer>
-    <boolean>
-      <name>scanConvert</name>
-      <label>Scan Convert</label>
-      <description>Do scan conversion.</description>
-      <longflag>scanConvert</longflag>
-      <flag>s</flag>
-    </boolean>
   </parameters>
 </executable>

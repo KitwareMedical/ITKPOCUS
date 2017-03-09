@@ -25,15 +25,14 @@ limitations under the License.
 #include "itkImageFileWriter.h"
 
 #include "IntersonArrayCxxControlsHWControls.h"
-#include "IntersonArrayCxxImagingCapture.h"
-#include "IntersonArrayCxxImagingScanConverter.h"
+#include "IntersonArrayCxxImagingContainer.h"
 
 #include "AcquireIntersonArrayBModeCLP.h"
 
-typedef IntersonArrayCxx::Imaging::Scan2DClass Scan2DClassType;
+typedef IntersonArrayCxx::Imaging::Container ContainerType;
 
 const unsigned int Dimension = 3;
-typedef Scan2DClassType::BmodePixelType    PixelType;
+typedef ContainerType::PixelType           PixelType;
 typedef itk::Image< PixelType, Dimension > ImageType;
 
 
@@ -46,36 +45,12 @@ struct CallbackClientData
 
 void __stdcall pasteIntoImage( PixelType * buffer, void * clientData )
 {
-  CallbackClientData * callbackClientData = static_cast< CallbackClientData * >( clientData );
+  CallbackClientData * callbackClientData =
+    static_cast< CallbackClientData * >( clientData );
   ImageType * image = callbackClientData->Image;
 
-  const ImageType::RegionType & largestRegion = image->GetLargestPossibleRegion();
-  const ImageType::SizeType imageSize = largestRegion.GetSize();
-  const itk::SizeValueType imageFrames = imageSize[2];
-  if( callbackClientData->FrameIndex >= imageFrames )
-    {
-    return;
-    }
-
-  const int maxVectors = Scan2DClassType::MAX_VECTORS;
-  const int maxSamples = Scan2DClassType::MAX_SAMPLES;
-  const int framePixels = maxVectors * maxSamples;
-
-  PixelType * imageBuffer = image->GetPixelContainer()->GetBufferPointer();
-  imageBuffer += framePixels * callbackClientData->FrameIndex;
-  std::memcpy( imageBuffer, buffer, framePixels * sizeof( PixelType ) );
-
-  std::cout << "Acquired frame: " << callbackClientData->FrameIndex << std::endl;
-  ++(callbackClientData->FrameIndex);
-}
-
-
-void __stdcall pasteIntoScanConvertedImage( PixelType * buffer, void * clientData )
-{
-  CallbackClientData * callbackClientData = static_cast< CallbackClientData * >( clientData );
-  ImageType * image = callbackClientData->Image;
-
-  const ImageType::RegionType & largestRegion = image->GetLargestPossibleRegion();
+  const ImageType::RegionType & largestRegion =
+    image->GetLargestPossibleRegion();
   const ImageType::SizeType imageSize = largestRegion.GetSize();
   const itk::SizeValueType imageFrames = imageSize[2];
   if( callbackClientData->FrameIndex >= imageFrames )
@@ -89,7 +64,8 @@ void __stdcall pasteIntoScanConvertedImage( PixelType * buffer, void * clientDat
   imageBuffer += framePixels * callbackClientData->FrameIndex;
   std::memcpy( imageBuffer, buffer, framePixels * sizeof( PixelType ) );
 
-  std::cout << "Acquired frame: " << callbackClientData->FrameIndex << std::endl;
+  std::cout << "Acquired frame: " << callbackClientData->FrameIndex
+    << std::endl;
   ++(callbackClientData->FrameIndex);
 }
 
@@ -99,12 +75,9 @@ int main( int argc, char * argv[] )
   PARSE_ARGS;
 
   typedef IntersonArrayCxx::Controls::HWControls HWControlsType;
-  IntersonArrayCxx::Controls::HWControls hwControls;
+  HWControlsType hwControls;
 
-  Scan2DClassType scan2D;
-
-  typedef IntersonArrayCxx::Imaging::ScanConverter ScanConverterType;
-  ScanConverterType scanConverter;
+  ContainerType container;
 
   typedef HWControlsType::FoundProbesType FoundProbesType;
   FoundProbesType foundProbes;
@@ -122,19 +95,21 @@ int main( int argc, char * argv[] )
     return EXIT_FAILURE;
     }
 
-  const bool upDown = false;
-  const bool leftRight = false;
-  const int width = 1000;
-  const int height = 650;
+  const int width = hwControls.GetLinesPerArray();
+  const int height = container.MAX_SAMPLES;
+  const int scanWidth = container.GetWidthScan();
+  const int scanHeight = container.GetHeightScan();
+  std::cout << "Width = " << width << std::endl;
+  std::cout << "Height = " << height << std::endl;
+  std::cout << "ScanWidth = " << scanWidth << std::endl;
+  std::cout << "ScanHeight = " << scanHeight << std::endl;
+  std::cout << "MM per Pixel = " << container.GetMmPerPixel() << std::endl;
+  const int steering = 0;
   if( hwControls.ValidDepth( depth ) == depth )
     {
-    ScanConverterType::ScanConverterError converterError =
-      scanConverter.HardInitScanConverter( depth,
-                                           upDown,
-                                           leftRight,
-                                           width,
-                                           height );
-    if( converterError != ScanConverterType::SUCCESS )
+    ContainerType::ScanConverterError converterError =
+      container.HardInitScanConverter( depth, width, height, steering );
+    if( converterError != ContainerType::SUCCESS )
       {
       std::cerr << "Error during hard scan converter initialization: "
                 << converterError << std::endl;
@@ -148,8 +123,8 @@ int main( int argc, char * argv[] )
 
 
   const itk::SizeValueType framesToCollect = frames;
-  const int maxVectors = Scan2DClassType::MAX_VECTORS;
-  const int maxSamples = Scan2DClassType::MAX_SAMPLES;
+  const int maxVectors = hwControls.GetLinesPerArray();
+  const int maxSamples = ContainerType::MAX_SAMPLES;
 
   ImageType::Pointer image = ImageType::New();
   typedef ImageType::RegionType RegionType;
@@ -158,44 +133,29 @@ int main( int argc, char * argv[] )
   imageIndex.Fill( 0 );
   imageRegion.SetIndex( imageIndex );
   ImageType::SizeType imageSize;
-  if( scanConvert )
-    {
-    imageSize[0] = width;
-    imageSize[1] = height;
-    }
-  else
-    {
-    imageSize[0] = maxSamples;
-    imageSize[1] = maxVectors;
-    }
+  imageSize[0] = maxSamples;
+  imageSize[1] = maxVectors;
   imageSize[2] = framesToCollect;
   imageRegion.SetSize( imageSize );
   image->SetRegions( imageRegion );
   image->Allocate();
 
   CallbackClientData clientData;
-
   clientData.Image = image.GetPointer();
   clientData.FrameIndex = 0;
 
-  if( scanConvert )
-    {
-    scan2D.SetNewScanConvertedBmodeImageCallback( &pasteIntoScanConvertedImage, &clientData );
-    }
-  else
-    {
-    scan2D.SetNewBmodeImageCallback( &pasteIntoImage, &clientData );
-    }
+  container.SetNewImageCallback( &pasteIntoImage, &clientData );
 
   HWControlsType::FrequenciesType frequencies;
   hwControls.GetFrequency( frequencies );
-  if( !hwControls.SetFrequency( frequencies[frequencyIndex] ) )
+  if( !hwControls.SetFrequencyAndFocus( frequencyIndex, focusIndex,
+      steering ) )
     {
     std::cerr << "Could not set the frequency." << std::endl;
     return EXIT_FAILURE;
     }
 
-  if( !hwControls.SendHighVoltage( highVoltage ) )
+  if( !hwControls.SendHighVoltage( highVoltage, highVoltage ) )
     {
     std::cerr << "Could not set the high voltage." << std::endl;
     return EXIT_FAILURE;
@@ -213,14 +173,9 @@ int main( int argc, char * argv[] )
 
   hwControls.DisableHardButton();
 
-  scan2D.AbortScan();
-  scan2D.SetRFData( false );
-  if( !hwControls.StartMotor() )
-    {
-    std::cerr << "Could not start motor." << std::endl;
-    return EXIT_FAILURE;
-    };
-  scan2D.StartReadScan();
+  container.AbortScan();
+  container.SetRFData( false );
+  container.StartReadScan();
   Sleep( 100 ); // "time to start"
   if( !hwControls.StartBmode() )
     {
@@ -228,16 +183,20 @@ int main( int argc, char * argv[] )
     return EXIT_FAILURE;
     };
 
-  while( clientData.FrameIndex < framesToCollect )
+  int c = 0;
+  while( clientData.FrameIndex < framesToCollect && c < 100 )
     {
+    std::cout << clientData.FrameIndex << " of " << framesToCollect
+      << std::endl;
+    std::cout << c << " of 100" << std::endl;
     Sleep( 100 );
+    ++c;
     }
 
   hwControls.StopAcquisition();
-  scan2D.StopReadScan();
+  container.StopReadScan();
   Sleep( 100 ); // "time to stop"
-  scan2D.DisposeScan();
-  hwControls.StopMotor();
+  container.DisposeScan();
 
   typedef itk::ImageFileWriter< ImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();

@@ -31,9 +31,6 @@ int main( int argc, char * argv[] )
 
   HWControlsType hwControls;
 
-
-  std::cout << "ID_CA_OP_10MHz: " << hwControls.ID_CA_OP_10MHz << std::endl;
-
   std::cout << "ProbeID: " << static_cast< int >(
     hwControls.GetProbeID() ) << std::endl;
 
