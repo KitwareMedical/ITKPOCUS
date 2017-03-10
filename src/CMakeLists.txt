@@ -33,9 +33,6 @@ set( COMPILE_FLAGS "/clr /EHa /AI${IntersonArraySDK_DIR}/Libraries" )
 set( IntersonArrayCxx_SRCS
   IntersonArrayCxxControlsHWControls.cxx
   IntersonArrayCxxImagingContainer.cxx
-  IntersonArrayCxxImagingCapture.cxx
-  IntersonArrayCxxImagingImageBuilding.cxx
-  IntersonArrayCxxImagingScanConverter.cxx
   IntersonArrayCxxIntersonClass.cxx
   )
 
