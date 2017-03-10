@@ -24,8 +24,6 @@ set( _tests
   IntersonArrayCxxIntersonClassTest
   IntersonArrayCxxControlsHWControlsTest
   IntersonArrayCxxImagingContainerTest
-  IntersonArrayCxxImagingCaptureTest
-  IntersonArrayCxxImagingScanConverterTest
   )
 
 foreach( test ${_tests} )

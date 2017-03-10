@@ -23,9 +23,6 @@
 set( IntersonArrayCxx_HEADERS
   IntersonArrayCxxControlsHWControls.h
   IntersonArrayCxxImagingContainer.h
-  IntersonArrayCxxImagingCapture.h
-  IntersonArrayCxxImagingImageBuilding.h
-  IntersonArrayCxxImagingScanConverter.h
   IntersonArrayCxxIntersonArrayClass.h
   )
 install( FILES
