@@ -77,8 +77,9 @@ int main( int argc, char * argv[] )
   typedef IntersonArrayCxx::Controls::HWControls HWControlsType;
   IntersonArrayCxx::Controls::HWControls hwControls;
 
-  ContainerType container;
+  int ret = EXIT_SUCCESS;
 
+  int steering = 0;
   typedef HWControlsType::FoundProbesType FoundProbesType;
   FoundProbesType foundProbes;
   hwControls.FindAllProbes( foundProbes );
@@ -94,50 +95,6 @@ int main( int argc, char * argv[] )
     std::cerr << "Could not find the probe." << std::endl;
     return EXIT_FAILURE;
     }
-
-  int ret = EXIT_SUCCESS;
-
-  int steering = 0;
-
-  const int width = hwControls.GetLinesPerArray();
-  const int height = ContainerType::MAX_RFSAMPLES;
-  if( hwControls.ValidDepth( depth ) == depth )
-    {
-    ContainerType::ScanConverterError converterError =
-      container.HardInitScanConverter( depth, width, height, steering );
-    if( converterError != ContainerType::SUCCESS )
-      {
-      std::cerr << "Error during hard scan converter initialization: "
-                << converterError << std::endl;
-      return EXIT_FAILURE;
-      }
-    }
-  else
-    {
-    std::cerr << "Invalid requested depth for probe." << std::endl;
-    }
-
-  const itk::SizeValueType framesToCollect = frames;
-  const int maxVectors = hwControls.GetLinesPerArray();
-  const int maxSamples = ContainerType::MAX_RFSAMPLES;
-
-  ImageType::Pointer image = ImageType::New();
-  typedef ImageType::RegionType RegionType;
-  RegionType imageRegion;
-  ImageType::IndexType imageIndex;
-  imageIndex.Fill( 0 );
-  imageRegion.SetIndex( imageIndex );
-  ImageType::SizeType imageSize;
-  imageSize[0] = maxSamples;
-  imageSize[1] = maxVectors;
-  imageSize[2] = framesToCollect;
-  imageRegion.SetSize( imageSize );
-  image->SetRegions( imageRegion );
-  image->Allocate();
-
-  CallbackClientData clientData;
-  clientData.Image = image.GetPointer();
-  clientData.FrameIndex = 0;
 
   HWControlsType::FrequenciesType frequencies;
   hwControls.GetFrequency( frequencies );
@@ -161,10 +118,46 @@ int main( int argc, char * argv[] )
 
   hwControls.DisableHardButton();
 
-  std::cout << "Acquire 1 bmode image" << std::endl;
+  ContainerType container;
+
+  const int height = hwControls.GetLinesPerArray();
+  const int width = ContainerType::MAX_RFSAMPLES;
+  const itk::SizeValueType framesToCollect = frames;
+
   container.AbortScan();
-  container.SetRFData( false );
+  container.SetRFData( true );
+
+  if( hwControls.ValidDepth( depth ) != depth )
+    {
+    container.IdleInitScanConverter( depth, width, height, probeId,
+      steering, false, false, 0 );
+    container.HardInitScanConverter( depth, width, height, steering );
+    }
+
+  ImageType::Pointer image = ImageType::New();
+  typedef ImageType::RegionType RegionType;
+  RegionType imageRegion;
+  ImageType::IndexType imageIndex;
+  imageIndex.Fill( 0 );
+  imageRegion.SetIndex( imageIndex );
+  ImageType::SizeType imageSize;
+  imageSize[0] = width;
+  imageSize[1] = height;
+  imageSize[2] = framesToCollect;
+  imageRegion.SetSize( imageSize );
+  image->SetRegions( imageRegion );
+  image->Allocate();
+
+  CallbackClientData clientData;
+  clientData.Image = image.GetPointer();
+  clientData.FrameIndex = 0;
+
+  container.SetNewRFImageCallback( &pasteIntoImage, &clientData );
+
+  /* Begin theoretically unnecessary yet definitely necessary lines...*/
+  std::cout << "Acquire 1 bmode image" << std::endl;
   container.StartReadScan();
+  Sleep( 100 );
   if( !hwControls.StartBmode() )
     {
     std::cerr << "Could not start RF collection." << std::endl;
@@ -179,11 +172,23 @@ int main( int argc, char * argv[] )
   container.StopReadScan();
   Sleep( 100 ); // "time to stop"
   container.DisposeScan();
-
-  container.SetNewRFImageCallback( &pasteIntoImage, &clientData );
+  Sleep( 100 ); // "time to stop"
 
   std::cout << "SetRFData" << std::endl;
   container.SetRFData( true );
+
+  // Sequent to init a scan, after above variables are set
+  std::cout << "HardInitScanConverter" << std::endl;
+  ContainerType::ScanConverterError converterError =
+    container.HardInitScanConverter( depth, width, height, steering );
+  if( converterError != ContainerType::SUCCESS )
+    {
+    std::cerr << "Error during hard scan converter initialization: "
+              << converterError << std::endl;
+    return EXIT_FAILURE;
+    }
+  /* ...end necessary lines. */
+
   std::cout << "StartRFReadScan" << std::endl;
   container.StartRFReadScan();
   Sleep( 100 ); // "time to start"

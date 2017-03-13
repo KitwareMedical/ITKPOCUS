@@ -77,8 +77,7 @@ int main( int argc, char * argv[] )
   typedef IntersonArrayCxx::Controls::HWControls HWControlsType;
   HWControlsType hwControls;
 
-  ContainerType container;
-
+  const int steering = 0;
   typedef HWControlsType::FoundProbesType FoundProbesType;
   FoundProbesType foundProbes;
   hwControls.FindAllProbes( foundProbes );
@@ -94,57 +93,6 @@ int main( int argc, char * argv[] )
     std::cerr << "Could not find the probe." << std::endl;
     return EXIT_FAILURE;
     }
-
-  const int width = hwControls.GetLinesPerArray();
-  const int height = container.MAX_SAMPLES;
-  const int scanWidth = container.GetWidthScan();
-  const int scanHeight = container.GetHeightScan();
-  std::cout << "Width = " << width << std::endl;
-  std::cout << "Height = " << height << std::endl;
-  std::cout << "ScanWidth = " << scanWidth << std::endl;
-  std::cout << "ScanHeight = " << scanHeight << std::endl;
-  std::cout << "MM per Pixel = " << container.GetMmPerPixel() << std::endl;
-  const int steering = 0;
-  if( hwControls.ValidDepth( depth ) == depth )
-    {
-    ContainerType::ScanConverterError converterError =
-      container.HardInitScanConverter( depth, width, height, steering );
-    if( converterError != ContainerType::SUCCESS )
-      {
-      std::cerr << "Error during hard scan converter initialization: "
-                << converterError << std::endl;
-      return EXIT_FAILURE;
-      }
-    }
-  else
-    {
-    std::cerr << "Invalid requested depth for probe." << std::endl;
-    }
-
-
-  const itk::SizeValueType framesToCollect = frames;
-  const int maxVectors = hwControls.GetLinesPerArray();
-  const int maxSamples = ContainerType::MAX_SAMPLES;
-
-  ImageType::Pointer image = ImageType::New();
-  typedef ImageType::RegionType RegionType;
-  RegionType imageRegion;
-  ImageType::IndexType imageIndex;
-  imageIndex.Fill( 0 );
-  imageRegion.SetIndex( imageIndex );
-  ImageType::SizeType imageSize;
-  imageSize[0] = maxSamples;
-  imageSize[1] = maxVectors;
-  imageSize[2] = framesToCollect;
-  imageRegion.SetSize( imageSize );
-  image->SetRegions( imageRegion );
-  image->Allocate();
-
-  CallbackClientData clientData;
-  clientData.Image = image.GetPointer();
-  clientData.FrameIndex = 0;
-
-  container.SetNewImageCallback( &pasteIntoImage, &clientData );
 
   HWControlsType::FrequenciesType frequencies;
   hwControls.GetFrequency( frequencies );
@@ -173,8 +121,60 @@ int main( int argc, char * argv[] )
 
   hwControls.DisableHardButton();
 
+  ContainerType container;
   container.AbortScan();
   container.SetRFData( false );
+
+  const int height = hwControls.GetLinesPerArray();
+  const int width = 512; //container.MAX_SAMPLES;
+  if( hwControls.ValidDepth( depth ) == depth )
+    {
+    ContainerType::ScanConverterError converterErrorIdle =
+      container.IdleInitScanConverter( depth, width, height, probeId,
+        steering, false, false, 0 );
+    ContainerType::ScanConverterError converterError =
+      container.HardInitScanConverter( depth, width, height, steering );
+    if( converterError != ContainerType::SUCCESS )
+      {
+      std::cerr << "Error during hard scan converter initialization: "
+                << converterError << std::endl;
+      return EXIT_FAILURE;
+      }
+    }
+  else
+    {
+    std::cerr << "Invalid requested depth for probe." << std::endl;
+    }
+
+  const int scanWidth = container.GetWidthScan();
+  const int scanHeight = container.GetHeightScan();
+  std::cout << "Width = " << width << std::endl;
+  std::cout << "Height = " << height << std::endl;
+  std::cout << "ScanWidth = " << scanWidth << std::endl;
+  std::cout << "ScanHeight = " << scanHeight << std::endl;
+  std::cout << "MM per Pixel = " << container.GetMmPerPixel() << std::endl;
+
+  const itk::SizeValueType framesToCollect = frames;
+
+  ImageType::Pointer image = ImageType::New();
+  typedef ImageType::RegionType RegionType;
+  RegionType imageRegion;
+  ImageType::IndexType imageIndex;
+  imageIndex.Fill( 0 );
+  imageRegion.SetIndex( imageIndex );
+  ImageType::SizeType imageSize;
+  imageSize[0] = width;
+  imageSize[1] = height;
+  imageSize[2] = framesToCollect;
+  imageRegion.SetSize( imageSize );
+  image->SetRegions( imageRegion );
+  image->Allocate();
+
+  CallbackClientData clientData;
+  clientData.Image = image.GetPointer();
+  clientData.FrameIndex = 0;
+
+  container.SetNewImageCallback( &pasteIntoImage, &clientData );
   container.StartReadScan();
   Sleep( 100 ); // "time to start"
   if( !hwControls.StartBmode() )
