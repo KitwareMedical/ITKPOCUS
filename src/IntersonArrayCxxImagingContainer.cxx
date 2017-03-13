@@ -332,7 +332,7 @@ public:
   {
     this->Handler->SetNewImageCallback( callback, clientData );
     std::cout << "Callback width = " << this->GetWidthScan() << std::endl;
-    std::cout << "        heidth = " << this->GetHeightScan() << std::endl;
+    std::cout << "        height = " << this->GetHeightScan() << std::endl;
     this->Handler->SetImageSize( this->GetWidthScan(),
       this->GetHeightScan() );
   }
@@ -342,7 +342,7 @@ public:
   {
     this->RFHandler->SetNewRFImageCallback( callback, clientData );
     std::cout << "Callback width = " << this->GetWidthScan() << std::endl;
-    std::cout << "        heidth = " << this->GetHeightScan() << std::endl;
+    std::cout << "        height = " << this->GetHeightScan() << std::endl;
     this->RFHandler->SetImageSize( this->GetWidthScan(),
       this->GetHeightScan() );
   }
