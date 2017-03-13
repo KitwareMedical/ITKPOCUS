@@ -52,6 +52,8 @@ public:
   NewRFImageHandler( RFArrayType ^managedRFBuffer ):
     NewRFImageCallback( NULL ),
     NewRFImageCallbackClientData( NULL ),
+    bufferWidth( Container::MAX_RFSAMPLES ),
+    bufferHeight( Container::MAX_RFSAMPLES ),
     NativeRFBuffer( new RFPixelType[Container::MAX_RFSAMPLES
       * Container::MAX_RFSAMPLES] ),
     ManagedRFBuffer( managedRFBuffer )
@@ -68,17 +70,23 @@ public:
   {
     if ( this->NewRFImageCallback != NULL )
     {
-      for ( int ii = 0; ii < Container::MAX_RFSAMPLES; ++ii )
+      for ( int ii = 0; ii < bufferHeight; ++ii )
       {
-        for ( int jj = 0; jj < Container::MAX_RFSAMPLES; ++jj )
+        for ( int jj = 0; jj < bufferWidth; ++jj )
         {
-          this->NativeRFBuffer[Container::MAX_RFSAMPLES * ii + jj] =
+          this->NativeRFBuffer[bufferWidth * ii + jj] =
             this->ManagedRFBuffer[ii, jj];
         }
       }
       this->NewRFImageCallback( this->NativeRFBuffer,
         this->NewRFImageCallbackClientData );
     }
+  }
+
+  void SetImageSize( int width, int height )
+  {
+     bufferWidth = width;
+     bufferHeight = height;
   }
 
   void SetNewRFImageCallback( NewRFImageCallbackType callback,
@@ -93,6 +101,8 @@ private:
   void                   * NewRFImageCallbackClientData;
   RFPixelType            * NativeRFBuffer;
   RFArrayType            ^ ManagedRFBuffer;
+  int                      bufferWidth;
+  int                      bufferHeight;
 };
 
 
@@ -107,6 +117,8 @@ public:
   NewImageHandler( ArrayType ^managedBuffer ):
     NewImageCallback( NULL ),
     NewImageCallbackClientData( NULL ),
+    bufferWidth( Container::MAX_SAMPLES ),
+    bufferHeight( Container::MAX_SAMPLES ),
     NativeBuffer( new PixelType[Container::MAX_SAMPLES *
       Container::MAX_SAMPLES] ),
     ManagedBuffer( managedBuffer )
@@ -123,17 +135,23 @@ public:
   {
     if ( this->NewImageCallback != NULL )
     {
-      for ( int ii = 0; ii < Container::MAX_SAMPLES; ++ii )
+      for ( int ii = 0; ii < bufferHeight; ++ii )
       {
-        for ( int jj = 0; jj < Container::MAX_SAMPLES; ++jj )
+        for ( int jj = 0; jj < bufferWidth; ++jj )
         {
-          this->NativeBuffer[Container::MAX_SAMPLES * ii + jj] =
+          this->NativeBuffer[bufferWidth * ii + jj] =
             this->ManagedBuffer[ii, jj];
         }
       }
       this->NewImageCallback( this->NativeBuffer,
         this->NewImageCallbackClientData );
     }
+  }
+
+  void SetImageSize( int width, int height )
+  {
+     bufferWidth = width;
+     bufferHeight = height;
   }
 
   void SetNewImageCallback( NewImageCallbackType callback,
@@ -148,6 +166,8 @@ private:
   void                 * NewImageCallbackClientData;
   PixelType            * NativeBuffer;
   ArrayType            ^ ManagedBuffer;
+  int                    bufferWidth;
+  int                    bufferHeight;
 };
 
 // End Capture
@@ -182,7 +202,6 @@ public:
       IntersonArray::Imaging::Capture::NewImageHandler( RFHandler,
         & NewRFImageHandler::HandleNewRFImage );
     WrappedCapture->NewImageTick += RFHandlerDelegate;
-
   }
 
   ~ContainerImpl()
@@ -312,12 +331,20 @@ public:
     void *clientData = 0 )
   {
     this->Handler->SetNewImageCallback( callback, clientData );
+    std::cout << "Callback width = " << this->GetWidthScan() << std::endl;
+    std::cout << "        heidth = " << this->GetHeightScan() << std::endl;
+    this->Handler->SetImageSize( this->GetWidthScan(),
+      this->GetHeightScan() );
   }
 
   void SetNewRFImageCallback( NewRFImageCallbackType callback,
     void *clientData = 0 )
   {
     this->RFHandler->SetNewRFImageCallback( callback, clientData );
+    std::cout << "Callback width = " << this->GetWidthScan() << std::endl;
+    std::cout << "        heidth = " << this->GetHeightScan() << std::endl;
+    this->RFHandler->SetImageSize( this->GetWidthScan(),
+      this->GetHeightScan() );
   }
 
   // 

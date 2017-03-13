@@ -55,7 +55,7 @@
       <description>Depth of acquisition [mm]. Only relevant with scanConvert.</description>
       <longflag>depth</longflag>
       <flag>d</flag>
-      <default>40</default>
+      <default>100</default>
       <minimum>0</minimum>
       <maximum>200</maximum>
     </integer>
