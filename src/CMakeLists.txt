@@ -20,10 +20,10 @@
 # limitations under the License.
 #
 ##############################################################################
-#if(CMAKE_CXX_FLAGS_DEBUG MATCHES "/RTC1")
-  #string(REPLACE "/RTC1" " " CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
-#endif()
-#
+if(CMAKE_CXX_FLAGS_DEBUG MATCHES "/RTC1")
+  string(REPLACE "/RTC1" " " CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+endif()
+
 #if(CMAKE_CXX_FLAGS MATCHES "/EHsc")
   #string(REPLACE "/EHsc" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 #endif()
