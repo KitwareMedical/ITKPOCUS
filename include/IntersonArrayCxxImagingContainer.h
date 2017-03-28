@@ -24,7 +24,7 @@ limitations under the License.
 #define _IntersonArrayCxxImagingContainer_h
 
 #include "IntersonArrayCxx_Export.h"
-
+#include "IntersonArrayCxxControlsHWControls.h"
 #include <string>
 #include <vector>
 
@@ -44,9 +44,11 @@ public:
 
   typedef unsigned char  PixelType;
   typedef unsigned short RFPixelType;
+  typedef short          RFImagePixelType;
 
   static const int MAX_SAMPLES = 1024;
   static const int MAX_RFSAMPLES = 2048;
+  static const int NBOFLINES = 127;
 
   bool GetCompound();
 
@@ -113,10 +115,12 @@ public:
   void SetNewImageCallback( NewImageCallbackType callback,
     void *clientData = NULL );
 
-  typedef void (__stdcall *NewRFImageCallbackType)( RFPixelType *buffer,
+  typedef void (__stdcall *NewRFImageCallbackType)( RFImagePixelType *buffer,
     void *clientData );
   void SetNewRFImageCallback( NewRFImageCallbackType callback,
     void *clientData = NULL );
+
+  void SetHWControls(IntersonArrayCxx::Controls::HWControls * controls);
 
 private:
 

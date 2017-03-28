@@ -32,7 +32,7 @@ limitations under the License.
 typedef IntersonArrayCxx::Imaging::Container ContainerType;
 
 const unsigned int Dimension = 3;
-typedef ContainerType::RFPixelType         PixelType;
+typedef ContainerType::RFImagePixelType    PixelType;
 typedef itk::Image< PixelType, Dimension > ImageType;
 
 
@@ -59,13 +59,13 @@ void __stdcall pasteIntoImage( PixelType * buffer, void * clientData )
     }
 
   const int framePixels = imageSize[0] * imageSize[1];
-  std::cout << "frame pixels = " << framePixels << std::endl;
+  std::cout << "frame pixels RF = " << framePixels << std::endl;
 
   PixelType * imageBuffer = image->GetPixelContainer()->GetBufferPointer();
   imageBuffer += framePixels * callbackClientData->FrameIndex;
   std::memcpy( imageBuffer, buffer, framePixels * sizeof( PixelType ) );
 
-  std::cout << "Acquired frame: " << callbackClientData->FrameIndex
+  std::cout << "Acquired frame RF: " << callbackClientData->FrameIndex
     << std::endl;
   ++(callbackClientData->FrameIndex);
 }
@@ -119,20 +119,20 @@ int main( int argc, char * argv[] )
   hwControls.DisableHardButton();
 
   ContainerType container;
+  container.SetHWControls(&hwControls);
 
-  const int height = hwControls.GetLinesPerArray();
-  const int width = ContainerType::MAX_RFSAMPLES;
+  const int height_lines = hwControls.GetLinesPerArray();
+  std::cout << "Lines per array: " << height_lines << std::endl;
+  const int width_samples = ContainerType::MAX_RFSAMPLES;
+  std::cout << "Max RF samples: " << width_samples << std::endl;
   const itk::SizeValueType framesToCollect = frames;
 
   container.AbortScan();
   container.SetRFData( true );
 
-  if( hwControls.ValidDepth( depth ) != depth )
-    {
-    container.IdleInitScanConverter( depth, width, height, probeId,
+  container.IdleInitScanConverter( depth, width_samples, height_lines, probeId,
       steering, false, false, 0 );
-    container.HardInitScanConverter( depth, width, height, steering );
-    }
+  container.HardInitScanConverter( depth, width_samples, height_lines, steering );
 
   ImageType::Pointer image = ImageType::New();
   typedef ImageType::RegionType RegionType;
@@ -141,8 +141,8 @@ int main( int argc, char * argv[] )
   imageIndex.Fill( 0 );
   imageRegion.SetIndex( imageIndex );
   ImageType::SizeType imageSize;
-  imageSize[0] = width;
-  imageSize[1] = height;
+  imageSize[0] = width_samples;
+  imageSize[1] = height_lines;
   imageSize[2] = framesToCollect;
   imageRegion.SetSize( imageSize );
   image->SetRegions( imageRegion );
@@ -154,41 +154,6 @@ int main( int argc, char * argv[] )
 
   container.SetNewRFImageCallback( &pasteIntoImage, &clientData );
 
-  /* Begin theoretically unnecessary yet definitely necessary lines...*/
-  std::cout << "Acquire 1 bmode image" << std::endl;
-  container.StartReadScan();
-  Sleep( 100 );
-  if( !hwControls.StartBmode() )
-    {
-    std::cerr << "Could not start RF collection." << std::endl;
-    return EXIT_FAILURE;
-    }
-  Sleep( 100 );
-  Sleep( 100 );
-  Sleep( 100 );
-  Sleep( 100 );
-  std::cout << "StopAcquisition" << std::endl;
-  hwControls.StopAcquisition();
-  container.StopReadScan();
-  Sleep( 100 ); // "time to stop"
-  container.DisposeScan();
-  Sleep( 100 ); // "time to stop"
-
-  std::cout << "SetRFData" << std::endl;
-  container.SetRFData( true );
-
-  // Sequent to init a scan, after above variables are set
-  std::cout << "HardInitScanConverter" << std::endl;
-  ContainerType::ScanConverterError converterError =
-    container.HardInitScanConverter( depth, width, height, steering );
-  if( converterError != ContainerType::SUCCESS )
-    {
-    std::cerr << "Error during hard scan converter initialization: "
-              << converterError << std::endl;
-    return EXIT_FAILURE;
-    }
-  /* ...end necessary lines. */
-
   std::cout << "StartRFReadScan" << std::endl;
   container.StartRFReadScan();
   Sleep( 100 ); // "time to start"
@@ -199,14 +164,12 @@ int main( int argc, char * argv[] )
     return EXIT_FAILURE;
     }
 
-  /*  BUG: FrameIndex never changes, since callback
-   *  never happens with RF data. */
   int c = 0;
-  while( clientData.FrameIndex < framesToCollect && c < 100 )
+  while( clientData.FrameIndex < framesToCollect && c < 10 )
     {
     std::cout << clientData.FrameIndex << " of " << framesToCollect
       << std::endl;
-    std::cout << c << " of 100" << std::endl;
+    std::cout << c << " of 10" << std::endl;
     Sleep( 100 );
     ++c;
     }
@@ -221,6 +184,7 @@ int main( int argc, char * argv[] )
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( outputImage );
   writer->SetInput( image );
+
   try
     {
     writer->Update();

@@ -46,16 +46,17 @@ public:
 
   typedef Container::NewRFImageCallbackType   NewRFImageCallbackType;
 
-  typedef IntersonArrayCxx::Imaging::Container::RFPixelType   RFPixelType;
-  typedef cli::array< RFPixelType, 2 >                        RFArrayType;
+  typedef IntersonArrayCxx::Imaging::Container::RFPixelType        RFPixelType;
+  typedef IntersonArrayCxx::Imaging::Container::RFImagePixelType   RFImagePixelType;
+  typedef cli::array< RFPixelType, 2 >                             RFArrayType;
 
   NewRFImageHandler( RFArrayType ^managedRFBuffer ):
     NewRFImageCallback( NULL ),
     NewRFImageCallbackClientData( NULL ),
     bufferWidth( Container::MAX_RFSAMPLES ),
     bufferHeight( Container::MAX_RFSAMPLES ),
-    NativeRFBuffer( new RFPixelType[Container::MAX_RFSAMPLES
-      * Container::MAX_RFSAMPLES] ),
+    NativeRFBuffer(new RFImagePixelType[Container::MAX_RFSAMPLES
+      * Container::NBOFLINES] ),
     ManagedRFBuffer( managedRFBuffer )
   {
   }
@@ -74,7 +75,7 @@ public:
       {
         for ( int jj = 0; jj < bufferWidth; ++jj )
         {
-          this->NativeRFBuffer[bufferWidth * ii + jj] =
+          this->NativeRFBuffer[bufferWidth * ii + jj] = (short)
             this->ManagedRFBuffer[ii, jj];
         }
       }
@@ -99,7 +100,7 @@ public:
 private:
   NewRFImageCallbackType   NewRFImageCallback;
   void                   * NewRFImageCallbackClientData;
-  RFPixelType            * NativeRFBuffer;
+  RFImagePixelType       * NativeRFBuffer;
   RFArrayType            ^ ManagedRFBuffer;
   int                      bufferWidth;
   int                      bufferHeight;
@@ -195,13 +196,11 @@ public:
         & NewImageHandler::HandleNewImage );
     WrappedCapture->NewImageTick += HandlerDelegate;
 
-    RFBuffer = gcnew RFArrayType( Container::MAX_RFSAMPLES,
-      Container::MAX_RFSAMPLES );
+    RFBuffer = gcnew RFArrayType(Container::NBOFLINES , Container::MAX_RFSAMPLES);
     RFHandler = gcnew NewRFImageHandler( RFBuffer );
     RFHandlerDelegate = gcnew
       IntersonArray::Imaging::Capture::NewImageHandler( RFHandler,
         & NewRFImageHandler::HandleNewRFImage );
-    WrappedCapture->NewImageTick += RFHandlerDelegate;
   }
 
   ~ContainerImpl()
@@ -294,7 +293,19 @@ public:
 
   void SetRFData( bool value )
   {
+    if (value){
+      this->hwControls->ReadFPGAVersion();
+    }
     WrappedCapture->RFData = value;
+    //Set correct image handler
+    if (value){
+      WrappedCapture->NewImageTick -= HandlerDelegate;
+      WrappedCapture->NewImageTick += RFHandlerDelegate;
+    }
+    else{
+      WrappedCapture->NewImageTick -= RFHandlerDelegate;
+      WrappedCapture->NewImageTick += HandlerDelegate;
+    }
   }
 
   double GetScanOn()
@@ -331,8 +342,6 @@ public:
     void *clientData = 0 )
   {
     this->Handler->SetNewImageCallback( callback, clientData );
-    std::cout << "Callback width = " << this->GetWidthScan() << std::endl;
-    std::cout << "        height = " << this->GetHeightScan() << std::endl;
     this->Handler->SetImageSize( this->GetWidthScan(),
       this->GetHeightScan() );
   }
@@ -341,10 +350,11 @@ public:
     void *clientData = 0 )
   {
     this->RFHandler->SetNewRFImageCallback( callback, clientData );
-    std::cout << "Callback width = " << this->GetWidthScan() << std::endl;
-    std::cout << "        height = " << this->GetHeightScan() << std::endl;
-    this->RFHandler->SetImageSize( this->GetWidthScan(),
-      this->GetHeightScan() );
+    this->RFHandler->SetImageSize(Container::MAX_RFSAMPLES, Container::NBOFLINES);
+  }
+  void SetHWControls(IntersonArrayCxx::Controls::HWControls * controls)
+  {
+    this->hwControls = controls;
   }
 
   // 
@@ -352,6 +362,7 @@ public:
   //
 
 private:
+  IntersonArrayCxx::Controls::HWControls * hwControls;
   msclr::auto_gcroot< IntersonArray::Imaging::ScanConverter ^ >
     WrappedScanConverter;
   msclr::auto_gcroot< IntersonArray::Imaging::ImageBuilding ^ >
@@ -576,6 +587,13 @@ Container
   void *clientData )
 {
   Impl->SetNewRFImageCallback( callback, clientData );
+}
+
+void
+Container
+::SetHWControls(IntersonArrayCxx::Controls::HWControls * controls)
+{
+  Impl->SetHWControls(controls);
 }
 
 } // end namespace Imaging
