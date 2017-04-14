@@ -23,7 +23,7 @@
 set( IntersonArrayCxx_HEADERS
   IntersonArrayCxxControlsHWControls.h
   IntersonArrayCxxImagingContainer.h
-  IntersonArrayCxxIntersonArrayClass.h
+  IntersonArrayCxxIntersonClass.h
   )
 install( FILES
   ${IntersonArrayCxx_HEADERS}

@@ -34,14 +34,10 @@ if(NOT CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
   set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${IntersonArraySDKCxx_BINARY_DIR}/lib )
 endif()
 
-# Following removed because of use of duplicate variable
-#set( CONF_INCLUDE_DIRS
-#  ${PROJECT_SOURCE_DIR}/include
-#  ${PROJECT_BINARY_DIR}/include )
-#include_directories( ${CONF_INCLUDE_DIRS} )
-include_directories(
+set( CONF_INCLUDE_DIRS
   ${PROJECT_SOURCE_DIR}/include
   ${PROJECT_BINARY_DIR}/include )
+include_directories( ${CONF_INCLUDE_DIRS} )
 
 set( INSTALL_LIB_DIR lib )
 set( INSTALL_BIN_DIR bin )
@@ -92,7 +88,7 @@ configure_file( IntersonArraySDKCxxConfig.cmake.in
   "${PROJECT_BINARY_DIR}/IntersonArraySDKCxxConfig.cmake" @ONLY )
 
 set( CONF_INCLUDE_DIRS
-  "\${IntersonArraySDKCxx_CMAKE_DIR}/${_relative_include_dir}" )
+  "\${IntersonArraySDKCxx_CMAKE_DIR}/${_relative_include_dir} ${CONF_INCLUDE_DIRS}" )
 configure_file( IntersonArraySDKCxxConfig.cmake.in
   "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/IntersonArraySDKCxxConfig.cmake"
   @ONLY )
