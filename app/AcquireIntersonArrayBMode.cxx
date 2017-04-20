@@ -127,6 +127,7 @@ int main( int argc, char * argv[] )
 
   const int height = hwControls.GetLinesPerArray();
   const int width = container.MAX_SAMPLES;
+  const int depth = 100;
   if( hwControls.ValidDepth( depth ) == depth )
     {
     ContainerType::ScanConverterError converterErrorIdle =
