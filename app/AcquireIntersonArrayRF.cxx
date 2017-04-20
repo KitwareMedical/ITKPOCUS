@@ -127,6 +127,11 @@ int main( int argc, char * argv[] )
   std::cout << "Max RF samples: " << width_samples << std::endl;
   const itk::SizeValueType framesToCollect = frames;
 
+  const double ns = ContainerType::MAX_RFSAMPLES; // number of samples
+  const double fs = 30000; // [kHz]=[samples/ms] - sampling frequency
+  const double depth = sos * ( ns - 1 ) / ( 2 * fs );
+  std::cout << "Depth: " << depth << "mm" << std::endl;
+
   container.AbortScan();
   container.SetRFData( true );
 
@@ -147,6 +152,11 @@ int main( int argc, char * argv[] )
   imageSize[2] = framesToCollect;
   imageRegion.SetSize( imageSize );
   image->SetRegions( imageRegion );
+  ImageType::SpacingType imageSpacing;
+  imageSpacing[ 0 ] = sos / ( 2 * fs );
+  imageSpacing[ 1 ] = 38.0 / ( height_lines - 1 );
+  imageSpacing[ 2 ] = 1;
+  image->SetSpacing( imageSpacing );
   image->Allocate();
 
   CallbackClientData clientData;

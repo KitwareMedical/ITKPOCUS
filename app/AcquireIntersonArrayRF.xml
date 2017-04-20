@@ -49,5 +49,12 @@
       <minimum>0</minimum>
       <maximum>100</maximum>
     </integer>
+    <double>
+      <name>sos</name>
+      <label>Speed of sound</label>
+      <description> Assumed speed of sound in the crossed medium in mm/ms.</description>
+      <longflag>sos</longflag>
+      <default>1540</default>
+    </double>
   </parameters>
 </executable>

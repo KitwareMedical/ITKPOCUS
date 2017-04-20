@@ -154,6 +154,7 @@ int main( int argc, char * argv[] )
   std::cout << "ScanWidth = " << scanWidth << std::endl;
   std::cout << "ScanHeight = " << scanHeight << std::endl;
   std::cout << "MM per Pixel = " << container.GetMmPerPixel() << std::endl;
+  std::cout << "Depth: " << depth << "mm" << std::endl;
 
   const itk::SizeValueType framesToCollect = frames;
 
@@ -169,6 +170,11 @@ int main( int argc, char * argv[] )
   imageSize[2] = framesToCollect;
   imageRegion.SetSize( imageSize );
   image->SetRegions( imageRegion );
+  ImageType::SpacingType imageSpacing;
+  imageSpacing[ 0 ] = container.GetMmPerPixel();
+  imageSpacing[ 1 ] = 38.0 / (height - 1);
+  imageSpacing[ 2 ] = 1;
+  image->SetSpacing( imageSpacing );
   image->Allocate();
 
   CallbackClientData clientData;
