@@ -20,6 +20,9 @@
 # limitations under the License.
 #
 ##############################################################################
+
+# XXX (Maeliss, Jc) Ideally, these flags should probably be associated with the
+#                   targets using target_compile_options command.
 if(CMAKE_CXX_FLAGS_DEBUG MATCHES "/RTC1")
   string(REPLACE "/RTC1" " " CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
 endif()
@@ -28,7 +31,6 @@ endif()
   #string(REPLACE "/EHsc" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 #endif()
 set( CMAKE_CXX_FLAGS "/clr /EHa /AI${IntersonArraySDK_DIR}/Libraries" )
-set( COMPILE_FLAGS "/clr /EHa /AI${IntersonArraySDK_DIR}/Libraries" )
 
 set( IntersonArrayCxx_SRCS
   IntersonArrayCxxControlsHWControls.cxx
@@ -36,27 +38,39 @@ set( IntersonArrayCxx_SRCS
   IntersonArrayCxxIntersonClass.cxx
   )
 
-include( GenerateExportHeader )
 add_library( IntersonArrayCxx SHARED
   ${IntersonArrayCxx_SRCS} )
 
+target_include_directories( IntersonArrayCxx PUBLIC
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+  $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  )
+
+# Generate and install export header
+include( GenerateExportHeader )
+set(export_header ${PROJECT_BINARY_DIR}/include/IntersonArrayCxx_Export.h)
 generate_export_header( IntersonArrayCxx
   BASE_NAME IntersonArrayCxx
   EXPORT_MACRO_NAME IntersonArrayCxx_EXPORT
-  EXPORT_FILE_NAME ${PROJECT_BINARY_DIR}/include/IntersonArrayCxx_Export.h
+  EXPORT_FILE_NAME ${export_header}
   )
-#set_target_properties( IntersonArrayCxx PROPERTIES
-  #CMAKE_CXX_FLAGS "/clr /EHa /AI${IntersonArraySDK_DIR}/Libraries"
-  #)
-  # COMPILE_FLAGS "/clr /EHa /AI${IntersonArraySDK_DIR}/Libraries"
+install(
+  FILES ${export_header}
+  DESTINATION include COMPONENT Development
+  )
 
-install( TARGETS IntersonArrayCxx
+# Install library
+install(
+  TARGETS IntersonArrayCxx
   EXPORT IntersonArraySDKCxxTargets
   RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT Runtime
   LIBRARY DESTINATION "${INSTALL_LIB_DIR}" COMPONENT Development
+  ARCHIVE DESTINATION "${INSTALL_LIB_DIR}" COMPONENT Development
   )
+
+# Copy "IntersonArray.dll" and "IntersonArrayCxx.dll" to allow tests and applications to be executed from the build directory
 if( BUILD_TESTING )
-  # For running tests
   add_custom_command( TARGET IntersonArrayCxx
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${IntersonArraySDK_DIR}/Libraries/IntersonArray.dll" "${PROJECT_BINARY_DIR}/bin"
@@ -66,9 +80,6 @@ if( BUILD_APPLICATIONS )
   add_custom_command( TARGET IntersonArrayCxx
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${IntersonArraySDK_DIR}/Libraries/IntersonArray.dll" "${PROJECT_BINARY_DIR}/app/bin"
-    )
-  add_custom_command( TARGET IntersonArrayCxx
-    POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${PROJECT_BINARY_DIR}/bin/IntersonArrayCxx.dll" "${PROJECT_BINARY_DIR}/app/bin"
     )
 endif()
