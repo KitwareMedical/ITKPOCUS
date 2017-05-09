@@ -24,35 +24,15 @@
 # Config file for the IntersonArraySDKCxx library wrapper.
 #
 # It defines the following variables:
-#   IntersonArraySDKCxx_INCLUDE_DIRS - include directories for
-#     IntersonArraySDKCxx
-#   IntersonArraySDKCxx_RUNTIME_LIBRARY_DIRS - directories that store the
-#     libraries needed for runtime execution
 #   IntersonArraySDKCxx_LIBRARIES    - libraries to link against
-#   IntersonArraySDK_DIR             - Path to the IntersonArraySDK used to
-#     build this library.
 
-get_filename_component( IntersonArraySDKCxx_CMAKE_DIR
- "${CMAKE_CURRENT_LIST_FILE}" PATH )
+@PACKAGE_INIT@
 
-set( IntersonArraySDKCxx_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@" )
+set_and_check( IntersonArraySDKCxx_TARGETS "@PACKAGE_CONFIG_DIR_CONFIG@/IntersonArraySDKCxxTargets.cmake" )
 
-if( NOT TARGET IntersonArrayCxx AND NOT IntersonArraySDKCxx_BINARY_DIR )
-  include( "${IntersonArraySDKCxx_CMAKE_DIR}/IntersonArraySDKCxxTargets.cmake" )
+if( NOT IntersonArraySDKCxx_TARGETS_IMPORTED )
+  set( IntersonArraySDKCxx_TARGETS_IMPORTED 1 )
+  include( ${IntersonArraySDKCxx_TARGETS} )
 endif()
 
 set( IntersonArraySDKCxx_LIBRARIES IntersonArrayCxx )
-
-set( IntersonArrayCxx_RUNTIME_LIBRARY_DIRS )
-get_property( _configs TARGET IntersonArrayCxx PROPERTY
-  IMPORTED_CONFIGURATIONS )
-foreach( _config ${_configs} )
-  get_property( _libloc TARGET IntersonArrayCxx PROPERTY
-    IMPORTED_LOCATION_${_config} )
-  if( EXISTS "${_libloc}" )
-    get_filename_component( _libpath "${_libloc}" PATH )
-    list( APPEND IntersonArrayCxx_RUNTIME_LIBRARY_DIRS "${_libpath}" )
-  endif()
-endforeach()
-
-set( IntersonArraySDK_DIR "@IntersonArraySDK_DIR@" )
