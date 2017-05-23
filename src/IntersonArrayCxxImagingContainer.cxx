@@ -84,12 +84,6 @@ public:
     }
   }
 
-  void SetImageSize( int width, int height )
-  {
-     //bufferWidth = width;
-     //bufferHeight = height;
-  }
-
   void SetNewRFImageCallback( NewRFImageCallbackType callback,
     void *clientData )
   {
@@ -124,8 +118,6 @@ public:
       Container::NBOFLINES ] ),
     ManagedBuffer( managedBuffer )
   {
-     std::cout << "Conatiner NBOFLINES: " << Container::NBOFLINES << std::endl;
-
   }
 
   ~NewImageHandler()
@@ -151,11 +143,6 @@ public:
     }
   }
 
-  void SetImageSize( int width, int height )
-  {
-    // bufferWidth = width;
-    // bufferHeight = height;
-  }
 
   void SetNewImageCallback( NewImageCallbackType callback,
     void *clientData )
@@ -344,16 +331,12 @@ public:
     void *clientData = 0 )
   {
     this->Handler->SetNewImageCallback( callback, clientData );
-    
-    //this->Handler->SetImageSize( this->GetWidthScan(),
-    //  this->GetHeightScan() );
   }
 
   void SetNewRFImageCallback( NewRFImageCallbackType callback,
     void *clientData = 0 )
   {
     this->RFHandler->SetNewRFImageCallback( callback, clientData );
-    this->RFHandler->SetImageSize(Container::MAX_RFSAMPLES, Container::NBOFLINES);
   }
   void SetHWControls(IntersonArrayCxx::Controls::HWControls * controls)
   {
