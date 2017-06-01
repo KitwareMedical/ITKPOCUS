@@ -25,6 +25,8 @@
 #
 # It defines the following variables:
 #   IntersonArraySDKCxx_LIBRARIES    - libraries to link against
+#   IntersonArraySDK_DIR             - Path to the IntersonArraySDK used to
+#     build this library.
 
 @PACKAGE_INIT@
 
@@ -36,3 +38,4 @@ if( NOT IntersonArraySDKCxx_TARGETS_IMPORTED )
 endif()
 
 set( IntersonArraySDKCxx_LIBRARIES IntersonArrayCxx )
+set( IntersonArraySDK_DIR "@IntersonArraySDK_DIR@" )
