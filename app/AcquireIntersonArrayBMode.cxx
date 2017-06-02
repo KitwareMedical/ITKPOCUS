@@ -126,7 +126,7 @@ int main( int argc, char * argv[] )
   container.SetRFData( false );
 
   const int height = hwControls.GetLinesPerArray();
-  const int width = 512; //container.MAX_SAMPLES;
+  const int width = container.MAX_SAMPLES;
   if( hwControls.ValidDepth( depth ) == depth )
     {
     ContainerType::ScanConverterError converterErrorIdle =

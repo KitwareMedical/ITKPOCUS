@@ -54,7 +54,7 @@ public:
     NewRFImageCallback( NULL ),
     NewRFImageCallbackClientData( NULL ),
     bufferWidth( Container::MAX_RFSAMPLES ),
-    bufferHeight( Container::MAX_RFSAMPLES ),
+    bufferHeight( Container::NBOFLINES ),
     NativeRFBuffer(new RFImagePixelType[Container::MAX_RFSAMPLES
       * Container::NBOFLINES] ),
     ManagedRFBuffer( managedRFBuffer )
@@ -82,12 +82,6 @@ public:
       this->NewRFImageCallback( this->NativeRFBuffer,
         this->NewRFImageCallbackClientData );
     }
-  }
-
-  void SetImageSize( int width, int height )
-  {
-     bufferWidth = width;
-     bufferHeight = height;
   }
 
   void SetNewRFImageCallback( NewRFImageCallbackType callback,
@@ -119,9 +113,9 @@ public:
     NewImageCallback( NULL ),
     NewImageCallbackClientData( NULL ),
     bufferWidth( Container::MAX_SAMPLES ),
-    bufferHeight( Container::MAX_SAMPLES ),
+    bufferHeight( Container::NBOFLINES ),
     NativeBuffer( new PixelType[Container::MAX_SAMPLES *
-      Container::MAX_SAMPLES] ),
+      Container::NBOFLINES ] ),
     ManagedBuffer( managedBuffer )
   {
   }
@@ -149,11 +143,6 @@ public:
     }
   }
 
-  void SetImageSize( int width, int height )
-  {
-     bufferWidth = width;
-     bufferHeight = height;
-  }
 
   void SetNewImageCallback( NewImageCallbackType callback,
     void *clientData )
@@ -188,8 +177,7 @@ public:
     WrappedImageBuilding = gcnew IntersonArray::Imaging::ImageBuilding();
     WrappedCapture = gcnew IntersonArray::Imaging::Capture();
 
-    Buffer = gcnew ArrayType( Container::MAX_SAMPLES,
-      Container::MAX_SAMPLES);
+    Buffer = gcnew ArrayType( Container::NBOFLINES, Container::MAX_SAMPLES );
     Handler = gcnew NewImageHandler( Buffer );
     HandlerDelegate = gcnew
       IntersonArray::Imaging::Capture::NewImageHandler( Handler,
@@ -257,6 +245,7 @@ public:
   Container::ScanConverterError HardInitScanConverter( int depth,
     int widthScan, int heightScan, int steering )
   {
+    
     return static_cast< Container::ScanConverterError >(
       WrappedScanConverter->HardInitScanConverter( depth, widthScan,
         heightScan, steering, WrappedCapture.get(),
@@ -342,15 +331,12 @@ public:
     void *clientData = 0 )
   {
     this->Handler->SetNewImageCallback( callback, clientData );
-    this->Handler->SetImageSize( this->GetWidthScan(),
-      this->GetHeightScan() );
   }
 
   void SetNewRFImageCallback( NewRFImageCallbackType callback,
     void *clientData = 0 )
   {
     this->RFHandler->SetNewRFImageCallback( callback, clientData );
-    this->RFHandler->SetImageSize(Container::MAX_RFSAMPLES, Container::NBOFLINES);
   }
   void SetHWControls(IntersonArrayCxx::Controls::HWControls * controls)
   {
