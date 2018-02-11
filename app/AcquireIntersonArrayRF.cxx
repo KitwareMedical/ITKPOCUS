@@ -135,7 +135,6 @@ int main( int argc, char * argv[] )
   container.AbortScan();
   container.SetRFData( true );
 
-  const int depth = 100; // Depth of acquisition [mm]
   container.IdleInitScanConverter( depth, width_samples, height_lines, probeId,
       steering, false, false, 0 );
   container.HardInitScanConverter( depth, width_samples, height_lines, steering );
