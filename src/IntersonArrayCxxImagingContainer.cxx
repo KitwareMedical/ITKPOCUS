@@ -20,16 +20,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 =========================================================================*/
-#pragma unmanaged
 #include "IntersonArrayCxxImagingContainer.h"
 #include <iostream>
-#pragma managed
 
 #include <vcclr.h>
 #include <msclr/marshal_cppstd.h>
 #include <msclr/auto_gcroot.h>
 
 #using "IntersonArray.dll"
+
+#pragma managed
 
 namespace IntersonArrayCxx
 {
@@ -84,12 +84,6 @@ public:
     }
   }
 
-  void SetImageSize( int width, int height )
-  {
-     bufferWidth = width;
-     bufferHeight = height;
-  }
-
   void SetNewRFImageCallback( NewRFImageCallbackType callback,
     void *clientData )
   {
@@ -119,9 +113,9 @@ public:
     NewImageCallback( NULL ),
     NewImageCallbackClientData( NULL ),
     bufferWidth( Container::MAX_SAMPLES ),
-    bufferHeight( Container::MAX_SAMPLES ),
+    bufferHeight( Container::NBOFLINES ),
     NativeBuffer( new PixelType[Container::MAX_SAMPLES *
-      Container::MAX_SAMPLES] ),
+      Container::NBOFLINES ] ),
     ManagedBuffer( managedBuffer )
   {
   }
@@ -149,11 +143,6 @@ public:
     }
   }
 
-  void SetImageSize( int width, int height )
-  {
-     bufferWidth = width;
-     bufferHeight = height;
-  }
 
   void SetNewImageCallback( NewImageCallbackType callback,
     void *clientData )
@@ -188,8 +177,7 @@ public:
     WrappedImageBuilding = gcnew IntersonArray::Imaging::ImageBuilding();
     WrappedCapture = gcnew IntersonArray::Imaging::Capture();
 
-    Buffer = gcnew ArrayType( Container::MAX_SAMPLES,
-      Container::MAX_SAMPLES);
+    Buffer = gcnew ArrayType( Container::NBOFLINES, Container::MAX_SAMPLES );
     Handler = gcnew NewImageHandler( Buffer );
     Handler->SetImageSize( Container::MAX_SAMPLES, Container::MAX_SAMPLES );
     HandlerDelegate = gcnew
@@ -260,6 +248,7 @@ public:
   Container::ScanConverterError HardInitScanConverter( int depth,
     int widthScan, int heightScan, int steering )
   {
+    
     return static_cast< Container::ScanConverterError >(
       WrappedScanConverter->HardInitScanConverter( depth, widthScan,
         heightScan, steering, WrappedCapture.get(),
@@ -345,15 +334,12 @@ public:
     void *clientData = 0 )
   {
     this->Handler->SetNewImageCallback( callback, clientData );
-    this->Handler->SetImageSize( this->GetWidthScan(),
-      this->GetHeightScan() );
   }
 
   void SetNewRFImageCallback( NewRFImageCallbackType callback,
     void *clientData = 0 )
   {
     this->RFHandler->SetNewRFImageCallback( callback, clientData );
-    this->RFHandler->SetImageSize(Container::MAX_RFSAMPLES, Container::NBOFLINES);
   }
   void SetHWControls(IntersonArrayCxx::Controls::HWControls * controls)
   {

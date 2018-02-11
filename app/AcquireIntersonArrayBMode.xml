@@ -59,15 +59,5 @@
       <minimum>0</minimum>
       <maximum>255</maximum>
     </integer>
-    <integer>
-      <name>depth</name>
-      <label>Depth</label>
-      <description>Depth of acquisition [mm]. Only relevant with scanConvert.</description>
-      <longflag>depth</longflag>
-      <flag>d</flag>
-      <default>100</default>
-      <minimum>0</minimum>
-      <maximum>200</maximum>
-    </integer>
   </parameters>
 </executable>

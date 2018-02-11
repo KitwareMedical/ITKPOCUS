@@ -75,6 +75,8 @@ if( BUILD_TESTING )
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${IntersonArraySDK_DIR}/Libraries/IntersonArray.dll" "${PROJECT_BINARY_DIR}/bin/$<CONFIG>"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${IntersonArraySDK_DIR}/Libraries/IntersonArray.dll" "${PROJECT_BINARY_DIR}/bin"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:IntersonArrayCxx>" "${PROJECT_BINARY_DIR}/bin/$<CONFIG>"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:IntersonArrayCxx>" "${PROJECT_BINARY_DIR}/bin/"
     )
 endif()
 if( BUILD_APPLICATIONS )

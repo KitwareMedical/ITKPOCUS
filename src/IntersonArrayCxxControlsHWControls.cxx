@@ -21,17 +21,17 @@ limitations under the License.
 
 =========================================================================*/
 // C++
-#pragma unmanaged
 #include "IntersonArrayCxxControlsHWControls.h"
 
 // C#
-#pragma managed
 
 #include <vcclr.h>
 #include <msclr/marshal_cppstd.h>
 
 // Add library from SDK
 #using "IntersonArray.dll"
+
+#pragma managed
 
 namespace IntersonArrayCxx
 {

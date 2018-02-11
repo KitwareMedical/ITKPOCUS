@@ -21,7 +21,7 @@
 #
 ##############################################################################
 
-cmake_minimum_required( VERSION 3.6 )
+cmake_minimum_required( VERSION 3.5 )
 
 project( IntersonArraySDKCxx )
 
@@ -40,6 +40,10 @@ find_path( IntersonArraySDK_DIR
 if( NOT IntersonArraySDK_DIR )
   message( FATAL_ERROR "Please specify the path to the IntersonArraySDK"
     " in IntersonArraySDK_DIR" )
+endif()
+set( IntersonArraySDK_LIBRARY "${IntersonArraySDK_DIR}/Libraries/IntersonArray.dll" )
+if( NOT EXISTS ${IntersonArraySDK_LIBRARY} )
+  message( FATAL_ERROR "Interson library is missing [${IntersonArraySDK_LIBRARY}]" )
 endif()
 
 # Install relative directories
@@ -68,6 +72,11 @@ endif()
 if( BUILD_APPLICATIONS )
   add_subdirectory( app )
 endif()
+
+# Install Interson libraries
+install( FILES ${IntersonArraySDK_LIBRARY}
+  DESTINATION ${INSTALL_BIN_DIR} COMPONENT Runtime
+  )
 
 # Configure 'IntersonArraySDKCxxConfig.cmake' for a build tree
 set(CONFIG_DIR_CONFIG ${PROJECT_BINARY_DIR})
