@@ -143,7 +143,6 @@ public:
     }
   }
 
-
   void SetNewImageCallback( NewImageCallbackType callback,
     void *clientData )
   {
@@ -179,7 +178,6 @@ public:
 
     Buffer = gcnew ArrayType( Container::NBOFLINES, Container::MAX_SAMPLES );
     Handler = gcnew NewImageHandler( Buffer );
-    Handler->SetImageSize( Container::MAX_SAMPLES, Container::MAX_SAMPLES );
     HandlerDelegate = gcnew
       IntersonArray::Imaging::Capture::NewImageHandler( Handler,
         & NewImageHandler::HandleNewImage );
@@ -188,7 +186,6 @@ public:
     RFBuffer = gcnew RFArrayType( Container::NBOFLINES,
       Container::MAX_RFSAMPLES );
     RFHandler = gcnew NewRFImageHandler( RFBuffer );
-    RFHandler->SetImageSize( Container::MAX_RFSAMPLES, Container::NBOFLINES );
     RFHandlerDelegate = gcnew
       IntersonArray::Imaging::Capture::NewImageHandler( RFHandler,
         & NewRFImageHandler::HandleNewRFImage );
