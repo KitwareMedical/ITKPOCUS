@@ -20,16 +20,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 =========================================================================*/
-#pragma unmanaged
 #include "IntersonArrayCxxImagingContainer.h"
 #include <iostream>
-#pragma managed
 
 #include <vcclr.h>
 #include <msclr/marshal_cppstd.h>
 #include <msclr/auto_gcroot.h>
 
 #using "IntersonArray.dll"
+
+#pragma managed
 
 namespace IntersonArrayCxx
 {
