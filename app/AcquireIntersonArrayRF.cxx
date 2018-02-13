@@ -130,14 +130,15 @@ int main( int argc, char * argv[] )
   const double ns = ContainerType::MAX_RFSAMPLES; // number of samples
   const double fs = 30000; // [kHz]=[samples/ms] - sampling frequency
   const double depth = sos * ( ns - 1 ) / ( 2 * fs );
+  const double depthCfm = depth/2;
   std::cout << "Depth: " << depth << "mm" << std::endl;
 
-  container.AbortScan();
   container.SetRFData( true );
 
   container.IdleInitScanConverter( depth, width_samples, height_lines, probeId,
-      steering, false, false, 0 );
-  container.HardInitScanConverter( depth, width_samples, height_lines, steering );
+      steering, depthCfm, false, false, 0, false );
+  container.HardInitScanConverter( depth, width_samples, height_lines, steering,
+      depthCfm );
 
   ImageType::Pointer image = ImageType::New();
   typedef ImageType::RegionType RegionType;
@@ -188,7 +189,6 @@ int main( int argc, char * argv[] )
   hwControls.StopAcquisition();
   container.StopReadScan();
   Sleep( 100 ); // "time to stop"
-  container.DisposeScan();
 
   typedef itk::ImageFileWriter< ImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();

@@ -243,23 +243,23 @@ public:
   }
 
   Container::ScanConverterError HardInitScanConverter( int depth,
-    int widthScan, int heightScan, int steering )
+    int widthScan, int heightScan, int steering, int depthCfm )
   {
     
     return static_cast< Container::ScanConverterError >(
       WrappedScanConverter->HardInitScanConverter( depth, widthScan,
-        heightScan, steering, WrappedCapture.get(),
+        heightScan, steering, depthCfm, WrappedCapture.get(),
         WrappedImageBuilding.get() ) );
   }
 
   Container::ScanConverterError IdleInitScanConverter( int depth,
-    int widthScan, int heightScan, short idleId, int idleSteering,
-    bool idleDoubler, bool idleCompound, int idleCompoundAngle )
+    int widthScan, int heightScan, short idleId, int idleSteering, int depthCfm,
+    bool idleDoubler, bool idleCompound, int idleCompoundAngle, bool idleCfm )
   {
     return static_cast< Container::ScanConverterError >(
       WrappedScanConverter->IdleInitScanConverter( depth, widthScan,
-        heightScan, idleId, idleSteering, idleDoubler, idleCompound,
-        idleCompoundAngle, WrappedImageBuilding.get() ) );
+        heightScan, idleId, idleSteering, depthCfm, idleDoubler, idleCompound,
+        idleCompoundAngle, idleCfm, WrappedImageBuilding.get() ) );
   }
 
   // 
@@ -300,16 +300,6 @@ public:
   double GetScanOn()
   {
     return WrappedCapture->ScanOn;
-  }
-
-  void AbortScan()
-  {
-    WrappedCapture->AbortScan();
-  }
-
-  void DisposeScan()
-  {
-    WrappedCapture->DisposeScan();
   }
 
   void StartReadScan()
@@ -460,21 +450,22 @@ Container
 Container::ScanConverterError
 Container
 ::HardInitScanConverter( int depth, int widthScan, int heightScan,
-  int steering )
+  int steering, int depthCfm )
 {
   return Impl->HardInitScanConverter( depth, widthScan, heightScan,
-    steering );
+    steering, depthCfm );
 }
 
 
 Container::ScanConverterError
 Container
 ::IdleInitScanConverter( int depth, int width, int height, short idleId,
-  int idleSteering, bool idleDoubler, bool idleCompound,
-  int idleCompoundAngle )
+  int idleSteering, int depthCfm, bool idleDoubler, bool idleCompound,
+  int idleCompoundAngle, bool idleCfm )
 {
   return Impl->IdleInitScanConverter( depth, width, height, idleId,
-    idleSteering, idleDoubler, idleCompound, idleCompoundAngle );
+    idleSteering, depthCfm, idleDoubler, idleCompound, idleCompoundAngle,
+    idleCfm );
 }
 
 //
@@ -515,22 +506,6 @@ Container
 ::GetScanOn() const
 {
   return Impl->GetScanOn();
-}
-
-
-void
-Container
-::AbortScan()
-{
-  Impl->AbortScan();
-}
-
-
-void
-Container
-::DisposeScan()
-{
-  Impl->DisposeScan();
 }
 
 

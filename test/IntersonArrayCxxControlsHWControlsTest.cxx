@@ -38,15 +38,17 @@ int main( int argc, char * argv[] )
     FoundProbesType;
   FoundProbesType foundProbes;
   hwControls.FindAllProbes( foundProbes );
+  std::cout << "Number of probes = " << foundProbes.size() << std::endl;
+  if( foundProbes.empty() )
+    {
+    std::cerr << "No probes found. Please connect a probe for tests."
+      << std::endl;
+    return EXIT_FAILURE;
+    }
   std::cout << "Found Probes: " << std::endl;
   for( size_t ii = 0; ii < foundProbes.size(); ++ii )
     {
     std::cout << "    " << foundProbes[ii] << std::endl;
-    }
-  if( foundProbes.empty() )
-    {
-    std::cerr << "Could not find the probe." << std::endl;
-    return EXIT_FAILURE;
     }
 
   hwControls.FindMyProbe( 0 );

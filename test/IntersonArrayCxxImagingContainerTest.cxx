@@ -65,9 +65,10 @@ int main( int argc, char * argv[] )
   const int height = 512; 
 
   int steering = 0;
+  int depthCfm = 50;
   ContainerType::ScanConverterError converterError =
     container.IdleInitScanConverter( depth, width, height, probeId,
-    steering, false, false, 0 );
+    steering, depthCfm, false, false, 0, false );
   if( converterError != ContainerType::SUCCESS )
     {
     std::cerr << "Error during idle scan converter initialization: "
@@ -75,7 +76,7 @@ int main( int argc, char * argv[] )
     return EXIT_FAILURE;
     }
   converterError = container.HardInitScanConverter( depth, width,
-    height, steering );
+    height, steering, depthCfm );
   if( converterError != ContainerType::SUCCESS )
     {
     std::cerr << "Error during hard scan converter initialization: "
@@ -83,7 +84,6 @@ int main( int argc, char * argv[] )
     return EXIT_FAILURE;
     }
 
-  container.AbortScan();
   std::cout << "\nStarting BMode scanning..." << std::endl;
   container.StartReadScan();
   Sleep( 100 ); // "time to start"
@@ -99,7 +99,6 @@ int main( int argc, char * argv[] )
   hwControls.StopAcquisition();
   container.StopReadScan();
   Sleep( 100 ); // "time to stop"
-  container.DisposeScan();
 
   return EXIT_SUCCESS;
 }

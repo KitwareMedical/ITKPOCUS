@@ -122,19 +122,20 @@ int main( int argc, char * argv[] )
   hwControls.DisableHardButton();
 
   ContainerType container;
-  container.AbortScan();
   container.SetRFData( false );
 
   const int height = hwControls.GetLinesPerArray();
   const int width = container.MAX_SAMPLES;
   const int depth = 100;
+  const int depthCfm = 50;
   if( hwControls.ValidDepth( depth ) == depth )
     {
     ContainerType::ScanConverterError converterErrorIdle =
       container.IdleInitScanConverter( depth, width, height, probeId,
-        steering, false, false, 0 );
+        steering, depthCfm, false, false, 0, false );
     ContainerType::ScanConverterError converterError =
-      container.HardInitScanConverter( depth, width, height, steering );
+      container.HardInitScanConverter( depth, width, height, steering,
+        depthCfm );
     if( converterError != ContainerType::SUCCESS )
       {
       std::cerr << "Error during hard scan converter initialization: "
@@ -203,7 +204,6 @@ int main( int argc, char * argv[] )
   hwControls.StopAcquisition();
   container.StopReadScan();
   Sleep( 100 ); // "time to stop"
-  container.DisposeScan();
 
   typedef itk::ImageFileWriter< ImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();

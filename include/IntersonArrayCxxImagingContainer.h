@@ -81,11 +81,11 @@ public:
   };
 
   ScanConverterError HardInitScanConverter( int depth, int widthScan,
-    int heightScan, int steering );
+    int heightScan, int steering, int depthCfm );
 
   ScanConverterError IdleInitScanConverter( int depth, int width,
-    int height, short idleId, int idleSteering, bool idleDoubler,
-    bool idleCompound, int idleCompoundAngle );
+    int height, short idleId, int idleSteering, int depthCfm, bool idleDoubler,
+    bool idleCompound, int idleCompoundAngle, bool idleCfm );
   
   //
   // Begin Capture Methods
@@ -99,10 +99,6 @@ public:
   void SetFrameAvg( bool value );
 
   bool GetScanOn() const;
-
-  void AbortScan();
-
-  void DisposeScan();
 
   void StartReadScan();
 
