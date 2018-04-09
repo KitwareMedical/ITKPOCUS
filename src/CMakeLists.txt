@@ -47,6 +47,14 @@ target_include_directories( IntersonArrayCxx PUBLIC
   $<INSTALL_INTERFACE:include>
   )
 
+find_library(MSCOREE_LIBRARY
+  NAMES MSCOREE mscoree
+  PATHS "C:/Program Files (x86)/Common Files/Microsoft/Visual C++ for Python/9.0/WinSDK/Lib/"
+  )
+if(MSCOREE_LIBRARY)
+  target_link_libraries(IntersonArrayCxx ${MSCOREE_LIBRARY})
+endif()
+
 # Generate and install export header
 include( GenerateExportHeader )
 set(export_header ${PROJECT_BINARY_DIR}/include/IntersonArrayCxx_Export.h)
