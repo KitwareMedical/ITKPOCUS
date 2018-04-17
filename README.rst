@@ -8,5 +8,5 @@ Dependencies
 ------------
 
 - CMake
-- Interson Array SDK 
-- Visual Studio >= 2015 
+- Interson Array SDK
+- Visual Studio, VC x86 Compiler >= 2015
