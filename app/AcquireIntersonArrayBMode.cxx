@@ -174,7 +174,8 @@ int main( int argc, char * argv[] )
   ImageType::SpacingType imageSpacing;
   imageSpacing[ 0 ] = container.GetMmPerPixel() / 10.;
   imageSpacing[ 1 ] = 38.0 / (height - 1);
-  imageSpacing[ 2 ] = 1;
+  const short frameRate = hwControls.GetProbeFrameRate();
+  imageSpacing[ 2 ] = 1.0 / frameRate;
   image->SetSpacing( imageSpacing );
   ImageType::DirectionType direction;
   direction.SetIdentity();
