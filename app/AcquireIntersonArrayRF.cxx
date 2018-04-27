@@ -157,6 +157,14 @@ int main( int argc, char * argv[] )
   imageSpacing[ 1 ] = 38.0 / ( height_lines - 1 );
   imageSpacing[ 2 ] = 1;
   image->SetSpacing( imageSpacing );
+  ImageType::DirectionType direction;
+  direction.SetIdentity();
+  ImageType::DirectionType::InternalMatrixType & vnlDirection = direction.GetVnlMatrix();
+  vnlDirection.put(0, 0,  0.0);
+  vnlDirection.put(0, 1, -1.0);
+  vnlDirection.put(1, 0,  1.0);
+  vnlDirection.put(1, 1,  0.0);
+  image->SetDirection( direction );
   image->Allocate();
 
   CallbackClientData clientData;
