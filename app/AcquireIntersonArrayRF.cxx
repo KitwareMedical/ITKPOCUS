@@ -59,7 +59,6 @@ void __stdcall pasteIntoImage( PixelType * buffer, void * clientData )
     }
 
   const int framePixels = imageSize[0] * imageSize[1];
-  std::cout << "frame pixels RF = " << framePixels << std::endl;
 
   PixelType * imageBuffer = image->GetPixelContainer()->GetBufferPointer();
   imageBuffer += framePixels * callbackClientData->FrameIndex;
@@ -132,6 +131,7 @@ int main( int argc, char * argv[] )
   const double depth = sos * ( ns - 1 ) / ( 2 * fs );
   const double depthCfm = depth/2;
   std::cout << "Depth: " << depth << "mm" << std::endl;
+  std::cout << std::endl;
 
   container.SetRFData( true );
 
@@ -155,8 +155,17 @@ int main( int argc, char * argv[] )
   ImageType::SpacingType imageSpacing;
   imageSpacing[ 0 ] = sos / ( 2 * fs );
   imageSpacing[ 1 ] = 38.0 / ( height_lines - 1 );
-  imageSpacing[ 2 ] = 1;
+  const short frameRate = hwControls.GetProbeFrameRate();
+  imageSpacing[ 2 ] = 1.0 / frameRate;
   image->SetSpacing( imageSpacing );
+  ImageType::DirectionType direction;
+  direction.SetIdentity();
+  ImageType::DirectionType::InternalMatrixType & vnlDirection = direction.GetVnlMatrix();
+  vnlDirection.put(0, 0,  0.0);
+  vnlDirection.put(0, 1, -1.0);
+  vnlDirection.put(1, 0,  1.0);
+  vnlDirection.put(1, 1,  0.0);
+  image->SetDirection( direction );
   image->Allocate();
 
   CallbackClientData clientData;
@@ -176,16 +185,15 @@ int main( int argc, char * argv[] )
     }
 
   int c = 0;
-  while( clientData.FrameIndex < framesToCollect && c < 10 )
+  while( clientData.FrameIndex < framesToCollect && c < 10000 )
     {
+    std::cout << "Frames to collect: " << clientData.FrameIndex << " of " << framesToCollect << std::endl;
     std::cout << clientData.FrameIndex << " of " << framesToCollect
       << std::endl;
-    std::cout << c << " of 10" << std::endl;
     Sleep( 100 );
     ++c;
     }
 
-  std::cout << "StopAcquisition" << std::endl;
   hwControls.StopAcquisition();
   container.StopReadScan();
   Sleep( 100 ); // "time to stop"

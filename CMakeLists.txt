@@ -88,7 +88,7 @@ configure_package_config_file(
   PATH_VARS CONFIG_DIR_CONFIG
   NO_CHECK_REQUIRED_COMPONENTS_MACRO
   )
-  
+
 # Configure 'IntersonArraySDKCxxConfig.cmake' for an install tree
 set(CONFIG_DIR_CONFIG ${INSTALL_CMAKE_DIR})
 set( intersonArraySDKCxx_install_config ${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/IntersonArraySDKCxxConfig.cmake )

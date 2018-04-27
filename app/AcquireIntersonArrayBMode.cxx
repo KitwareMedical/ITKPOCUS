@@ -156,6 +156,7 @@ int main( int argc, char * argv[] )
   std::cout << "ScanHeight = " << scanHeight << std::endl;
   std::cout << "MM per Pixel = " << container.GetMmPerPixel() << std::endl;
   std::cout << "Depth: " << depth << "mm" << std::endl;
+  std::cout << std::endl;
 
   const itk::SizeValueType framesToCollect = frames;
 
@@ -172,10 +173,19 @@ int main( int argc, char * argv[] )
   imageRegion.SetSize( imageSize );
   image->SetRegions( imageRegion );
   ImageType::SpacingType imageSpacing;
-  imageSpacing[ 0 ] = container.GetMmPerPixel();
+  imageSpacing[ 0 ] = container.GetMmPerPixel() / 10.;
   imageSpacing[ 1 ] = 38.0 / (height - 1);
-  imageSpacing[ 2 ] = 1;
+  const short frameRate = hwControls.GetProbeFrameRate();
+  imageSpacing[ 2 ] = 1.0 / frameRate;
   image->SetSpacing( imageSpacing );
+  ImageType::DirectionType direction;
+  direction.SetIdentity();
+  ImageType::DirectionType::InternalMatrixType & vnlDirection = direction.GetVnlMatrix();
+  vnlDirection.put(0, 0,  0.0);
+  vnlDirection.put(0, 1, -1.0);
+  vnlDirection.put(1, 0,  1.0);
+  vnlDirection.put(1, 1,  0.0);
+  image->SetDirection( direction );
   image->Allocate();
 
   CallbackClientData clientData;
@@ -192,11 +202,10 @@ int main( int argc, char * argv[] )
     };
 
   int c = 0;
-  while( clientData.FrameIndex < framesToCollect && c < 100 )
+  while( clientData.FrameIndex < framesToCollect && c < 10000 )
     {
-    std::cout << clientData.FrameIndex << " of " << framesToCollect
+    std::cout << "Frames to collect: " << clientData.FrameIndex << " of " << framesToCollect
       << std::endl;
-    std::cout << c << " of 100" << std::endl;
     Sleep( 100 );
     ++c;
     }
