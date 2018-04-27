@@ -59,7 +59,6 @@ void __stdcall pasteIntoImage( PixelType * buffer, void * clientData )
     }
 
   const int framePixels = imageSize[0] * imageSize[1];
-  std::cout << "frame pixels RF = " << framePixels << std::endl;
 
   PixelType * imageBuffer = image->GetPixelContainer()->GetBufferPointer();
   imageBuffer += framePixels * callbackClientData->FrameIndex;
@@ -194,7 +193,6 @@ int main( int argc, char * argv[] )
     ++c;
     }
 
-  std::cout << "StopAcquisition" << std::endl;
   hwControls.StopAcquisition();
   container.StopReadScan();
   Sleep( 100 ); // "time to stop"
