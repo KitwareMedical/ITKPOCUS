@@ -20,7 +20,7 @@
       <label>Frames</label>
       <description>Frames to collect.</description>
       <longflag>frames</longflag>
-      <flag>n</flag> 
+      <flag>n</flag>
       <default>1</default>
     </integer>
     <integer>
@@ -28,7 +28,7 @@
       <label>Frequency Index</label>
       <description>Index of the frequency to examine.  See the output of PrintIntersonProbeInfo.</description>
       <longflag>frequencyIndex</longflag>
-      <flag>f</flag> 
+      <flag>f</flag>
       <default>1</default>
     </integer>
     <integer>
@@ -36,15 +36,15 @@
       <label>Focus Index</label>
       <description>Index of the focus to examine.  See the output of PrintIntersonProbeInfo.</description>
       <longflag>focusIndex</longflag>
-      <flag>F</flag> 
-      <default>0</default>
+      <flag>F</flag>
+      <default>1</default>
     </integer>
     <integer>
       <name>highVoltage</name>
       <label>High Voltage</label>
       <description>Percentage of the high voltage for transducer excitation.</description>
       <longflag>highVoltage</longflag>
-      <flag>z</flag> 
+      <flag>z</flag>
       <default>50</default>
       <minimum>0</minimum>
       <maximum>100</maximum>
