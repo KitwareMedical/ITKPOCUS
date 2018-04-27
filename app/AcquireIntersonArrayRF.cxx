@@ -132,6 +132,7 @@ int main( int argc, char * argv[] )
   const double depth = sos * ( ns - 1 ) / ( 2 * fs );
   const double depthCfm = depth/2;
   std::cout << "Depth: " << depth << "mm" << std::endl;
+  std::cout << std::endl;
 
   container.SetRFData( true );
 
@@ -184,11 +185,11 @@ int main( int argc, char * argv[] )
     }
 
   int c = 0;
-  while( clientData.FrameIndex < framesToCollect && c < 10 )
+  while( clientData.FrameIndex < framesToCollect && c < 10000 )
     {
+    std::cout << "Frames to collect: " << clientData.FrameIndex << " of " << framesToCollect << std::endl;
     std::cout << clientData.FrameIndex << " of " << framesToCollect
       << std::endl;
-    std::cout << c << " of 10" << std::endl;
     Sleep( 100 );
     ++c;
     }

@@ -202,7 +202,7 @@ int main( int argc, char * argv[] )
     };
 
   int c = 0;
-  while( clientData.FrameIndex < framesToCollect && c < 1000 )
+  while( clientData.FrameIndex < framesToCollect && c < 10000 )
     {
     std::cout << "Frames to collect: " << clientData.FrameIndex << " of " << framesToCollect
       << std::endl;
