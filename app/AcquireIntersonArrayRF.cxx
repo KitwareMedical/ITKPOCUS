@@ -155,7 +155,8 @@ int main( int argc, char * argv[] )
   ImageType::SpacingType imageSpacing;
   imageSpacing[ 0 ] = sos / ( 2 * fs );
   imageSpacing[ 1 ] = 38.0 / ( height_lines - 1 );
-  imageSpacing[ 2 ] = 1;
+  const short frameRate = hwControls.GetProbeFrameRate();
+  imageSpacing[ 2 ] = 1.0 / frameRate;
   image->SetSpacing( imageSpacing );
   ImageType::DirectionType direction;
   direction.SetIdentity();
