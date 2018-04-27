@@ -172,10 +172,18 @@ int main( int argc, char * argv[] )
   imageRegion.SetSize( imageSize );
   image->SetRegions( imageRegion );
   ImageType::SpacingType imageSpacing;
-  imageSpacing[ 0 ] = container.GetMmPerPixel();
+  imageSpacing[ 0 ] = container.GetMmPerPixel() / 10.;
   imageSpacing[ 1 ] = 38.0 / (height - 1);
   imageSpacing[ 2 ] = 1;
   image->SetSpacing( imageSpacing );
+  ImageType::DirectionType direction;
+  direction.SetIdentity();
+  ImageType::DirectionType::InternalMatrixType & vnlDirection = direction.GetVnlMatrix();
+  vnlDirection.put(0, 0,  0.0);
+  vnlDirection.put(0, 1, -1.0);
+  vnlDirection.put(1, 0,  1.0);
+  vnlDirection.put(1, 1,  0.0);
+  image->SetDirection( direction );
   image->Allocate();
 
   CallbackClientData clientData;
