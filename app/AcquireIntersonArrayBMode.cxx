@@ -156,6 +156,7 @@ int main( int argc, char * argv[] )
   std::cout << "ScanHeight = " << scanHeight << std::endl;
   std::cout << "MM per Pixel = " << container.GetMmPerPixel() << std::endl;
   std::cout << "Depth: " << depth << "mm" << std::endl;
+  std::cout << std::endl;
 
   const itk::SizeValueType framesToCollect = frames;
 
@@ -201,11 +202,10 @@ int main( int argc, char * argv[] )
     };
 
   int c = 0;
-  while( clientData.FrameIndex < framesToCollect && c < 100 )
+  while( clientData.FrameIndex < framesToCollect && c < 1000 )
     {
-    std::cout << clientData.FrameIndex << " of " << framesToCollect
+    std::cout << "Frames to collect: " << clientData.FrameIndex << " of " << framesToCollect
       << std::endl;
-    std::cout << c << " of 100" << std::endl;
     Sleep( 100 );
     ++c;
     }
