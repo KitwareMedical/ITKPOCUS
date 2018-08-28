@@ -31,6 +31,7 @@ include( CTest )
 
 # Options
 option( BUILD_APPLICATIONS "Build applications" OFF )
+option( BUILD_SERVERS "Build OpenIGTLink Servers" OFF)
 
 # External dependencies
 find_path( IntersonArraySDK_DIR
@@ -71,6 +72,10 @@ if( BUILD_TESTING )
 endif()
 if( BUILD_APPLICATIONS )
   add_subdirectory( app )
+endif()
+
+if( BUILD_SERVERS )
+  add_subdirectory( openigtlink )
 endif()
 
 # Install Interson libraries

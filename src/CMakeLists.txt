@@ -97,3 +97,14 @@ if( BUILD_APPLICATIONS )
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:IntersonArrayCxx>" "${PROJECT_BINARY_DIR}/app/bin"
     )
 endif()
+
+if( BUILD_SERVERS )
+  add_custom_command( TARGET IntersonArrayCxx
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_BINARY_DIR}/openigtlink/bin/$<CONFIG>"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${IntersonArraySDK_DIR}/Libraries/IntersonArray.dll" "${PROJECT_BINARY_DIR}/openigtlink/bin/$<CONFIG>"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:IntersonArrayCxx>" "${PROJECT_BINARY_DIR}/openigtlink/bin/$<CONFIG>"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${IntersonArraySDK_DIR}/Libraries/IntersonArray.dll" "${PROJECT_BINARY_DIR}/openigtlink/bin"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:IntersonArrayCxx>" "${PROJECT_BINARY_DIR}/openigtlink/bin"
+    )
+endif()
