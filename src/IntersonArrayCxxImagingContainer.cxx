@@ -427,7 +427,7 @@ double
 Container
 ::GetTrueDepth() const
 {
-  return Impl->GetMmPerPixel();
+  return Impl->GetTrueDepth();
 }
 
 
