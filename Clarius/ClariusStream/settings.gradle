@@ -1,0 +1,10 @@
+include ':mobileapi-8.0.1:mobileapi'
+include ':app'
+rootProject.name = "ClariusStream"
+
+//sourceControl {
+//    gitRepository('https://github.com/clariusdev/mobileapi.git') {
+//        //producesModule('mobileapi:me.clarius.mobileapi')
+//        producesModule(':Mobile_API_Quickstart')
+//    }
+//}

@@ -1,0 +1,13 @@
+*.iml
+.gradle
+/local.properties
+/.idea
+/mobileapi-8.0.1
+/v8.0.1.zip
+/v8.0.1
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
