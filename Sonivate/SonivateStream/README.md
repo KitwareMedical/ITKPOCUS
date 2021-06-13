@@ -10,6 +10,7 @@
 7. 3D Slicer (4.11.2021.02.26 or greater) and OpenIGTLinkIF module installed
 
 ## Building
+Important Note: The SonivateStream.sln file is only for bootstrapping the MFC project.  This does not actually build the application.  CMake must be used with an out-of-source build directory.
 1. Build OpenIGTLink
 2. Configure CMake (assuming you have Git Bash)
 	1. cd WORKSPACE_DIR
