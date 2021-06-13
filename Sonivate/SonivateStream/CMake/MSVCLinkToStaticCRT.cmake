@@ -1,0 +1,27 @@
+#
+# Taken from: https://github.com/Kitware/CMake/blob/master/Tests/MFC/CMakeLists.txt.in
+#
+macro(replace_flags var these those)
+  if("${${var}}" MATCHES "${these}")
+    string(REGEX REPLACE "${these}" "${those}" ${var} "${${var}}")
+    #message(STATUS "info: ${var} changed to '${${var}}'")
+  endif()
+  message(STATUS "Replacing flag: ${var}='${${var}}'")
+endmacro()
+
+macro(msvc_link_to_static_crt)
+  if(MSVC)
+    set(has_correct_flag 0)
+    foreach(lang C CXX)
+    foreach(suffix "" _DEBUG _MINSIZEREL _RELEASE _RELWITHDEBINFO)
+      replace_flags("CMAKE_${lang}_FLAGS${suffix}" "/MD" "/MT")
+      if(CMAKE_${lang}_FLAGS${suffix} MATCHES "/MT")
+        set(has_correct_flag 1)
+      endif()
+    endforeach()
+    endforeach()
+    if(NOT has_correct_flag)
+      message(FATAL_ERROR "no CMAKE_*_FLAGS var contains /MT")
+    endif()
+  endif()
+endmacro()
