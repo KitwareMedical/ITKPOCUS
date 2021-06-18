@@ -1,0 +1,6 @@
+itk>=5.2.0.post2
+numpy>=1.19.3
+scikit-image>=0.18.0
+scipy>=1.5.4
+sk-video>=1.1.10
+
