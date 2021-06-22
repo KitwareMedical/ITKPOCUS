@@ -2,6 +2,28 @@ import itk
 import numpy as np
 from random import shuffle
 
+def crop(npimg, crop, rgb=False):
+    '''
+    Parameters
+    ==========
+    npimg (ndarray) : [Tx]xMxNx[RGB]
+    crop (2x2 ndarray) : [[topmost, bottommost], [lefmost, rightmost]]
+    rgb : whether it is an rgb img
+    '''
+    if rgb:
+        if len(npimg.shape) == 3:
+            return npimg[crop[0,0]:(crop[0,1]+1), crop[1,0]:(crop[1,1]+1), :]
+        else: # len(npimg.shape) == 4:
+            return npimg[:, crop[0,0]:(crop[0,1]+1), crop[1,0]:(crop[1,1]+1),:]
+    else: # len(npimg.shape) == 4:
+        if len(npimg.shape) == 2:
+            return npimg[crop[0,0]:(crop[0,1]+1), crop[1,0]:(crop[1,1]+1)]
+        elif len(npimg.shape) == 3:
+            return npimg[:, crop[0,0]:(crop[0,1]+1), crop[1,0]:(crop[1,1]+1)]
+        else:
+            assert('npimg must be 2 or 3 dims (rgb=False) or 3 or 4 dims (rgb=True)')
+
+        
 def extract_slice(img, slice_, axis=2):
     '''
     Returns a 2D frame from a 3D image (assumes itk.F pixels)
