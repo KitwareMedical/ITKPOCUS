@@ -42,7 +42,7 @@ if( NOT IntersonArraySDK_DIR )
   message( FATAL_ERROR "Please specify the path to the IntersonArraySDK"
     " in IntersonArraySDK_DIR" )
 endif()
-set( IntersonArraySDK_LIBRARY "${IntersonArraySDK_DIR}/Libraries/IntersonArray.dll" )
+set( IntersonArraySDK_LIBRARY "${IntersonArraySDK_DIR}/IntersonArray.dll" )
 if( NOT EXISTS ${IntersonArraySDK_LIBRARY} )
   message( FATAL_ERROR "Interson library is missing [${IntersonArraySDK_LIBRARY}]" )
 endif()

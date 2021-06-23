@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <executable>
   <category>Ultrasound</category>
-  <title>Interson RF OpenIGTLink Server</title>
-  <description>Broadcast RF images over OpenIGTLink.</description>
+  <title>Acquire Interson B Mode</title>
+  <description>Acquire multiple B-Mode frames with the Interson USB probe.</description>
   <version>0.1.0</version>
   <license>Apache 2.0</license>
-  <contributor>Sam Horvath (Kitware), Matt McCormick (Kitware)</contributor>
-  <acknowledgements>This work is funded in part by a grant with InnerOptic/Kitware</acknowledgements>
+  <contributor>Brad T. Moore (Kitware)</contributor>
+  <acknowledgements>This effort was sponsored by the U.S. Government under Other Transactions Number W81XWH-15-9-0001/W81XWH-19-9-0015 (MTEC 19-08-MuLTI-0079).</acknowledgements>
   <parameters>
     <integer>
       <name>port</name>
@@ -15,6 +15,14 @@
       <longflag>port</longflag>
       <flag>p</flag>
       <default>18944</default>
+    </integer>
+    <integer>
+      <name>frames</name>
+      <label>Frames</label>
+      <description>Frames to collect.</description>
+      <longflag>frames</longflag>
+      <flag>n</flag>
+      <default>1</default>
     </integer>
     <integer>
       <name>frequencyIndex</name>
@@ -42,12 +50,15 @@
       <minimum>0</minimum>
       <maximum>100</maximum>
     </integer>
-    <double>
-      <name>sos</name>
-      <label>Speed of sound</label>
-      <description> Assumed speed of sound in the crossed medium in mm/ms.</description>
-      <longflag>sos</longflag>
-      <default>1540</default>
-    </double>
+    <integer>
+      <name>gain</name>
+      <label>Dynamic Gain</label>
+      <description>Dynamic gain [dB].</description>
+      <longflag>gain</longflag>
+      <flag>g</flag>
+      <default>100</default>
+      <minimum>0</minimum>
+      <maximum>255</maximum>
+    </integer>
   </parameters>
 </executable>
