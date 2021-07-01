@@ -92,14 +92,14 @@ public:
 
     HardButtonHandler = gcnew NewHardButtonHandler();
     HardButtonHandlerDelegate = gcnew
-      IntersonArray::Controls::HWControls::HWButtonHandler(
+      IntersonArray::Controls::HWControls::HWButtonHandlerReleased(
         HardButtonHandler, &NewHardButtonHandler::HandleNewHardButton );
-    Wrapped->HWButtonTick += HardButtonHandlerDelegate;
+    Wrapped->HWButtonTickReleased += HardButtonHandlerDelegate;
   }
 
   ~HWControlsImpl()
   {
-  Wrapped->HWButtonTick -= HardButtonHandlerDelegate;
+  Wrapped->HWButtonTickReleased -= HardButtonHandlerDelegate;
   }
 
   // Compound Angle Functions
@@ -351,7 +351,7 @@ private:
 
   gcroot< IntersonArray::Controls::HWControls ^ > Wrapped;
   gcroot< NewHardButtonHandler ^ >                HardButtonHandler;
-  gcroot< IntersonArray::Controls::HWControls::HWButtonHandler ^ >
+  gcroot< IntersonArray::Controls::HWControls::HWButtonHandlerReleased ^ >
                                                   HardButtonHandlerDelegate;
 
 };

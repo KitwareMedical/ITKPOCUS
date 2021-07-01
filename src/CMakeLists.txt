@@ -30,7 +30,7 @@ endif()
 #if(CMAKE_CXX_FLAGS MATCHES "/EHsc")
   #string(REPLACE "/EHsc" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 #endif()
-set( CMAKE_CXX_FLAGS "/clr /EHa /AI${IntersonArraySDK_DIR}/Libraries" )
+set( CMAKE_CXX_FLAGS "/clr /EHa /AI\"${IntersonArraySDK_DIR}\"" )
 
 set( IntersonArrayCxx_SRCS
   IntersonArrayCxxControlsHWControls.cxx
@@ -81,8 +81,8 @@ install(
 if( BUILD_TESTING )
   add_custom_command( TARGET IntersonArrayCxx
     POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${IntersonArraySDK_DIR}/Libraries/IntersonArray.dll" "${PROJECT_BINARY_DIR}/bin/$<CONFIG>"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${IntersonArraySDK_DIR}/Libraries/IntersonArray.dll" "${PROJECT_BINARY_DIR}/bin"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${IntersonArraySDK_DIR}/IntersonArray.dll" "${PROJECT_BINARY_DIR}/bin/$<CONFIG>"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${IntersonArraySDK_DIR}/IntersonArray.dll" "${PROJECT_BINARY_DIR}/bin"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:IntersonArrayCxx>" "${PROJECT_BINARY_DIR}/bin/$<CONFIG>"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:IntersonArrayCxx>" "${PROJECT_BINARY_DIR}/bin/"
     )
@@ -91,9 +91,9 @@ if( BUILD_APPLICATIONS )
   add_custom_command( TARGET IntersonArrayCxx
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_BINARY_DIR}/app/bin/$<CONFIG>"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${IntersonArraySDK_DIR}/Libraries/IntersonArray.dll" "${PROJECT_BINARY_DIR}/app/bin/$<CONFIG>"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${IntersonArraySDK_DIR}/IntersonArray.dll" "${PROJECT_BINARY_DIR}/app/bin/$<CONFIG>"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:IntersonArrayCxx>" "${PROJECT_BINARY_DIR}/app/bin/$<CONFIG>"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${IntersonArraySDK_DIR}/Libraries/IntersonArray.dll" "${PROJECT_BINARY_DIR}/app/bin"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${IntersonArraySDK_DIR}/IntersonArray.dll" "${PROJECT_BINARY_DIR}/app/bin"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:IntersonArrayCxx>" "${PROJECT_BINARY_DIR}/app/bin"
     )
 endif()
@@ -102,9 +102,9 @@ if( BUILD_SERVERS )
   add_custom_command( TARGET IntersonArrayCxx
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_BINARY_DIR}/openigtlink/bin/$<CONFIG>"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${IntersonArraySDK_DIR}/Libraries/IntersonArray.dll" "${PROJECT_BINARY_DIR}/openigtlink/bin/$<CONFIG>"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${IntersonArraySDK_DIR}/IntersonArray.dll" "${PROJECT_BINARY_DIR}/openigtlink/bin/$<CONFIG>"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:IntersonArrayCxx>" "${PROJECT_BINARY_DIR}/openigtlink/bin/$<CONFIG>"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${IntersonArraySDK_DIR}/Libraries/IntersonArray.dll" "${PROJECT_BINARY_DIR}/openigtlink/bin"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${IntersonArraySDK_DIR}/IntersonArray.dll" "${PROJECT_BINARY_DIR}/openigtlink/bin"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:IntersonArrayCxx>" "${PROJECT_BINARY_DIR}/openigtlink/bin"
     )
 endif()

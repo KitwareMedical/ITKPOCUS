@@ -26,6 +26,8 @@ include( ${SlicerExecutionModel_USE_FILE} )
 find_package(OpenIGTLink REQUIRED)
 include(${OpenIGTLink_USE_FILE})
 
+find_package( ITK REQUIRED )
+include( ${ITK_USE_FILE} )
 
 SEMMacroBuildCLI(
   NAME IntersonArrayServerRF
@@ -35,4 +37,13 @@ SEMMacroBuildCLI(
   INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR}/include
                       ${PROJECT_BINARY_DIR}/include
   )
+  
+SEMMacroBuildCLI(
+  NAME IntersonArrayServerBMode
+  TARGET_LIBRARIES ${ITK_LIBRARIES}
+                   IntersonArrayCxx
+                   OpenIGTLink
+  INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR}/include
+                      ${PROJECT_BINARY_DIR}/include
+)
 
