@@ -1,0 +1,23 @@
+[build-system]
+requires = ["flit_core >=2,<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.metadata]
+module = "itkpocus"
+author = "Brad T. Moore"
+author-email = "brad.moore@kitware.com"
+home-page = "https://github.com/KitwareMedical/ITKPOCUS"
+classifiers = [ 
+	"License :: OSI Approved :: Apache Software License",
+	"Topic :: Scientific/Engineering :: Image Processing",
+	"Topic :: Scientific/Engineering :: Medical Science Apps.",
+	"Programming Language :: Python :: 3",
+	"Intended Audience :: Healthcare Industry",
+	"Intended Audience :: Science/Research",
+]
+description-file = "README.md"
+requires = [
+	"itk>=5.2.0.post2",
+]
+requires-python = ">=3.7"
+dist-name = "itk-pocus"

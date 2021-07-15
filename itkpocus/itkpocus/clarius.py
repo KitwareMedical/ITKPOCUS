@@ -1,26 +1,29 @@
-'''
-Reads Clarius video data into a numpy video matrix
-'''
-
 import numpy as np
 import skvideo
 import skvideo.io
 from skimage.transform import SimilarityTransform
 from scipy.signal import find_peaks
-from tbitk.util import get_framerate
+from itkpocus.util import get_framerate
 import itk
- 
+
+'''
+Preprocessing and device-specific IO for the Clarius HD C7.
+'''
+
 def find_spacing_and_crop(npimg):
     '''
     Find the ruler in the image to calculate the physical dimensions and then crop to the B-mode data.
     
     Parameters
-    ==========
-    npimg (nparray) : MxNx3
+    ----------
+    npimg : ndarray
+        MxNx3
     
     Returns
     =======
-    spacing, crop (nparray) : [[ymin,ymax],[xmin,xmax]]
+    spacing
+    crop : ndarray
+        [[ymin,ymax],[xmin,xmax]]
     '''
     colsum = np.sum(npimg[:,:,0], axis=0)
     col_peaks, col_props = find_peaks(colsum, prominence=20)
@@ -49,27 +52,70 @@ def preprocess_image(npimg):
     Calculate physical spacing of image from identified ruler within image and crops to B-mode only.
     
     Parameters
-    ==========
-    npimg (nparray) : MxNx3
+    ----------
+    npimg : ndararay
+        MxNx3
     
     Returns
-    ==========
-    img (itkImage[itk.F,2]) : cropped image scaled to 0.0 to 1.0 (MxN) with physical spacing
+    -------
+    itkImage[itk.F,2]
+        cropped image scaled to 0.0 to 1.0 (MxN) with physical spacing
     '''
     spacing, crop = find_spacing_and_crop(npimg)
     img = itk.image_from_array((npimg[crop[0,0]:crop[0,1]+1, crop[1,0]:crop[1,1]+1, 0] / 255.0).astype('float32'))
     img.SetSpacing([spacing, spacing])
-    return img, [spacing, spacing], crop
+    return img, { 'spacing' : [spacing, spacing], 'crop' : crop }
 
 def preprocess_video(npvid, framerate=1):
     '''
-    npvid (nparray) : video TxMxNx3
-    framerate (real) : framerate (e.g. extracted from ffprobe)
+    npvid : ndarray
+        video TxMxNx3
+    framerate : float
+        framerate (e.g. extracted from ffprobe)
     '''
     npmean = np.mean(npvid, axis=0)
     spacing, crop = find_spacing_and_crop(npmean)
     vid = itk.image_from_array((npvid[:,crop[0,0]:crop[0,1]+1, crop[1,0]:crop[1,1]+1,0] / 255.0).astype('float32').squeeze())
     vid.SetSpacing([spacing, spacing, framerate])
     
-    return vid, [spacing, spacing, framerate], crop
+    return vid, { 'spacing' : [spacing, spacing, framerate], 'crop' : crop }
     
+def load_and_preprocess_image(fp):
+    '''
+    Loads and preprocesses a Clarius image.
+    
+    Parameters
+    ----------
+    fp : str
+        filepath to image
+    version : optional
+        Reserved for future use.
+    
+    Returns
+    -------
+    img : itk.Image[itk.F,2]
+        Floating point image with physical spacing set, origin is at upper-left of image, and intensities are between 0.0 and 1.0
+    meta : dict
+        Meta data (includes spacing and crop)
+    '''
+    return preprocess_image(itk.imread(fp))
+
+def load_and_preprocess_video(fp):
+    '''
+    Loads and preprocesses a Clarius video.
+    
+    Parameters
+    ----------
+    fp : str
+        filepath to video (e.g. .mp4)
+    version : optional
+        Reserved for future use.
+    
+    Returns
+    -------
+    img : itk.Image[itk.F,3]
+        Floating point image with physical spacing set (3rd dimension is framerate), origin is at upper-left of image, and intensities are between 0.0 and 1.0
+    meta : dict
+        Meta data (includes spacing and crop)
+    '''
+    return preprocess_video(skvideo.io.vread(fp))

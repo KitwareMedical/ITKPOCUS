@@ -5,20 +5,24 @@ from scipy.signal import find_peaks
 from skimage.morphology import disk
 from skimage.morphology import dilation
 import skimage.filters
-import tbitk.util
+import itkpocus.util
 import skvideo.io
+
+'''Preprocessing and device-specific IO for the Sonoque.'''
 
 def find_spacing(npimg):
     '''
     Finds the spacing (pixel dimension in mm) of a Sonoque image by detecting the ruler ticks of the overlay.
     
     Parameters
-    ==========
-    npimg (2D ndarray) : single channel 0 to 255 (e.g. pydicom's pixel_array or a video frame)
+    ----------
+    npimg : ndarray
+        single channel 0 to 255 (e.g. pydicom's pixel_array or a video frame)
     
     Returns
-    =======
-    spacing (float) or None if the ruler cannot be detected
+    -------
+    spacing : float
+        or None if the ruler cannot be detected
     '''
     tick_spacing = 5 # in mm
     error_threshold = 5 # in pixels
@@ -43,7 +47,7 @@ def find_crop(npimg):
     Calculates a crop that contains only the ultrasound portion of the image (overlay text may still be on portion).
     
     Parameters
-    ==========
+    ----------
     npimg (2D ndarray) : single channel 0 to 255 (e.g. pydicom's pixel_array or a video frame)
     
     Returns
