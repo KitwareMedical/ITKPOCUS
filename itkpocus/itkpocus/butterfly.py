@@ -1,3 +1,7 @@
+'''
+Preprocessing and device specific IO for the Butterfly iQ.
+'''
+
 import skvideo.io.ffprobe
 import skvideo.utils
 import sys
@@ -7,10 +11,6 @@ from pathlib import Path
 import numpy as np
 import itkpocus.util
 import itk
-
-'''
-Preprocessing and device specific IO for the Butterfly iQ.
-'''
 
 def ffprobe_count_frames(filename):
     """
@@ -71,7 +71,7 @@ def vread_workaround(fp, ffprobe_count_frames_dict=None):
     fp : str
         File path to video file to read
     ffprobe_count_frames_dict : dict, optional
-        A dict from ffprobe containing the key '@nb_read_frames'
+        A dict from ffprobe containing the key '@nb_read_frames'.  If not specified, ffprobe will be run on the file first.
         
     Returns
     -------
@@ -81,7 +81,7 @@ def vread_workaround(fp, ffprobe_count_frames_dict=None):
     ffprobe_count_frames_dict = ffprobe_count_frames_dict if ffprobe_count_frames_dict is not None else ffprobe_count_frames(fp)
     return vread(fp, outputdict={'-vframes' : ffprobe_count_frames_dict['video']['@nb_read_frames']})
 
-def calc_spacing(npvid):
+def _calc_spacing(npvid):
     '''
     Calculates the physical spacing of an image or video by interpeting the ruler overlay.
     
@@ -105,7 +105,7 @@ def calc_spacing(npvid):
     spacing = 2 / ruler_dist
     return spacing
 
-def calc_crop(npvid):
+def _calc_crop(npvid):
     '''
     Calculates the crop region to isolate the ultrasound data.
     
@@ -148,7 +148,7 @@ def calc_crop(npvid):
     
     return np.array([[sr, er], [sc, ec]], dtype='int')
 
-def preprocess_video(npvid, framerate=1):
+def preprocess_video(npvid, framerate=1, version=None):
     '''
     Preprocesses an ndarray representing a video (FRCRGB)
     
@@ -156,34 +156,38 @@ def preprocess_video(npvid, framerate=1):
     ----------
     npvid : ndarray
         FxRxCx3 (rgb), 0 to 255
+    version : None
+        reserved for future use
     
     Returns
     -------
     img : itk.Image[itk.F,3]
     meta : dict
     '''
-    spacing = calc_spacing(npvid)
+    spacing = _calc_spacing(npvid)
     spacing = np.array([spacing, spacing, framerate])
-    crop = calc_crop(npvid)
+    crop = _calc_crop(npvid)
     img = itkpocus.util.image_from_array(npvid[:,crop[0,0]:crop[0,1], crop[1,0]:crop[1,1],0].astype('float32') / 255.0, spacing=spacing)
     return img, {'spacing' : spacing, 'crop' : crop}
 
-def preprocess_image(npimg):
+def preprocess_image(npimg, version=None):
     '''
     
     Parameters
     ----------
     npimg : ndarray
         RxCx3 (rgb), 0 to 255
+    version : None
+        reserved for future use
     
     Returns
     -------
     img : itk.Image[itk.F,2]
     meta : dict
     '''
-    spacing = calc_spacing(npimg)
+    spacing = _calc_spacing(npimg)
     spacing = np.array([spacing, spacing])
-    crop = calc_crop(npimg)
+    crop = _calc_crop(npimg)
     img = itkpocus.util.image_from_array(npimg[crop[0,0]:crop[0,1], crop[1,0]:crop[1,1],0].astype('float32') / 255.0, spacing=spacing)
     return img, {'spacing' : spacing, 'crop' : crop}
 

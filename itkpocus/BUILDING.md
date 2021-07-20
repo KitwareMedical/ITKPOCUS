@@ -8,9 +8,13 @@ We use _flit_ and _sphinx_ for distribution and documentation.
 ```
 
 ## Building and rendering Jupyter examples
-TODO
+1. Create the notebook in [examples](examples)
+2. Add a .nblink file to [doc](doc)
+3. Add .nblink file to [doc/index.rst](doc/index.rst)
+NOTE: steps #1 and #2 are necessary because _examples_ is outside of the _doc_ directory.
 
 ## Building documentation
+1. Documentation is built using sphinx, sphinx-napoleon, sphinx-apidoc, and the sphinxdoc html_theme.
 ```
     # assuming venv-3.7.6-itkpocus is the virtual environment
     source venv-3.7.6-itkpocus/Scripts/activate
@@ -22,4 +26,4 @@ TODO
 ```
 
 ## Running testing
-TODO
+1. `python -m unittest`

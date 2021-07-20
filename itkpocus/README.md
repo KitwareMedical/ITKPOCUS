@@ -1,43 +1,32 @@
-# Traumatic Brain Injury Toolkit (tbitk) Python Library
+# ITKPOCUS (ITK Point-of-Care Ultrasound) Python Library
+
+## Documentation
+1. Example Jupyter Notebooks
+2. Readthedocs
 
 ## Installation
-We recommend using a Python virtual environment
-
 1. Install <https://www.ffmpeg.org/>
 2. Add ffmpeg binary directory to your PATH
-3. Activate your virtual environment, install Python dependencies, install tbitk
-``` 
-# activate your virtual environment, e.g., source venv-3.6.7/Scripts/Activate
-cd TraumaticBrainInjury/tbitk
-pip install requirements.txt
-pip install -e tbitk
-```
+    1. Note: errors in this step will result in exceptions from _skvideo_
+3. Activate your virtual environment
+4. `pip install itk-pocus`
 
 ## Usage
 The scripts provided convert manufacturer video files to ITK Image objects.  They may also remove overlays from the ultrasound image and set the physical dimension of the image by processing the overlay ruler (when applicable).
 
 ```
-import tbitk
+import itkpocus.clarius as clarius
 import matplotlib.pyplot as plt
-from tbitk.butterfly import ffprobe_count_frames, vread_workaround
-from tbitk.util import get_framerate
+import itk
 
-data_path=PATH_TO_FILE
+img_fp=PATH_TO_FILE
+video_fp=PATH_TO_FILE
 
-# clarius
-npvid = vread(data_path)
-vidmeta = skvideo.io.ffprobe(data_path)
-img, spacing, crop = tbitk.clarius.preprocess_video(npvid, framerate=get_framerate(vidmeta))
-plt.imshow(npvid[0]) # plot the first frame
+img, meta = load_and_preprocess_image(img_fp)
+plt.imshow(img)
+print(img, meta)
 
-# butterfly
-vidmeta = ffprobe_count_frames(data_path)
-npvid = vread_workaround(data_path, vidmeta)
-img, spacing, crop = tbitk.butterfly.preprocess_video(npvid, framerate=get_framerate(vidmeta))
-plt.imshow(npvid[0]) # plot the first frame
-
-# sonoque
-import tbitk.sonoque
-x, spacing, crop = tbitk.sonoque.load_and_preprocess_video(data_path)
-plt.imshow(npvid[0]) # plot the first frame
+vid, vid_meta = load_and_preprocess_video(video_fp)
+plt.imshow(itk.array_from_image(vid)[0,:,:]) # plot first frame
+print(vid, vid_meta)
 ```

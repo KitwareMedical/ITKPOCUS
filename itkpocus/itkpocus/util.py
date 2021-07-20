@@ -2,13 +2,20 @@ import itk
 import numpy as np
 from random import shuffle
 
+'''Collection of utility methods.  Note, this module is likely subject to API change.'''
+
 def crop(npimg, crop, rgb=False):
     '''
+    Crops the ndarray denoted by npimg according to rows and columns specified in crop.
+    
     Parameters
-    ==========
-    npimg (ndarray) : [Tx]xMxNx[RGB]
-    crop (2x2 ndarray) : [[topmost, bottommost], [lefmost, rightmost]]
-    rgb : whether it is an rgb img
+    ----------
+    npimg : ndarray
+        [Tx]xMxNx[RGB]
+    crop : ndarray
+        [[topmost, bottommost], [lefmost, rightmost]]
+    rgb : bool
+        whether it is an rgb img
     '''
     if rgb:
         if len(npimg.shape) == 3:
@@ -33,9 +40,12 @@ def extract_slice(img, slice_, axis=2):
     
     Parameters
     ----------
-    img : 3D ITK image
-    slice_ : the frame/slice to get
-    axis : a binary array of size dim specifing which index to slice along, the default assumes typical z-axis index
+    img : itk.Image[itk.F,3] 
+        3D ITK image
+    slice_ : int
+        the frame/slice to get
+    axis : ndarray
+        a binary array of size dim specifing which index to slice along, the default assumes typical z-axis index
     '''
     
     region = img.GetLargestPossibleRegion()
@@ -55,8 +65,13 @@ def polgyon_from_array(pts):
     Return a PolygonSpatialObject from a list of points defining a closed polygon.
     
     Parameters
-    ==========
-    pts(nx2 nparray) : ordered list of polygon points, x0 != xn
+    ----------
+    pts : ndarray
+        Nx2 open array of polygon points, x0 != xn
+        
+    Returns
+    -------
+    itk.PolygonSpatialObject[2]
     '''
     if pts is None:
         return None
@@ -72,6 +87,19 @@ def polgyon_from_array(pts):
 def image_from_array(array, spacing=None, direction=None, origin=None, reference_image=None):
     '''
     Augment ITK image_from_array so common parameters can be set in one line
+    
+    Parameters
+    ----------
+    array : ndarray
+    spacing : ndarray, optional
+    direction : ndarray, optional
+    origin : ndarray, optional
+    reference_image : ndarray, optional
+        if specified, use its spacing, direction, origin
+        
+    Returns
+    -------
+    itk.Image
     '''
     if reference_image is not None:
         spacing = reference_image.GetSpacing()
@@ -93,9 +121,14 @@ def array_from_image(img, return_meta=False):
     Augment ITK array_from_image so that common parameters are also returned
     
     Returns
-    =======
-    img --or-- (if return_meta)
-    img, spacing, direction, origin
+    -------
+    img : itk.Image
+    spacing : ndarray, optional
+        if return_meta
+    direction : ndarray, optional
+        if return_meta
+    origin : ndarray, optional
+        if return_meta
     '''
     # return array, spacing, direction, origin
     if return_meta:
@@ -108,6 +141,17 @@ def operate(img1, img2, foo):
     '''
     Convenience function for applying a function foo between two images.  foo is written on numpy arrays.  This function will output
     ITK arrays or numpy arrays to match the input.
+    
+    Parameters
+    ----------
+    img1 : itk.Image or ndarray
+    img2 : itk.Image or ndarray
+    foo : function
+        foo(img1, img2)
+    
+    Returns
+    -------
+    itk.Image or ndarray
     '''
     assert type(img1) == type(img2)
     tstr = str(type(img1))
@@ -129,6 +173,17 @@ def operate(img1, img2, foo):
 def overwrite_mask(npimg1, npimg2, outside_value=0):
     '''
     Combine npimg1 and npimg2 while overwriting any overlap with npimg2's value.
+    
+    Parameters
+    ----------
+    npimg1 : ndarray
+    npimg2 : ndarray
+    outside_value : float or int, default=0
+        elements in npimg2 with value == outside_value will not overwrite npimg1
+        
+    Returns
+    -------
+    ndarray
     '''
     ans = npimg1.copy()
     idx = npimg2 != outside_value
@@ -138,6 +193,19 @@ def overwrite_mask(npimg1, npimg2, outside_value=0):
 def union_mask(npimg1, npimg2, outside_value=0, inside_value=1):
     '''
     Combine npimg1 and npimg2 and set the union to inside_value
+    
+    Parameters
+    ----------
+    npimg1 : ndarray
+    npimg2 : ndarray
+    outside_value : float or int, default=0
+        defines the background in the mask images
+    inside_value : float or int, default=1
+        defines the value of non-background union
+        
+    Returns
+    -------
+    ndarray
     '''
     ans = np.ones(npimg1.shape) * outside_value
     idx = np.logical_or(npimg1 != outside_value, npimg2 != outside_value)
@@ -148,11 +216,18 @@ def array_from_spatial(obj, size, inside_value=1, outside_value=0):
     '''
     Return a Numpy array image of an ITKSpatialOjbect
     
-    obj (ITKSpatialObject or list of ITKSpatialObject) : spatial object(s) to convert to mask image, should be in index (i.e. spacing = 1.0, origin = 0.0) coordinates
-    size (nparray(2)) : size in x and y (columns, rows).  In the future may be None to self-calculate.
-    reference_image (itk.Image) : sets the spacing, direction, origin, and size of the output image
-    inside_value (real or list) : value to assign interior of each mask, if real, same value for each mask
-    outside_value
+    obj : itk.SpatialObject or list of itk.SpatialObject 
+        spatial object(s) to convert to mask image, should be in index (i.e. spacing = 1.0, origin = 0.0) coordinates
+    size : ndarray 
+        size in x and y (columns, rows)
+    inside_value : float or list of float
+        value to assign interior of each mask, if real, same value for each mask
+    outside_value : float
+        value to assign background
+        
+    Returns
+    -------
+    ndarray
     '''
     # the below is to allow obj to either be a single spatial object or a list
     # expand objects to lists
@@ -178,12 +253,18 @@ def image_from_spatial(obj, reference_image, inside_value=1, outside_value=0):
     Return a mask image from a single or list of ITKSpatialObjects.
     
     Parameters
-    ==========
+    ----------
+    obj : itk.SpatialObject or list of itk.SpatialObject
+        spatial object(s) to convert to mask image, should be in index (i.e. spacing = 1.0, origin = 0.0) coordinates
+    reference_image : itk.Image
+        sets the spacing, direction, origin, and size of the output image
+    inside_value : float or list of float
+        value to assign interior of each mask, if real, same value for each mask
+    outside_value : float
     
-    obj (ITKSpatialObject or list of ITKSpatialObject) : spatial object(s) to convert to mask image, should be in index (i.e. spacing = 1.0, origin = 0.0) coordinates
-    reference_image (itk.Image) : sets the spacing, direction, origin, and size of the output image
-    inside_value (real or list) : value to assign interior of each mask, if real, same value for each mask
-    outside_value
+    Returns
+    -------
+    itk.Image
     '''
     npimg = array_from_spatial(obj, np.array(reference_image.GetLargestPossibleRegion().GetSize()), inside_value, outside_value)
     ans = image_from_array(npimg, reference_image.GetSpacing(), reference_image.GetDirection(), reference_image.GetOrigin())
@@ -194,8 +275,12 @@ def get_framerate(meta_dict):
     Returns the framerate as a float from a meta_dict from ffprobe.
     
     Parameters
-    ==========
-    meta_dict (dict)
+    ----------
+    meta_dict : dict
+    
+    Returns
+    -------
+    float
     '''
     arr = meta_dict['video']['@avg_frame_rate'].split('/')
     return float(arr[1]) / float(arr[0])
@@ -204,17 +289,22 @@ def get_framerate(meta_dict):
 def get_slice(img, idx, axis, squeeze=True):
     '''
     Take an orthogonal slice from an image (must be axis-aligned, no interpolation).
+    WARNING: likely to be deprecated.
     
     Parameters
-    ==========
-    img (itk.Image)
-    idx (int) : index in axis to take slice
-    axis (int) : axis of slice
-    squeeze (bool) : whether to remove the specified axis from the output image
+    ----------
+    img : itk.Image
+    idx : int
+        index in axis to take slice
+    axis :int
+        axis of slice
+    squeeze : bool
+        whether to remove the specified axis from the output image
     
     Returns
-    =======
-    itk.Image : with dimensionality reduced by 1
+    -------
+    itk.Image
+        with dimensionality reduced by 1
     '''
     npimg, spacing, direction, origin = array_from_image(img, return_meta=True)
     npimg = npimg.take(indices=[idx], axis=axis)
@@ -239,7 +329,7 @@ def get_slice(img, idx, axis, squeeze=True):
 
 def wrap_itk_index(x):
     '''
-    TODO: see if this is necessary in newer ITK version
+    DEPRECATED: see if this is necessary in newer ITK version
     '''
     idx = itk.Index[2]()
     idx.SetElement(0, int(x[0]))
@@ -248,7 +338,7 @@ def wrap_itk_index(x):
 
 def wrap_itk_point(x):
     '''
-    TODO: see if this is necessary in newer ITK version
+    DEPRECATED: see if this is necessary in newer ITK version
     '''
     # TODO, why itk.F?
     pt = itk.Point[itk.F,2]()
@@ -259,31 +349,57 @@ def wrap_itk_point(x):
 def transform_to_physical(indices, image):
     '''
     Transform [y,x] indices to physical locations in an image.  Note, this is not the same as ITK's index scheme.
+    
+    Parameters
+    ----------
+    indices : ndarray
+        Nx2 indices represented as [row,col], i.e., numpy indexing
+    image : itk.Image
+    
+    Returns
+    -------
+    ndarray
+        Nx2 physical points [x,y]
     '''
     start_index = np.asarray(image.GetLargestPossibleRegion().GetIndex())
     return np.apply_along_axis(lambda x: np.array(image.TransformIndexToPhysicalPoint(wrap_itk_index(x))), 1, np.fliplr(indices) + start_index[np.newaxis,:])
 
 def transform_to_indices(pts, image):
-    # TODO find usage of this and figure out if I want to get rid of it
     '''
     Transform ITK's physical locations to [y,x] indices.  Note, this is not the same as ITK's index scheme.
+    
+    Parameters
+    ----------
+    pts : ndarray
+        Nx2 physical points [x,y]
+    image : itk.Image
+    
+    Returns
+    -------
+    ndarray
+        Nx2 indices in [row,col], i.e., numpy indexing
     '''
     start_index = np.asarray(image.GetLargestPossibleRegion().GetIndex())
     return np.fliplr(np.apply_along_axis(lambda x: np.array(image.TransformPhysicalPointToIndex(wrap_itk_point(x))), 1, pts) - start_index[np.newaxis,:])
 
 def window_sample(x, spacing, num=None):
     '''
-    Randomly sample an array of indices maintaining a minimum distance between samples.
+    Randomly sample an array of indices maintaining a minimum distance between samples.  For example, when wanting to take frames from a video that
+    are sufficiently separated in time.
     
     Parameters
-    ==========
-    x (ndarray of int) : an array of indices such as from np.argwhere
-    spacing (int) : distance maintained between return indices, i.e., or all x,y in result, |x-y| > spacing
-    num (int) : number of samples to return, or as many as possible if None
+    ----------
+    x : ndarray of int
+        an array of indices such as from np.argwhere
+    spacing : int
+        distance maintained between return indices, i.e., or all x,y in result,  :math:`|x-y| > \text{spacing}`
+    num : int
+        number of samples to return, or as many as possible if None
     
     Returns
-    =======
-    ndarray subsample of x
+    -------
+    ndarray : 
+        subsample of x
     '''
     num = num if num is not None else len(x)
     y = x.copy()

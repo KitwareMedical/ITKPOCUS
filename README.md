@@ -1,6 +1,6 @@
 # ITK Point-of-Care Ultrasound (ITKPOCUS)
 
-<img src="Documentation/images/Clarius Phantom.gif" alt="Clarius Phantom" width="800"/>
+![](doc/_static/Clarius%20Phantom.gif)
 
 ## About
 ITK Point-of-Care Ultrasound (ITKPOCUS) is an open source (Apache 2.0) collection of software libraries for the preprocessing and streaming of point-of-care ultrasound (POCUS) devices in order to support image processing and AI.  It currently has levels of support for Clarius, Butterfly, Sonivate, Sonoque, and Interson probes.
@@ -12,7 +12,7 @@ The ONSD estimation work is still active and updates will be pushed to this repo
 ITKPOCUS is developed by [Kitware, Inc.](https://www.kitware.com) in collaboration with Duke University.  This effort was sponsored by the U.S. Government under Other Transactions Number W81XWH-15-9-0001/W81XWH-19-9-0015 (MTEC 19-08-MuLTI-0079).
 
 ## Usage
-See the individual device folders for additional documentation.  Streaming APIs are dependent on the manufacturer's API (e.g. Android/Java for Clarius, MFC C++ for Sonivate, C++ for Interson).  The toolkit wraps the native device APIs to the [OpenIGTLink](http://openigtlink.org) message protocol.  The folder [itkpocus](itkpocus) contains the _itkpocus_ Python library for preprocessing video files.  Video files from the various manufacturers are converted into Insight Toolkit ([ITK](https://github.com/InsightSoftwareConsortium/ITK)) ```Image``` objects and file formats for image processing.
+See the individual device folders for additional documentation.  Streaming APIs are dependent on the manufacturer's API (e.g. Android/Java for Clarius, MFC C++ for Sonivate, C++ for Interson).  The toolkit wraps the native device APIs to the [OpenIGTLink](http://openigtlink.org) message protocol.  The folder [itkpocus](itkpocus) contains the _itkpocus_ Python library for preprocessing video files.  Video files from the various manufacturers are converted into Insight Toolkit ([ITK](https://github.com/InsightSoftwareConsortium/ITK)) ```itk.Image``` objects and file formats for image processing.
 
 ## Roadmap
 ### Always

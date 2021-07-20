@@ -10,7 +10,7 @@ import itk
 Preprocessing and device-specific IO for the Clarius HD C7.
 '''
 
-def find_spacing_and_crop(npimg):
+def _find_spacing_and_crop(npimg):
     '''
     Find the ruler in the image to calculate the physical dimensions and then crop to the B-mode data.
     
@@ -47,7 +47,7 @@ def find_spacing_and_crop(npimg):
     
     return spacing, np.array([[topbound, bottombound], [leftbound, rightbound]])
 
-def preprocess_image(npimg):
+def preprocess_image(npimg, version=None):
     '''
     Calculate physical spacing of image from identified ruler within image and crops to B-mode only.
     
@@ -55,32 +55,36 @@ def preprocess_image(npimg):
     ----------
     npimg : ndararay
         MxNx3
+    version : None
+        reserved for future use
     
     Returns
     -------
     itkImage[itk.F,2]
         cropped image scaled to 0.0 to 1.0 (MxN) with physical spacing
     '''
-    spacing, crop = find_spacing_and_crop(npimg)
+    spacing, crop = _find_spacing_and_crop(npimg)
     img = itk.image_from_array((npimg[crop[0,0]:crop[0,1]+1, crop[1,0]:crop[1,1]+1, 0] / 255.0).astype('float32'))
     img.SetSpacing([spacing, spacing])
     return img, { 'spacing' : [spacing, spacing], 'crop' : crop }
 
-def preprocess_video(npvid, framerate=1):
+def preprocess_video(npvid, framerate=1, version=None):
     '''
     npvid : ndarray
         video TxMxNx3
     framerate : float
         framerate (e.g. extracted from ffprobe)
+    version : None
+        reserved for future use
     '''
     npmean = np.mean(npvid, axis=0)
-    spacing, crop = find_spacing_and_crop(npmean)
+    spacing, crop = _find_spacing_and_crop(npmean)
     vid = itk.image_from_array((npvid[:,crop[0,0]:crop[0,1]+1, crop[1,0]:crop[1,1]+1,0] / 255.0).astype('float32').squeeze())
     vid.SetSpacing([spacing, spacing, framerate])
     
     return vid, { 'spacing' : [spacing, spacing, framerate], 'crop' : crop }
     
-def load_and_preprocess_image(fp):
+def load_and_preprocess_image(fp, version=None):
     '''
     Loads and preprocesses a Clarius image.
     
@@ -88,7 +92,7 @@ def load_and_preprocess_image(fp):
     ----------
     fp : str
         filepath to image
-    version : optional
+    version : None
         Reserved for future use.
     
     Returns
@@ -100,7 +104,7 @@ def load_and_preprocess_image(fp):
     '''
     return preprocess_image(itk.imread(fp))
 
-def load_and_preprocess_video(fp):
+def load_and_preprocess_video(fp, version=None):
     '''
     Loads and preprocesses a Clarius video.
     

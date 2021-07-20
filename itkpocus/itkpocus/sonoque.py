@@ -10,7 +10,7 @@ import skvideo.io
 
 '''Preprocessing and device-specific IO for the Sonoque.'''
 
-def find_spacing(npimg):
+def _find_spacing(npimg):
     '''
     Finds the spacing (pixel dimension in mm) of a Sonoque image by detecting the ruler ticks of the overlay.
     
@@ -42,17 +42,19 @@ def find_spacing(npimg):
     spacing = tick_spacing / np.mean(ruler_diffs)
     return spacing
 
-def find_crop(npimg):
+def _find_crop(npimg):
     '''
     Calculates a crop that contains only the ultrasound portion of the image (overlay text may still be on portion).
     
     Parameters
     ----------
-    npimg (2D ndarray) : single channel 0 to 255 (e.g. pydicom's pixel_array or a video frame)
+    npimg : ndarray
+        single channel 0 to 255 (e.g. pydicom's pixel_array or a video frame)
     
     Returns
-    =======
-    crop (2x2 ndarray) [[topbound, bottombound], [leftbound, rightbound]]
+    -------
+    crop : ndarray
+        (2x2 ndarray) [[topbound, bottombound], [leftbound, rightbound]]
     '''
     nonempty_threshold = 0.1 # percentage of nonzero pixels
     background_threshold = 10 # pixel intensity
@@ -76,15 +78,17 @@ def find_crop(npimg):
     return np.array([[topbound, bottombound], [leftbound, rightbound]])
 
 
-def normalize(npimg, npimgrgb):
+def _normalize(npimg, npimgrgb):
     '''
     A bunch of pixel-hacking to find the overlay elements in the image.  Returns the overlay (necessary) 
     for cropping later on and the image with the overlay elements in-filled (median filter at overlay pixels).
 
     Returns
     -------
-    npnorm (nparray MxN) : normalized image to be cropped later (median filtered hud elements)
-    npmasked (nparray MxN) : hud image that is input to cropping algorithm
+    npnorm : ndarray
+        MxN normalized image to be cropped later (median filtered hud elements)
+    npmasked : ndarray
+        MxN hud image that is input to cropping algorithm
     '''    
     white_threshold = 245
     black_threshold = 6
@@ -109,68 +113,70 @@ def normalize(npimg, npimgrgb):
 
     return npnorm, npmasked
 
-def load_and_preprocess_image(fp):
+def load_and_preprocess_image(fp, version=None):
     '''
     Loads Sonoque .dcm image.  Crops to ultrasound data (e.g. removes rulers) and uses a masked median filter to remove any overlayed text (by masking out bright white).
     
     Returns and itk.Image[itk.F,2] with intensities 0 to 1.0 and correct physical spacing.
-    Parameters
-    ==========
     
-    fp (str) : filepath
+    Parameters
+    ----------
+    fp : str
+        filepath
+    version : None
+        reserved for future use
     
     Returns
-    ==========
-    img, spacing, crop
-    
-    img (itk.Image[itk.F,2])
-    spacing (2 element ndarray) : [spacingX, spacingY]
-    crop (2x2 ndarray) : [[topmost, bottomost], [leftmost, rightmost]] for use with tbitk.util.crop
+    -------
+    img : itk.Image[it.F,2]
+    meta : dict
+        Meta dictionary
     '''
     tmp = pydicom.dcmread(fp)
     spacing = ( tmp[0x0018, 0x6011][0][0x0018, 0x602c].value, tmp[0x0018, 0x6011][0][0x0018, 0x602e].value ) # expecting single item ultrasound series, get physicalX and Y tags
     npimg_rgb = tmp.pixel_array
     npimg = tmp.pixel_array[:,:,0]
-    crop = find_crop(npimg)
-    npnorm, _ = normalize(tbitk.util.crop(npimg, crop), tbitk.util.crop(npimg_rgb, crop, rgb=True))
+    crop = _find_crop(npimg)
+    npnorm, _ = _normalize(itkpocus.util.crop(npimg, crop), itkpocus.util.crop(npimg_rgb, crop, rgb=True))
     img = itk.image_from_array(npnorm / 255.0)
     img.SetSpacing(spacing)
 
-    return img, spacing, crop
+    return img, {'spacing' : spacing, 'crop' : crop}
 
-def load_and_preprocess_video(fp):
+def load_and_preprocess_video(fp, version=None):
     '''
     Loads Sonoque .mov video.  Crops to ultrasound data (e.g. removes rulers) and uses a masked median filter to remove any overlayed text (by masking out bright white).
     
     Returns and itk.Image[itk.F,3] with intensities 0 to 1.0 and correct physical spacing.
-    Parameters
-    ==========
     
-    fp (str) : filepath
+    Parameters
+    ----------
+    fp : str 
+        filepath
+    version : None
+        reserved for future use
     
     Returns
-    ==========
-    img, spacing, crop
-    
-    img (itk.Image[itk.F,2])
-    spacing (2 element ndarray) : [spacingX, spacingY, framerate]
-    crop (2x2 ndarray) : [[topmost, bottomost], [leftmost, rightmost]] for use with tbitk.util.crop
+    -------
+    img : itk.Image[itk.F,2]
+    meta : dict
+        Meta data dictionary
     '''
     npvid_rgb = skvideo.io.vread(fp)
     npvid = npvid_rgb[:,:,:,0]
     vidmeta = skvideo.io.ffprobe(fp)
     
     npfirst = npvid[0,:,:]
-    spacing = find_spacing(npfirst)
-    spacing = [spacing, spacing, tbitk.util.get_framerate(vidmeta)]
-    crop = find_crop(npfirst)
+    spacing = _find_spacing(npfirst)
+    spacing = [spacing, spacing, itkpocus.util.get_framerate(vidmeta)]
+    crop = _find_crop(npfirst)
     
-    npvid_rgb = tbitk.util.crop(npvid_rgb, crop, rgb=True)
-    npvid = tbitk.util.crop(npvid, crop)
+    npvid_rgb = itkpocus.util.crop(npvid_rgb, crop, rgb=True)
+    npvid = itkpocus.util.crop(npvid, crop)
     for i in range(npvid.shape[0]):
-        npvid[i,:,:], _ = normalize(npvid[i,:,:], npvid_rgb[i,:,:])
+        npvid[i,:,:], _ = _normalize(npvid[i,:,:], npvid_rgb[i,:,:])
         
     img = itk.image_from_array(npvid / 255.0)
     img.SetSpacing(spacing)
 
-    return img, spacing, crop
+    return img, { 'spacing' : spacing, 'crop' : crop }
