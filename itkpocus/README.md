@@ -14,7 +14,7 @@
 ## Usage
 The scripts provided convert manufacturer video files to ITK Image objects.  They may also remove overlays from the ultrasound image and set the physical dimension of the image by processing the overlay ruler (when applicable).
 
-```
+```python
 import itkpocus.clarius as clarius
 import matplotlib.pyplot as plt
 import itk
