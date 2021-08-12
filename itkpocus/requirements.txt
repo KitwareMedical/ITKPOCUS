@@ -3,4 +3,4 @@ numpy>=1.19.3
 scikit-image>=0.18.0
 scipy>=1.5.4
 sk-video>=1.1.10
-
+pydicom>=2.1.2
