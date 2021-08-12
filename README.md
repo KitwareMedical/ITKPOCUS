@@ -1,6 +1,6 @@
 # ITK Point-of-Care Ultrasound (ITKPOCUS)
 
-![](doc/_static/Clarius%20Phantom.gif)
+<img src="docs/_static/Clarius Phantom.gif" />
 
 ## About
 ITK Point-of-Care Ultrasound (ITKPOCUS) is an open source (Apache 2.0) collection of software libraries for the preprocessing and streaming of point-of-care ultrasound (POCUS) devices in order to support image processing and AI.  It currently has levels of support for Clarius, Butterfly, Sonivate, Sonoque, and Interson probes.

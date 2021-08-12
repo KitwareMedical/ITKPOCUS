@@ -18,6 +18,10 @@ classifiers = [
 description-file = "README.md"
 requires = [
 	"itk>=5.2.0.post2",
+	"scikit-image",
+	"scipy",
+	"sk-video",
+	"numpy"
 ]
 requires-python = ">=3.7"
 dist-name = "itk-pocus"

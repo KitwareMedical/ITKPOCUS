@@ -122,4 +122,4 @@ def load_and_preprocess_video(fp, version=None):
     meta : dict
         Meta data (includes spacing and crop)
     '''
-    return preprocess_video(skvideo.io.vread(fp))
+    return preprocess_video(skvideo.io.vread(fp), framerate=get_framerate(skvideo.io.ffprobe(fp)))
