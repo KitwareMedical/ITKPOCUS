@@ -28,6 +28,14 @@ itkpocus.sonoque module
    :undoc-members:
    :show-inheritance:
 
+itkpocus.sonosite module
+------------------------
+
+.. automodule:: itkpocus.sonosite
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 itkpocus.util module
 --------------------
 
