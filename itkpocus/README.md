@@ -13,7 +13,7 @@ ITKPOCUS is developed by [Kitware, Inc.](https://www.kitware.com) in collaborati
 ## Usage
 The scripts provided convert manufacturer image and video files to ITK Image objects.  They may also remove overlays from the ultrasound image and set the physical dimension of the image by processing the overlay ruler (when applicable).
 
-```
+```python
 import itk
 import matplotlib.pyplot as plt
 import itkpocus.sonoque as sonoque
@@ -31,3 +31,4 @@ new_img, meta = sonoque.load_and_preprocess_image(fp)
     1. Note: errors in this step will result in exceptions from _skvideo_
 3. Activate your virtual environment
 4. `pip install itk-pocus`
+
