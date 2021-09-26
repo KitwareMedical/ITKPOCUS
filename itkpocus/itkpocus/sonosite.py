@@ -8,6 +8,7 @@ from itkpocus.util import get_framerate
 import skimage.filters
 import numpy as np
 import os
+import itkpocus.util
 
 def load_and_preprocess_video(fp, version=None):
     '''
@@ -226,4 +227,49 @@ def preprocess_video(npvid, framerate=1, version=None):
     img = itk.image_from_array((npnormvid / 255.0).astype('float32'))
     tmp = np.array([spacing, spacing, framerate])
     img.SetSpacing(tmp)
-    return (npnormvid / 255.0).astype('float32'), {'spacing' : tmp, 'crop' : crop}
+    return img, {'spacing' : tmp, 'crop' : crop}
+
+def load_and_preprocess_image(fp, version=None):
+    '''
+    Loads Sonosite .jpg image.  Crops to ultrasound data (e.g. removes rulers) and uses a masked median filter to remove any overlayed text (by masking out bright white).
+    
+    Returns and itk.Image[itk.F,2] with intensities 0 to 1.0 and correct physical spacing.
+    
+    Parameters
+    ----------
+    fp : str
+        filepath
+    version : None
+        reserved for future use
+    
+    Returns
+    -------
+    img : itk.Image[it.F,2]
+    meta : dict
+        Meta dictionary
+    '''
+    return preprocess_image(itk.imread(fp), version)
+    
+def load_and_preprocess_video(fp, version=None):
+    '''
+    Loads Sonosite .mp4 video.  Crops to ultrasound data (e.g. removes rulers) and uses a masked median filter to remove any overlayed text (by masking out bright white).
+    
+    Returns and itk.Image[itk.F,3] with intensities 0 to 1.0 and correct physical spacing.
+    
+    Parameters
+    ----------
+    fp : str 
+        filepath
+    version : None
+        reserved for future use
+    
+    Returns
+    -------
+    img : itk.Image[itk.F,2]
+    meta : dict
+        Meta data dictionary
+    '''
+    npvid_rgb = skvideo.io.vread(fp)
+    vidmeta = skvideo.io.ffprobe(fp)
+    
+    return preprocess_video(npvid_rgb, itkpocus.util.get_framerate(vidmeta), version)

@@ -211,7 +211,7 @@ def load_and_preprocess_video(fp, version=None):
     '''
     vidmeta = ffprobe_count_frames(fp)
     npvid_rgb = vread_workaround(fp, vidmeta)
-    return preprocess_video(npvid_rgb, framerate=get_framerate(vidmeta))
+    return preprocess_video(npvid_rgb, framerate=itkpocus.util.get_framerate(vidmeta))
 
 def load_and_preprocess_image(fp, version=None):
     '''

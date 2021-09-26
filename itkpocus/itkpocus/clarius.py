@@ -42,8 +42,13 @@ def _find_spacing_and_crop(npimg):
     midrow = npimg.shape[0]/2.0
     rowsum = np.sum(npimg[:,leftbound:rightbound+1,0], axis=1)
     zerorow = np.argwhere(rowsum == 0)
-    topbound = np.max(zerorow[zerorow < midrow])
-    bottombound = np.min(zerorow[midrow < zerorow])
+    
+    if len(zerorow) == 0: # fills the whole image vertically
+        topbound=0
+        bottombound=npimg.shape[0]-1
+    else:
+        topbound = np.max(zerorow[zerorow < midrow])
+        bottombound = np.min(zerorow[midrow < zerorow])
     
     return spacing, np.array([[topbound, bottombound], [leftbound, rightbound]])
 
