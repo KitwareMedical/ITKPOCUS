@@ -38,27 +38,27 @@ target_include_directories(SonivateStream PUBLIC
   ${Sonivate_INCLUDE_DIR}
 )
 
-FILE(GLOB DEMO_SRC_FILES "Demo_Test/*.cpp")
-FILE(GLOB DEMO_HEAD_FILES "Demo_Test/*.h")
-FILE(GLOB DEMO_RC_FILES "Demo_Test/*.rc" "Demo_Test/res/*")
-add_executable(DemoTest ${DEMO_SRC_FILES} ${DEMO_HEAD_FILES} ${DEMO_RC_FILES})
+#FILE(GLOB DEMO_SRC_FILES "Demo_Test/*.cpp")
+#FILE(GLOB DEMO_HEAD_FILES "Demo_Test/*.h")
+#FILE(GLOB DEMO_RC_FILES "Demo_Test/*.rc" "Demo_Test/res/*")
+#add_executable(DemoTest ${DEMO_SRC_FILES} ${DEMO_HEAD_FILES} ${DEMO_RC_FILES})
 
 # TODO: confirm the /SAFESEH:NO flag is necessary
-set_target_properties(DemoTest PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS /SAFESEH:NO")
+#set_target_properties(DemoTest PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS /SAFESEH:NO")
 # add_definitions(-D_AFXDLL) # Necessary for stdafx.h
 set(CMAKE_MFC_FLAG 1)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MT")
 include(MSVCLinkToStaticCRT)
 msvc_link_to_static_crt()
 
-target_link_libraries(DemoTest
-  ${OpenIGTLink_LIBRARIES}
-  ${Sonivate_LIBRARIES}
-)
-target_include_directories(DemoTest PUBLIC
-  ${OpenIGTLink_INCLUDE_DIRS}
-  ${Sonivate_INCLUDE_DIR}
-)
+#target_link_libraries(DemoTest
+#  ${OpenIGTLink_LIBRARIES}
+#  ${Sonivate_LIBRARIES}
+#)
+#target_include_directories(DemoTest PUBLIC
+#  ${OpenIGTLink_INCLUDE_DIRS}
+#  ${Sonivate_INCLUDE_DIR}
+#)
 
 #if(DEFINED ${Sonviate_RESOURCES_DEBUG})
   message("Copying resources debug")

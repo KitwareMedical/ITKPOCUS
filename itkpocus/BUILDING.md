@@ -24,6 +24,13 @@ NOTE: steps #1 and #2 are necessary because _examples_ is outside of the _doc_ d
     sphinx-apidoc -f -o doc . 'tests'
     ./doc/make html
 ```
+2. Note, all documentation will be rebuilt and deployed to readthedocs _automatically_ on merge to master.
 
 ## Running testing
-1. `python -m unittest`
+1. `python -m unittest` or `python tests/test_myfile.py`
+
+## Publishing to PyPI
+1. Update `itkpocus/__init__.py` version number
+    1. Use _rc_ for release candidates on major versions
+    2. Use subversions for bugfixes
+2. `flit publish`

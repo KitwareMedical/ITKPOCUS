@@ -285,48 +285,6 @@ def get_framerate(meta_dict):
     arr = meta_dict['video']['@avg_frame_rate'].split('/')
     return float(arr[1]) / float(arr[0])
     
-
-def get_slice(img, idx, axis, squeeze=True):
-    '''
-    Take an orthogonal slice from an image (must be axis-aligned, no interpolation).
-    WARNING: likely to be deprecated.
-    
-    Parameters
-    ----------
-    img : itk.Image
-    idx : int
-        index in axis to take slice
-    axis :int
-        axis of slice
-    squeeze : bool
-        whether to remove the specified axis from the output image
-    
-    Returns
-    -------
-    itk.Image
-        with dimensionality reduced by 1
-    '''
-    npimg, spacing, direction, origin = array_from_image(img, return_meta=True)
-    npimg = npimg.take(indices=[idx], axis=axis)
-    if squeeze: # remove the extra dimension of npimg and remove it from spacing/direction/origin
-        npimg = npimg.squeeze(axis=axis)
-        
-        tmp = list(spacing)
-        del(tmp[axis])
-        spacing = np.array(tmp, dtype='float32').tolist()
-        
-        # this works for my case but probably needs a general sanity check
-        tmp = itk.array_from_matrix(direction)
-        tmp = np.delete(tmp, axis, 0) # delete row corresponding to axis
-        tmp = np.delete(tmp, axis, 1) # delete column corresponding to axis
-        direction = itk.matrix_from_array(tmp)
-    
-        tmp = list(origin)
-        del(tmp[axis])
-        origin = np.array(tmp, dtype='float32').tolist()
-        
-    return image_from_array(npimg, spacing=spacing, direction=direction, origin=origin)
-
 def wrap_itk_index(x):
     '''
     DEPRECATED: see if this is necessary in newer ITK version

@@ -14,12 +14,16 @@ class TestButterfly(unittest.TestCase):
         # consider using subTests in the future for different versions/images
         #  with self.subTest(i=i):
         #      self.assertEqual()...
-        img, spacing, crop = itkpocus.butterfly.load_and_preprocess_image('./tests/data/butterfly_axial-lateral-resolution-2020.png')
+        img, meta_dict = itkpocus.butterfly.load_and_preprocess_image('./tests/data/butterfly_axial-lateral-resolution-2020.png')
+        
+        spacing = meta_dict['spacing']
+        crop = meta_dict['crop']
+        
         self.assertAlmostEqual(spacing[0], 0.047619, delta=SPACING_DELTA)
         self.assertAlmostEqual(spacing[1], 0.047619, delta=SPACING_DELTA)
     
         self.assertAlmostEqual(crop[0,0], 54)
-        self.assertAlmostEqual(crop[0,1], 10)
+        self.assertAlmostEqual(crop[0,1], 1048)
         print(crop)
     
 if __name__ == '__main__':
