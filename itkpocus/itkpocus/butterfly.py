@@ -127,10 +127,17 @@ def _calc_crop(npvid):
     # center of image
     cr, cc = (np.array(npimg.shape) / 2.0).astype('int')
     
-    sr = int(0.05 * npimg.shape[0])
+    #sr = int(0.05 * npimg.shape[0])
+    sr = cr
     er = cr
-
-    while er < npimg.shape[0]-1 and len(np.argwhere(npimg[er,:])) > npimg.shape[1] * 0.25:
+    row_cutoff = npimg.shape[1] * 0.25
+    
+    while sr > 0 and len(np.argwhere(npimg[sr,:])) > row_cutoff:
+        sr -= 1
+    
+    sr += 5 # get rid of gray bar
+    
+    while er < npimg.shape[0]-1 and len(np.argwhere(npimg[er,:])) > row_cutoff:
         er += 1
     
     er -= 15 # get rid of angling shadowbox on butterfly
