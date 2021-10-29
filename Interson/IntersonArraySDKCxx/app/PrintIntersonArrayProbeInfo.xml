@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<executable>
+  <category>Ultrasound</category>
+  <title>Print Interson Probe Info</title>
+  <description>Print properties of the connected Interson USB probe.</description>
+  <version>0.1.0</version>
+  <license>Apache 2.0</license>
+  <contributor>Matt McCormick (Kitware)</contributor>
+  <acknowledgements>This work is funded in part by a grant with InnerOptic/Kitware</acknowledgements>
+  <parameters>
+    <integer>
+      <name>probeIndex</name>
+      <label>Probe Index</label>
+      <description>Index of the probe to examine.</description>
+      <longflag>probeIndex</longflag>
+      <flag>i</flag> 
+      <default>0</default>
+    </integer>
+  </parameters>
+</executable>
