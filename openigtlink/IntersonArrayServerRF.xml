@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<executable>
+  <category>Ultrasound</category>
+  <title>Interson RF OpenIGTLink Server</title>
+  <description>Broadcast RF images over OpenIGTLink.</description>
+  <version>0.1.0</version>
+  <license>Apache 2.0</license>
+  <contributor>Sam Horvath (Kitware), Matt McCormick (Kitware)</contributor>
+  <acknowledgements>This work is funded in part by a grant with InnerOptic/Kitware</acknowledgements>
+  <parameters>
+    <integer>
+      <name>port</name>
+      <label>Port Number</label>
+      <description>Port for OpenIGTLink Server.</description>
+      <longflag>port</longflag>
+      <flag>p</flag>
+      <default>18944</default>
+    </integer>
+    <integer>
+      <name>frequencyIndex</name>
+      <label>Frequency Index</label>
+      <description>Index of the frequency to examine.  See the output of PrintIntersonProbeInfo.</description>
+      <longflag>frequencyIndex</longflag>
+      <flag>f</flag>
+      <default>1</default>
+    </integer>
+    <integer>
+      <name>focusIndex</name>
+      <label>Focus Index</label>
+      <description>Index of the focus to examine.  See the output of PrintIntersonProbeInfo.</description>
+      <longflag>focusIndex</longflag>
+      <flag>F</flag>
+      <default>1</default>
+    </integer>
+    <integer>
+      <name>highVoltage</name>
+      <label>High Voltage</label>
+      <description>Percentage of the high voltage for transducer excitation.</description>
+      <longflag>highVoltage</longflag>
+      <flag>z</flag>
+      <default>50</default>
+      <minimum>0</minimum>
+      <maximum>100</maximum>
+    </integer>
+    <double>
+      <name>sos</name>
+      <label>Speed of sound</label>
+      <description> Assumed speed of sound in the crossed medium in mm/ms.</description>
+      <longflag>sos</longflag>
+      <default>1540</default>
+    </double>
+  </parameters>
+</executable>
