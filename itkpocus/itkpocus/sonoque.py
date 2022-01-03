@@ -7,7 +7,7 @@ from skimage.morphology import dilation
 import skimage.filters
 import itkpocus.util
 import skvideo.io
-
+from pathlib import Path
 '''Preprocessing and device-specific IO for the Sonoque.'''
 
 def _find_spacing(npimg):
@@ -18,20 +18,20 @@ def _find_spacing(npimg):
     ----------
     npimg : ndarray
         single channel 0 to 255 (e.g. pydicom's pixel_array or a video frame)
-    
     Returns
     -------
     spacing : float
         or None if the ruler cannot be detected
     '''
     tick_spacing = 5 # in mm
+    bg_threshold = 10
     error_threshold = 5 # in pixels
     ruler_size_threshold = 0.7 # percentage of vertical image
     ticks_offset = 3 # in pixels, right of long ruler line
     ruler_intensity_threshold = 80 # minimum brightness of ruler pixels/height in peak finding
     
     ruler_thresh = npimg.shape[0] * ruler_size_threshold
-    col_count = np.sum(npimg > 0, axis=0)
+    col_count = np.sum(npimg > bg_threshold, axis=0)
     ruler_col = np.argwhere(col_count > ruler_thresh)[0] + ticks_offset
     ruler_ticks, _ = find_peaks(npimg[:, ruler_col].flatten(), height=ruler_intensity_threshold)
     ruler_diffs = ruler_ticks[1:] - ruler_ticks[:-1]
@@ -132,10 +132,17 @@ def load_and_preprocess_image(fp, version=None):
     meta : dict
         Meta dictionary
     '''
-    tmp = pydicom.dcmread(fp)
-    spacing = ( tmp[0x0018, 0x6011][0][0x0018, 0x602c].value, tmp[0x0018, 0x6011][0][0x0018, 0x602e].value ) # expecting single item ultrasound series, get physicalX and Y tags
-    npimg_rgb = tmp.pixel_array
-    npimg = tmp.pixel_array[:,:,0]
+    
+    if Path(fp).suffix.lower() in ['.dcm', '.dicom']: 
+        tmp = pydicom.dcmread(fp)
+        spacing = ( tmp[0x0018, 0x6011][0][0x0018, 0x602c].value, tmp[0x0018, 0x6011][0][0x0018, 0x602e].value ) # expecting single item ultrasound series, get physicalX and Y tags
+        npimg_rgb = tmp.pixel_array
+        npimg = tmp.pixel_array[:,:,0]
+    else:
+        npimg_rgb = itk.imread(fp)
+        npimg = npimg_rgb[:,:,0]
+        spacing = _find_spacing(npimg)
+    
     crop = _find_crop(npimg)
     npnorm, _ = _normalize(itkpocus.util.crop(npimg, crop), itkpocus.util.crop(npimg_rgb, crop, rgb=True))
     img = itk.image_from_array(npnorm / 255.0)
