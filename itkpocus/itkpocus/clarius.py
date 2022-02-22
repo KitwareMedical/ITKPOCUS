@@ -12,7 +12,7 @@ import itk
 Preprocessing and device-specific IO for the Clarius HD C7.
 '''
 
-def _get_rightmost_ruler_from_mask(mask):
+def _get_rightmost_ruler_from_mask(mask, tick_dist):
     '''
     Finds the ruler as long as it is the rightmost thing on the mask.
     
@@ -20,6 +20,8 @@ def _get_rightmost_ruler_from_mask(mask):
     ----------
     mask : ndarray
         MxN where the ruler and other overlay elements are non-zero values
+    tick_dist : float
+        Distance between each tick in the ruler in mm
         
     Returns
     -------
@@ -32,7 +34,6 @@ def _get_rightmost_ruler_from_mask(mask):
     row_width=5
     consistency_threshold = 10 # max number of pixels a ruler step can differ in
     outlier_threshold = 0.1
-    tick_dist = 10.0 # physical distance between ticks in mm
     
     colsum = np.sum(mask, axis=0)
     col_peaks, col_props = find_peaks(colsum, prominence=col_prominence)
@@ -124,7 +125,7 @@ def _get_overlay_mask(npimg, version=None, threshold=250):
     mask = dilation(mask, disk(5))
     return mask
 
-def preprocess_image(npimg, version=None):
+def preprocess_image(npimg, version=None, tick_dist=10):
     '''
     Calculate physical spacing of image from identified ruler within image and crops to B-mode only.
     
@@ -143,13 +144,13 @@ def preprocess_image(npimg, version=None):
     mask = _get_overlay_mask(npimg)
     npimg_clean = _inpaint(npimg[:,:,0], mask)
     crop = _find_crop(npimg_clean)
-    spacing, ruler_col, ruler_peaks = _get_rightmost_ruler_from_mask(mask)
+    spacing, ruler_col, ruler_peaks = _get_rightmost_ruler_from_mask(mask, tick_dist=tick_dist)
     img = itk.image_from_array(npimg_clean[crop[0,0]:crop[0,1]+1, crop[1,0]:crop[1,1]+1])
     img.SetSpacing([spacing, spacing])
     
     return img, { 'spacing' : [spacing, spacing], 'crop' : crop }
 
-def preprocess_video(npvid, framerate=1, version=None):
+def preprocess_video(npvid, framerate=1, version=None, tick_dist=10):
     '''
     npvid : ndarray
         video TxMxNx3
@@ -161,7 +162,7 @@ def preprocess_video(npvid, framerate=1, version=None):
     npmean = np.mean(npvid, axis=0)
     
     mask = _get_overlay_mask(npmean)
-    spacing, ruler_col, ruler_peaks = _get_rightmost_ruler_from_mask(mask)
+    spacing, ruler_col, ruler_peaks = _get_rightmost_ruler_from_mask(mask, tick_dist=tick_dist)
     
     npmean_clean = _inpaint(npmean[:,:,0], mask)
     crop = _find_crop(npmean_clean)
@@ -176,7 +177,7 @@ def preprocess_video(npvid, framerate=1, version=None):
     
     return vid, { 'spacing' : [spacing, spacing, framerate], 'crop' : crop }
     
-def load_and_preprocess_image(fp, version=None):
+def load_and_preprocess_image(fp, version=None, tick_dist=10):
     '''
     Loads and preprocesses a Clarius image.
     
@@ -194,9 +195,9 @@ def load_and_preprocess_image(fp, version=None):
     meta : dict
         Meta data (includes spacing and crop)
     '''
-    return preprocess_image(itk.imread(fp))
+    return preprocess_image(itk.imread(fp), tick_dist=tick_dist)
 
-def load_and_preprocess_video(fp, version=None):
+def load_and_preprocess_video(fp, version=None, tick_dist=10):
     '''
     Loads and preprocesses a Clarius video.
     
@@ -214,4 +215,4 @@ def load_and_preprocess_video(fp, version=None):
     meta : dict
         Meta data (includes spacing and crop)
     '''
-    return preprocess_video(skvideo.io.vread(fp), framerate=get_framerate(skvideo.io.ffprobe(fp)))
+    return preprocess_video(skvideo.io.vread(fp), framerate=get_framerate(skvideo.io.ffprobe(fp)), tick_dist=tick_dist)

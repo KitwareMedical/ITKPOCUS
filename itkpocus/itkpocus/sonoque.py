@@ -78,7 +78,7 @@ def _find_crop(npimg):
     return np.array([[topbound, bottombound], [leftbound, rightbound]])
 
 
-def _normalize(npimg, npimgrgb):
+def _normalize(npimg, npimgrgb, remove_overlay=True):
     '''
     A bunch of pixel-hacking to find the overlay elements in the image.  Returns the overlay (necessary) 
     for cropping later on and the image with the overlay elements in-filled (median filter at overlay pixels).
@@ -103,7 +103,7 @@ def _normalize(npimg, npimgrgb):
     nphud2 = dilation(nphud, disk(4))
     npmasked = npimg.copy()
     npmasked[nphud2] = 0
-
+                                                                                                                                                                                             
     # now we have a cropped image, need to get rid of the annotation marks
     nphud3 = dilation(nphud, disk(dilation_radius))
     #     nphud3 = nphud3[crop2[0,0]:crop2[0,1]+1, crop2[1,0]:crop2[1,1]+1]
@@ -113,7 +113,7 @@ def _normalize(npimg, npimgrgb):
 
     return npnorm, npmasked
 
-def load_and_preprocess_image(fp, version=None):
+def load_and_preprocess_image(fp, version=None, remove_overlay=True):
     '''
     Loads Sonoque .dcm image.  Crops to ultrasound data (e.g. removes rulers) and uses a masked median filter to remove any overlayed text (by masking out bright white).
     

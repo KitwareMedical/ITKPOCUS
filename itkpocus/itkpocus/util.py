@@ -1,6 +1,8 @@
 import itk
 import numpy as np
 from random import shuffle
+import skimage.restoration
+from skimage.morphology import dilation, disk
 
 '''Collection of utility methods.  Note, this module is likely subject to API change.'''
 
@@ -369,3 +371,42 @@ def window_sample(x, spacing, num=None):
         y = [r for r in y[1:] if r < tmp - spacing or r > tmp + spacing]
     
     return ans
+
+def inpaint(npimg, mask):
+    '''
+    Inpaint the locations in npimg corresponding to true values in mask.
+    
+    Parameters
+    ----------
+    npimg : ndarray
+        MxN
+    mask : ndarray
+        MxN
+        
+    Returns
+    -------
+    ndarray
+    '''
+    return skimage.restoration.inpaint.inpaint_biharmonic(npimg, mask)
+
+def get_overlay_mask(npimgrgb, version=None, threshold=250):
+    '''
+    Identify the overlay and annotation elements by brightness (threshold) and color.
+    
+    Parameters
+    ----------
+    npimg : ndarray
+        MxNx3
+    version : None
+        reserved for future use
+    threshold : int
+        brightness threshold for overlay elements, if too low, B-mode data may mistakenly masked
+        
+    Returns
+    -------
+    ndarray
+        False is background and True is overlay
+    '''
+    mask = np.logical_not((npimgrgb[:,:,0] == npimgrgb[:,:,1]) & (npimgrgb[:,:,1] == npimgrgb[:,:,2])) | (npimgrgb[:,:,0] >= threshold)
+    mask = dilation(mask, disk(5))
+    return mask
