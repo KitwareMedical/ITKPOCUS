@@ -8,6 +8,7 @@ import itk
 from skimage.morphology import disk
 from skimage.morphology import dilation
 import skimage.filters
+from struct import unpack, calcsize
 
 '''
 Preprocessing and device-specific IO for the Interson SP-L01.
@@ -154,6 +155,172 @@ def load_and_preprocess_image(fp, version=None):
     '''
     return preprocess_image(itk.imread(fp))
 
+
+
+class ProbeSettings:
+    '''
+    Struct-like class for handling probe settings meta data from the Interson .cine format.
+    '''
+    
+    FORMAT_STR = 'iifiiiiif'
+    
+    def __init__(self, depth, frequency_idx, frequency, near_gain, mid_gain, far_gain, contrast, intensity, voltage):
+        '''
+        Order of parameters matters here as is used by unpack.  Do not change these parameters.
+        '''
+        self.depth = depth
+        self.frequency_idx = frequency_idx
+        self.frequency = frequency
+        self.near_gain = near_gain
+        self.mid_gain = mid_gain
+        self.far_gain = far_gain
+        self.contrast = contrast
+        self.intensity = intensity
+        self.voltage = voltage
+        
+    def __str__(self):
+        return  str(self.__class__) + '\n' + '\n'.join((str(item) + ' = ' + str(self.__dict__[item]) for item in sorted(self.__dict__)))    
+    
+class DownloadSettings:
+    '''
+    Struct-like class for handling probe settings meta data from the Interson .cine format.
+    '''
+    
+    FORMAT_STR = 'i???' + ProbeSettings.FORMAT_STR + 'i??ii?ifi??ihi?ii'
+    def __init__(self, probe_id, bidir, rf_probe, b360_probe, depth, frequency_idx, frequency, near_gain, mid_gain, far_gain, contrast, intensity, voltage, y_display_offset, img_left_orientation, img_top_orientation, image_rotation, frame_scan_rate, averaging, image_sector, scan_radius, compound_angle, compound_enabled, doubler_enabled, steering_angle, cine_compression_ratio, number_of_cine_frames, cine_cfm_mode, cfm_vectors, cfm_samples):
+        '''
+        Order of parameters matters here as is used by unpack.  Do not change these parameters.
+        '''
+        self.probe_id = probe_id
+        self.bidir = bidir
+        self.rf_probe = rf_probe
+        self.b360_probe = b360_probe
+        self.probe_settings = ProbeSettings(depth, frequency_idx, frequency, near_gain, mid_gain, far_gain, contrast, intensity, voltage)
+        self.y_display_offset = y_display_offset
+        self.img_left_orientation = img_left_orientation
+        self.img_top_orientation = img_top_orientation
+        self.image_rotation = image_rotation
+        self.frame_scan_rate = frame_scan_rate
+        self.averaging = averaging
+        self.image_sector = image_sector
+        self.scan_radius = scan_radius
+        self.compound_angle = compound_angle
+        self.compound_enabled = compound_enabled
+        self.doubler_enabled = doubler_enabled
+        self.steering_angle = steering_angle
+        self.cine_compression_ratio = cine_compression_ratio
+        self.number_of_cine_frames = number_of_cine_frames
+        self.cine_cfm_mode = cine_cfm_mode
+        self.cmf_vectors = cfm_vectors
+        self.cfm_samples = cfm_samples
+    def __str__(self):
+        return  str(self.__class__) + '\n' + '\n'.join((str(item) + ' = ' + str(self.__dict__[item]) for item in sorted(self.__dict__)))
+    
+def _load_video(fp):
+    '''
+    Loads an Interson .cine file.
+    
+    Parameters
+    ----------
+    fp : str
+    
+    Returns
+    -------
+    version : int
+    download_settings : DownloadSettings
+        Contains .cine file meta data
+    tmp_buffer : bytearray
+    length : int
+        Length of cine_buffer
+    cine_buffer : bytearray
+    cfm_cine_length : int
+        Length of cfm_cine_length
+    cfm_cine_buffer : bytearray
+    '''
+    with open(fp, mode='rb') as f:
+        version = unpack('i', f.read(calcsize('i')))
+        download_settings = DownloadSettings(*unpack(DownloadSettings.FORMAT_STR, f.read(calcsize(DownloadSettings.FORMAT_STR))))
+        # magic number from interson
+        tmp_buffer = f.read(1164)
+        length = 127 * 1024 * download_settings.number_of_cine_frames
+        cine_buffer = bytearray(f.read(length))
+        
+        cfm_cine_length = None
+        cfm_cine_buffer = None
+        if download_settings.cine_cfm_mode:
+            cfm_cine_length = download_settings.number_of_cine_frames * download_settings.cfm_vectors * download_settings.cfm_samples
+            cfm_cine_buffer = f.read(cfm_cine_length)
+    
+    return version, download_settings, tmp_buffer, length, cine_buffer, cfm_cine_length, cfm_cine_buffer
+
+def _convert_to_image(cine_buffer, number_of_cine_frames, depth, frame_scan_rate):
+    '''
+    Converts cine_buffer into an itk.Image that has been resampled to be isometric
+    
+    Parameters
+    ----------
+    cine_buffer : bytearray
+        From _load_video
+    number_of_cine_frames : int
+        Number of video frames, i.e., download_setttings.number_of_cine_frames
+    depth : int
+        Image depth in mm, i.e., download_settings.probe_settings.depth
+    frame_scan_rate : int
+        Frames per second of video, i.e., download_settings.frame_scan_rate
+        
+    Returns
+    -------
+    itk.Image[itk.D,3]
+        Original frame count and y pixel size preserved, x is resized to be isometric
+        and there is cropping in the x dimension.
+    '''
+    # hard-coded x/y dims from interson
+    size = [127, 1024, number_of_cine_frames]
+    img = itk.Image[itk.UC, 3].New()
+    img.SetRegions(itk.ImageRegion[3](size))
+    img.Allocate()
+    # 38mm for probe head size
+    spacing = [38.0/size[0], depth/size[1], 1.0/frame_scan_rate]
+    img.SetSpacing(spacing)
+    p = 0
+    idx = itk.Index[3]()
+    idx_map = [2, 0, 1]
+    for i in range(size[idx_map[0]]):
+        idx.SetElement(idx_map[0], i)
+        for j in range(size[idx_map[1]]):
+            idx.SetElement(idx_map[1], j)
+            for k in range(size[idx_map[2]]):
+                idx.SetElement(idx_map[2], k)
+                img.SetPixel(idx, cine_buffer[p])
+                p += 1
+    
+    output_size = size
+    output_size[0] = spacing[0] / spacing[1] * 112
+    
+    output_spacing = [spacing[1], spacing[1], spacing[2]]
+    
+    s = img.GetLargestPossibleRegion().GetSize()
+    for i in range(len(s)):
+        s[i] = int(output_size[i])
+    
+    # use this to crop the data
+    # the ultrasound data doesn't fill the buffer
+    translate_transform = itk.TranslationTransform[itk.D,3].New()
+    p = translate_transform.GetParameters()
+    p[0] = 0.5 # probe reading doesn't start until 0.5mm into the buffer
+    translate_transform.SetParameters(p)
+
+    interpolator = itk.LinearInterpolateImageFunction.New(img)
+    resampled = itk.resample_image_filter(
+        img,
+        transform=translate_transform,
+        interpolator=interpolator,
+        size=s,
+        output_spacing=np.array(output_spacing),
+    )
+    
+    return resampled
+
 def load_and_preprocess_video(fp, version=None):
     '''
     Loads and preprocesses a Interson video.
@@ -161,7 +328,7 @@ def load_and_preprocess_video(fp, version=None):
     Parameters
     ----------
     fp : str
-        filepath to video (e.g. .mp4)
+        filepath to video (e.g. .mp4, .cine)
     version : optional
         Reserved for future use.
     
@@ -172,4 +339,17 @@ def load_and_preprocess_video(fp, version=None):
     meta : dict
         Meta data (includes spacing and crop)
     '''
-    return preprocess_video(skvideo.io.vread(fp), framerate=get_framerate(skvideo.io.ffprobe(fp)))
+    if fp.endswith('.cine'): # interson .cine proprietary format
+        version, download_settings, tmp_buffer, length, cine_buffer, cfm_cine_length, cfm_cine_buffer = _load_video(fp)
+        img = _convert_to_image(cine_buffer, download_settings.number_of_cine_frames, download_settings.probe_settings.depth, download_settings.frame_scan_rate)
+        size = img.GetLargestPossibleRegion().GetSize()
+        meta_dict = { 
+            'spacing' : np.array([
+                img.GetSpacing()[0],
+                img.GetSpacing()[1],
+                img.GetSpacing()[2]]),
+            'crop' : np.array([[0, 0], [size[0], size[1]]]) # there's no cropping (per se) as the .cine is just the raw data
+        }
+        return img, meta_dict
+    else: # .mp4
+        return preprocess_video(skvideo.io.vread(fp), framerate=get_framerate(skvideo.io.ffprobe(fp)))
