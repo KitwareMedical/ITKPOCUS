@@ -184,7 +184,7 @@ BOOL CSonivateStreamDlg::OnInitDialog()
 	
 	if (probe->InitHardware()) {
 		log(LogLevel::info, "Connection successful");
-		probe->LoadPreset(2);
+		probe->LoadPreset(7);
 		//m_pMCE->LoadPreset(2);
 		//m_pImgDisp = new ImgDisplay;
 		//m_pImgDisp->Setup(m_pMCE->ImgWidth(), m_pMCE->ImgHeight(), m_eView.GetDC());
