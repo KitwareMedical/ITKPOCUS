@@ -25,6 +25,12 @@ class TestButterfly(unittest.TestCase):
         self.assertAlmostEqual(crop[0,0], 31)
         self.assertAlmostEqual(crop[0,1], 1048)
         print(crop)
-    
+
+    def test_mean_crop(self):
+        img, _ = itkpocus.butterfly.load_and_preprocess_video('./tests/data/butterfly-mean-crop.mp4')
+        img_size = img.GetLargestPossibleRegion().GetSize()
+        self.assertNotEqual(img_size[0], 0)
+        self.assertNotEqual(img_size[1], 0)
+
 if __name__ == '__main__':
     unittest.main()
