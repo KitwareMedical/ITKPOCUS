@@ -26,5 +26,13 @@ class TestButterfly(unittest.TestCase):
         self.assertAlmostEqual(crop[0,1], 1048)
         print(crop)
     
+    def test_vread_workaround(self):
+        f = './tests/data/butterfly-vsync.mp4'
+        x = itkpocus.butterfly.vread_workaround(f)
+        self.assertAlmostEqual(x.shape[0], 761)
+        self.assertAlmostEqual(x.shape[1], 1080)
+        self.assertAlmostEqual(x.shape[2], 776)
+        self.assertAlmostEqual(x.shape[3], 3)
+    
 if __name__ == '__main__':
     unittest.main()
