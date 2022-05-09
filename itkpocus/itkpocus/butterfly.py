@@ -124,34 +124,34 @@ def _calc_crop(npvid):
         2x2 array in format [[start_row, end_row], [start_column, end_column]]
     '''
     if len(npvid.shape) == 4:
-        npimg = npvid[0,:,:,0].squeeze()
+        npmean = np.mean(npvid[:,:,:,0], axis=0)
     else:
-        npimg = npvid[:,:,0].squeeze()
+        npmean = npvid[:,:,0].squeeze()
     
     # center of image
-    cr, cc = (np.array(npimg.shape) / 2.0).astype('int')
+    cr, cc = (np.array(npmean.shape) / 2.0).astype('int')
     
-    #sr = int(0.05 * npimg.shape[0])
+    #sr = int(0.05 * npmean.shape[0])
     sr = cr
     er = cr
-    row_cutoff = npimg.shape[1] * 0.25
+    row_cutoff = npmean.shape[1] * 0.25
     
-    while sr > 0 and len(np.argwhere(npimg[sr,:])) > row_cutoff:
+    while sr > 0 and len(np.argwhere(npmean[sr,:])) > row_cutoff:
         sr -= 1
     
     sr += 5 # get rid of gray bar
     
-    while er < npimg.shape[0]-1 and len(np.argwhere(npimg[er,:])) > row_cutoff:
+    while er < npmean.shape[0]-1 and len(np.argwhere(npmean[er,:])) > row_cutoff:
         er += 1
     
     er -= 15 # get rid of angling shadowbox on butterfly
     
     sc = cc
     ec = cc
-    col_baseline = len(np.argwhere(npimg[:, cc]))
-    while sc > 0 and len(np.argwhere(npimg[sr:er, sc])) > npimg.shape[0] * 0.25:
+    col_baseline = len(np.argwhere(npmean[:, cc]))
+    while sc > 0 and len(np.argwhere(npmean[sr:er, sc])) > npmean.shape[0] * 0.25:
         sc -= 1
-    while ec < npimg.shape[1]-1 and len(np.argwhere(npimg[sr:er,ec])) > npimg.shape[0] * 0.25:
+    while ec < npmean.shape[1]-1 and len(np.argwhere(npmean[sr:er,ec])) > npmean.shape[0] * 0.25:
         ec += 1
     
     sc += 15 # get rid of angling shadowbox on butterfly
