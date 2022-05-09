@@ -55,7 +55,7 @@ def ffprobe_count_frames(filename):
             streamsbytype[d["stream"]["@codec_type"].lower()] = d["stream"]
 
         return streamsbytype
-    except AttibuteError as e:
+    except AttributeError as e:
         print(e)
         return {}
     except:
@@ -79,7 +79,11 @@ def vread_workaround(fp, ffprobe_count_frames_dict=None):
         Video array in F,H,W,RGB format
     '''
     ffprobe_count_frames_dict = ffprobe_count_frames_dict if ffprobe_count_frames_dict is not None else ffprobe_count_frames(fp)
-    return vread(fp, outputdict={'-vframes' : ffprobe_count_frames_dict['video']['@nb_read_frames']})
+    
+    # in rare cases, butterfly-iq will encode duplicate frames or whatnot that cause the output frames from ffmpeg to be lower
+    # than that recorded by ffprobe as it resamples for a constant frame rate
+    # vsync 0 forces ffmpeg to not resample
+    return vread(fp, outputdict={'-vsync' : '0', '-vframes' : ffprobe_count_frames_dict['video']['@nb_read_frames']})
 
 def _calc_spacing(npvid):
     '''
