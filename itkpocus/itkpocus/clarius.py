@@ -42,7 +42,7 @@ def _get_rightmost_ruler_from_mask(mask, tick_dist):
     
     diffs = np.abs(ruler_peaks[1:] - ruler_peaks[:-1])
     median_diff = np.median(diffs)
-    outliers_perc =  len(np.argwhere(diffs - median_diff > consistency_threshold)) / len(diffs)
+    outliers_perc =  len(np.argwhere(np.abs(diffs - median_diff) > consistency_threshold)) / len(diffs)
     if outliers_perc > outlier_threshold:
         raise ValueError('Max percentage of outlier ruler ticks greater than threshold (ruler likely not detected or obscured): {} > {}'.format(outliers_perc, outlier_threshold))
     
