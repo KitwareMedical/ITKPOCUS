@@ -176,7 +176,9 @@ def load_and_preprocess_video(fp, version=None):
     npfirst = npvid[0,:,:]
     spacing = _find_spacing(npfirst)
     spacing = [spacing, spacing, itkpocus.util.get_framerate(vidmeta)]
-    crop = _find_crop(npfirst)
+
+    npmean = np.mean(npvid, axis=0)
+    crop = _find_crop(npmean)
     
     npvid_rgb = itkpocus.util.crop(npvid_rgb, crop, rgb=True)
     npvid = itkpocus.util.crop(npvid, crop)
