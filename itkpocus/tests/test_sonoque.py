@@ -25,6 +25,12 @@ class TestSonoque(unittest.TestCase):
         self.assertAlmostEqual(crop[0,0], 72)
         self.assertAlmostEqual(crop[0,1], 1382)
         print(crop)
+
+    def test_mean_crop(self):
+        img, _ = itkpocus.sonoque.load_and_preprocess_video('./tests/data/sonoque-mean-crop.MOV')
+        img_size = img.GetLargestPossibleRegion().GetSize()
+        self.assertGreaterEqual(img_size[0], 900)
+        self.assertGreaterEqual(img_size[1], 1200)
     
 if __name__ == '__main__':
     unittest.main()
