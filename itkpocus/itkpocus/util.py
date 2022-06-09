@@ -65,13 +65,13 @@ def inward_out_crop(nparr, center=None, bg_threshold=0, crop_threshold=(0.1, 0.1
     ndarray
         2x2 array in format [[start_row, end_row], [start_column, end_column]]
     '''
-    assert nparr.shape in (2,3)
+    assert len(nparr.shape) in (2,3)
     
-    npmean = nparr if nparr.shape == 2 else np.mean(nparr, axis=0)
+    npmean = nparr if len(nparr.shape) == 2 else np.mean(nparr, axis=0)
     
     # center of image
     cr, cc = (np.array(npmean.shape) / 2.0).astype('int') if center is None else center
-    
+
     def crop_row(cr, sc=0, ec=npmean.shape[1]-1):
         '''
         Parameters
@@ -115,11 +115,13 @@ def inward_out_crop(nparr, center=None, bg_threshold=0, crop_threshold=(0.1, 0.1
         sc += -pad[2]
         sc = max(0, sc)
         
-        while ec < npmean.shape[1]-1 and len(np.argwhere(npmean[sr:er,ec])) > col_cutoff:
+        while ec < npmean.shape[1]-1 and len(np.argwhere(npmean[sr:er,ec]) > bg_threshold) > col_cutoff:
             ec += 1
         ec += pad[3]
-        ec = min(sc, npmean.shape[1]-1)
-    
+        ec = min(ec, npmean.shape[1]-1)
+        
+        return sc, ec
+     
     if row_first:
         sr, er = crop_row(cr)
         sc, ec = crop_col(cc, sr, er)

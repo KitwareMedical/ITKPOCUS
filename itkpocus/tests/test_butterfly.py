@@ -22,8 +22,8 @@ class TestButterfly(unittest.TestCase):
         self.assertAlmostEqual(spacing[0], 0.047619, delta=SPACING_DELTA)
         self.assertAlmostEqual(spacing[1], 0.047619, delta=SPACING_DELTA)
     
-        self.assertAlmostEqual(crop[0,0], 31)
-        self.assertAlmostEqual(crop[0,1], 1048)
+        self.assertAlmostEqual(crop[0,0], 36)
+        self.assertAlmostEqual(crop[0,1], 1062)
         print(crop)
 
 
