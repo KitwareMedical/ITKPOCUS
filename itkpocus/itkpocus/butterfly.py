@@ -109,7 +109,7 @@ def _calc_spacing(npvid):
     spacing = 2 / ruler_dist
     return spacing
 
-def _calc_crop(npvid):
+def _calc_crop(npvid, crop_threshold=0.1):
     '''
     Calculates the crop region to isolate the ultrasound data.
     
@@ -117,47 +117,21 @@ def _calc_crop(npvid):
     ----------
     npvid : ndarray
         video or image, if image, H, W, RGB, if video, F, H, W, RGB
-        
+    crop_threshold : float
+        What percentage of row/column of pixels should be non-zero to be considered valid B-mode
     Returns
     -------
     ndarray
         2x2 array in format [[start_row, end_row], [start_column, end_column]]
     '''
     if len(npvid.shape) == 4:
-        npmean = np.mean(npvid[:,:,:,0], axis=0)
+        nparr = npvid[:,:,:,0].squeeze()
     else:
-        npmean = npvid[:,:,0].squeeze()
+        nparr = npvid[:,:,0].squeeze()
     
-    # center of image
-    cr, cc = (np.array(npmean.shape) / 2.0).astype('int')
+    crop_params = itkpocus.util.inward_out_crop(nparr, center=None, bg_threshold=0, crop_threshold=(0.1, 0.1), row_first=False, pad=(-10,-10,-15,-15))
     
-    #sr = int(0.05 * npmean.shape[0])
-    sr = cr
-    er = cr
-    row_cutoff = npmean.shape[1] * 0.25
-    
-    while sr > 0 and len(np.argwhere(npmean[sr,:])) > row_cutoff:
-        sr -= 1
-    
-    sr += 5 # get rid of gray bar
-    
-    while er < npmean.shape[0]-1 and len(np.argwhere(npmean[er,:])) > row_cutoff:
-        er += 1
-    
-    er -= 15 # get rid of angling shadowbox on butterfly
-    
-    sc = cc
-    ec = cc
-    col_baseline = len(np.argwhere(npmean[:, cc]))
-    while sc > 0 and len(np.argwhere(npmean[sr:er, sc])) > npmean.shape[0] * 0.25:
-        sc -= 1
-    while ec < npmean.shape[1]-1 and len(np.argwhere(npmean[sr:er,ec])) > npmean.shape[0] * 0.25:
-        ec += 1
-    
-    sc += 15 # get rid of angling shadowbox on butterfly
-    ec -= 15 # get rid of angling shadowbox on butterfly
-    
-    return np.array([[sr, er], [sc, ec]], dtype='int')
+    return crop_params
 
 def preprocess_video(npvid, framerate=1, version=None):
     '''

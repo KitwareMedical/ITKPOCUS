@@ -7,6 +7,7 @@ from skimage.morphology import dilation, disk
 from scipy.signal import find_peaks
 from itkpocus.util import get_framerate
 import itk
+import itkpocus.util
 
 '''
 Preprocessing and device-specific IO for the Clarius HD C7.
@@ -81,29 +82,33 @@ def _find_crop(npimg_clean):
         [[toprow, bottomrow], [leftcol, rightcol]]
     '''
     
-    bg_cutoff = 10.0 / 255.0
-    col_cutoff_perc = 0.1
-    row_cutoff_perc = 0.1
+   
+    crop_params = itkpocus.util.inward_out_crop(npimg_clean, center=None, bg_threshold=0.0, crop_threshold=(0.01, 0.01), row_first=False)
     
-    non_bg = npimg_clean > bg_cutoff
+    return crop_params
+#     bg_cutoff = 10.0 / 255.0
+#     col_cutoff_perc = 0.1
+#     row_cutoff_perc = 0.1
     
-    colsum = np.sum(non_bg, axis=0)
-    col_cutoff = col_cutoff_perc * np.max(colsum)
+#     non_bg = npimg_clean > bg_cutoff
     
-    fgcol = np.argwhere(colsum > col_cutoff)
-    leftbound = np.min(fgcol)
-    rightbound = np.max(fgcol)
+#     colsum = np.sum(non_bg, axis=0)
+#     col_cutoff = col_cutoff_perc * np.max(colsum)
     
-    rowsum = np.sum(non_bg[:,leftbound:rightbound+1], axis=1)
-    row_cutoff = row_cutoff_perc * np.max(rowsum)
-    fgrow = np.argwhere(rowsum > row_cutoff)
+#     fgcol = np.argwhere(colsum > col_cutoff)
+#     leftbound = np.min(fgcol)
+#     rightbound = np.max(fgcol)
     
-    topbound = np.min(fgrow)
-    bottombound = np.max(fgrow)
+#     rowsum = np.sum(non_bg[:,leftbound:rightbound+1], axis=1)
+#     row_cutoff = row_cutoff_perc * np.max(rowsum)
+#     fgrow = np.argwhere(rowsum > row_cutoff)
     
-    return np.array([[topbound, bottombound], [leftbound, rightbound]])
+#     topbound = np.min(fgrow)
+#     bottombound = np.max(fgrow)
+    
+#     return np.array([[topbound, bottombound], [leftbound, rightbound]])
 
-def _get_overlay_mask(npimg, version=None, threshold=250):
+def _get_overlay_mask(npimg, version=None, threshold=245):
     '''
     Identify the overlay and annotation elements by brightness (threshold) and color.
     
@@ -142,10 +147,11 @@ def preprocess_image(npimg, version=None, tick_dist=10):
         cropped image scaled to 0.0 to 1.0 (MxN) with physical spacing
     '''
     mask = _get_overlay_mask(npimg)
-    npimg_clean = _inpaint(npimg[:,:,0], mask)
+    npimg_clean = npimg[:,:,0].copy().squeeze()
+    npimg_clean[mask] = 0
     crop = _find_crop(npimg_clean)
     spacing, ruler_col, ruler_peaks = _get_rightmost_ruler_from_mask(mask, tick_dist=tick_dist)
-    img = itk.image_from_array(npimg_clean[crop[0,0]:crop[0,1]+1, crop[1,0]:crop[1,1]+1])
+    img = itk.image_from_array(_inpaint(npimg[crop[0,0]:crop[0,1]+1, crop[1,0]:crop[1,1]+1, 0], mask[crop[0,0]:crop[0,1]+1, crop[1,0]:crop[1,1]+1]) / 255.0)
     img.SetSpacing([spacing, spacing])
     
     return img, { 'spacing' : [spacing, spacing], 'crop' : crop }

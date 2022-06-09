@@ -21,8 +21,8 @@ class TestClarius(unittest.TestCase):
         self.assertAlmostEqual(spacing[0], 0.2564, delta=SPACING_DELTA)
         self.assertAlmostEqual(spacing[1], 0.2564, delta=SPACING_DELTA)
     
-        self.assertAlmostEqual(crop[0,0], 87)
-        self.assertAlmostEqual(crop[0,1], 872)
+        self.assertAlmostEqual(crop[0,0], 86)
+        self.assertAlmostEqual(crop[0,1], 873)
         print(crop)
         
     def test_load_and_preprocess_video(self):
@@ -37,8 +37,8 @@ class TestClarius(unittest.TestCase):
         self.assertAlmostEqual(spacing[1], 0.2564, delta=SPACING_DELTA)
         self.assertAlmostEqual(spacing[2], 0.04, delta=SPACING_DELTA)
     
-        self.assertAlmostEqual(crop[0,0], 79)
-        self.assertAlmostEqual(crop[0,1], 881)
+        self.assertAlmostEqual(crop[0,0], 86)
+        self.assertAlmostEqual(crop[0,1], 873)
         print(crop)
     
 if __name__ == '__main__':
