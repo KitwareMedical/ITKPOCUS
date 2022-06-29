@@ -30,7 +30,7 @@ def preprocess_image(img_raw, version=None, probe_type='linear'):
     img = itk.image_from_array(npimg)
     
     img.SetSpacing([img_raw.GetSpacing()[0], img_raw.GetSpacing()[1]])
-    return img, { 'spacing' : img.GetSpacing(), 'crop' : crop }
+    return img, { 'spacing' : [ img.GetSpacing()[0], img.GetSpacing()[1] ], 'crop' : crop }
 
 def preprocess_video(img_raw, version=None, probe_type='linear' ):
     '''
@@ -60,7 +60,7 @@ def preprocess_video(img_raw, version=None, probe_type='linear' ):
     img = itk.image_from_array(npimg)
     img.SetSpacing([0.0776016, 0.0776016, 1/24.0])
     
-    return img, { 'spacing' : img.GetSpacing(), 'crop' : crop }
+    return img, { 'spacing' : [ img.GetSpacing()[0], img.GetSpacing()[1], img.GetSpacing()[2] ], 'crop' : crop }
 
 def load_and_preprocess_image(fp, version=None, probe_type='linear'):
     '''

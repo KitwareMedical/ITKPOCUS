@@ -40,14 +40,9 @@ def _find_spacing_and_crop(npimg):
     midrow = npimg.shape[0]/2.0
     rowsum = np.sum(npimg[:,leftbound:rightbound+1,0], axis=1)
     zerorow = np.argwhere(rowsum == 0)
-    
-    if len(zerorow) == 0: # fills the whole image vertically
-        topbound=0
-        bottombound=npimg.shape[0]-1
-    else:
-        topbound = np.max(zerorow[zerorow < midrow])
-        bottombound = np.min(zerorow[midrow < zerorow])
-    
+   
+    topbound = np.max(np.append(zerorow[zerorow < midrow], 0))
+    bottombound = np.min(np.append(zerorow[midrow < zerorow],  npimg.shape[0]-1))   
     
     # interson ruler on left side and has text above it
     colsum2 = np.sum(npimg[topbound:(bottombound+1),:,0], axis=0)
