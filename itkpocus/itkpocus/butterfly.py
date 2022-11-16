@@ -133,7 +133,7 @@ def _calc_crop(npvid, crop_threshold=0.1):
     
     return crop_params
 
-def preprocess_video(npvid, framerate=1, version=None):
+def preprocess_video(npvid, framerate=1, version=None, manual_crop=None):
     '''
     Preprocesses an ndarray representing a video (FRCRGB)
     
@@ -151,11 +151,11 @@ def preprocess_video(npvid, framerate=1, version=None):
     '''
     spacing = _calc_spacing(npvid)
     spacing = np.array([spacing, spacing, framerate])
-    crop = _calc_crop(npvid)
+    crop = _calc_crop(npvid) if manual_crop is None else manual_crop
     img = itkpocus.util.image_from_array(npvid[:,crop[0,0]:crop[0,1], crop[1,0]:crop[1,1],0].astype('float32') / 255.0, spacing=spacing)
     return img, {'spacing' : spacing, 'crop' : crop}
 
-def preprocess_image(npimg, version=None):
+def preprocess_image(npimg, version=None, manual_crop=None):
     '''
     
     Parameters
@@ -172,11 +172,11 @@ def preprocess_image(npimg, version=None):
     '''
     spacing = _calc_spacing(npimg)
     spacing = np.array([spacing, spacing])
-    crop = _calc_crop(npimg)
+    crop = _calc_crop(npimg) if manual_crop is None else manual_crop
     img = itkpocus.util.image_from_array(npimg[crop[0,0]:crop[0,1], crop[1,0]:crop[1,1],0].astype('float32') / 255.0, spacing=spacing)
     return img, {'spacing' : spacing, 'crop' : crop}
 
-def load_and_preprocess_video(fp, version=None):
+def load_and_preprocess_video(fp, version=None, manual_crop=None):
     '''
     Loads and preprocesses a Butterfly video.
     
@@ -196,9 +196,9 @@ def load_and_preprocess_video(fp, version=None):
     '''
     vidmeta = ffprobe_count_frames(fp)
     npvid_rgb = vread_workaround(fp, vidmeta)
-    return preprocess_video(npvid_rgb, framerate=itkpocus.util.get_framerate(vidmeta))
+    return preprocess_video(npvid_rgb, framerate=itkpocus.util.get_framerate(vidmeta), manual_crop=manual_crop)
 
-def load_and_preprocess_image(fp, version=None):
+def load_and_preprocess_image(fp, version=None, manual_crop=None):
     '''
     Loads and preprocesses a Butterfly image.
     
@@ -217,5 +217,5 @@ def load_and_preprocess_image(fp, version=None):
         Meta data (includes spacing and crop)
     '''
     npimg_rgb = itk.array_from_image(itk.imread(fp))
-    return preprocess_image(npimg_rgb)
+    return preprocess_image(npimg_rgb, manual_crop=manual_crop)
     
