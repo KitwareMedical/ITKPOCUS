@@ -3,5 +3,5 @@ ITKPOCUS - an open source library for image processing and AI of point-of-care u
 
 '''
 
-__version__ = '0.2.0'
+__version__ = '0.3.0'
 
