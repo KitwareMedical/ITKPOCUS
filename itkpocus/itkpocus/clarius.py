@@ -147,11 +147,13 @@ def preprocess_image(npimg, version=None, tick_dist=10):
         cropped image scaled to 0.0 to 1.0 (MxN) with physical spacing
     '''
     mask = _get_overlay_mask(npimg)
-    npimg_clean = npimg[:,:,0].copy().squeeze()
+    npimg_clean = npimg[:,:,0].copy().squeeze() / 255.0
     npimg_clean[mask] = 0
     crop = _find_crop(npimg_clean)
     spacing, ruler_col, ruler_peaks = _get_rightmost_ruler_from_mask(mask, tick_dist=tick_dist)
-    img = itk.image_from_array(_inpaint(npimg[crop[0,0]:crop[0,1]+1, crop[1,0]:crop[1,1]+1, 0], mask[crop[0,0]:crop[0,1]+1, crop[1,0]:crop[1,1]+1]) / 255.0)
+
+    # inpaint will convert to 1.0 if it is a non-float array which it is
+    img = itk.image_from_array(_inpaint(npimg[crop[0,0]:crop[0,1]+1, crop[1,0]:crop[1,1]+1, 0], mask[crop[0,0]:crop[0,1]+1, crop[1,0]:crop[1,1]+1]))
     img.SetSpacing([spacing, spacing])
     
     return img, { 'spacing' : [spacing, spacing], 'crop' : crop }
