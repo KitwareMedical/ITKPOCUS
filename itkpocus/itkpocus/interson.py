@@ -110,7 +110,7 @@ def preprocess_image(npimg, version=None):
     spacing, crop = _find_spacing_and_crop(npimg)
     npimgcrop = npimg[crop[0,0]:crop[0,1]+1, crop[1,0]:crop[1,1]+1]
     npimgnorm, _ = _normalize(npimgcrop[:,:,0], npimgcrop)
-    img = itk.image_from_array(npimgnorm)
+    img = itk.image_from_array(npimgnorm / 255.0)
     img.SetSpacing([spacing, spacing])
     return img, { 'spacing' : [spacing, spacing], 'crop' : crop }
 
