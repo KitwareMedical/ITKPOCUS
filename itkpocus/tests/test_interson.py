@@ -1,6 +1,6 @@
 import unittest
 import itkpocus.interson
-
+import numpy as np
 SPACING_DELTA = 0.0005
 
 
@@ -23,6 +23,8 @@ class TestIntersons(unittest.TestCase):
     
         self.assertAlmostEqual(crop[0,0], 393)
         self.assertAlmostEqual(crop[0,1], 895)
+        self.assertGreater(np.max(img), 0.5)
+        self.assertLessEqual(np.max(img), 1.0)
         print(crop)
         
     def test_load_and_preprocess_video(self):
